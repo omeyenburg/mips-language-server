@@ -1,14 +1,11 @@
-//use std::collections::HashMap;
 use dashmap::DashMap;
 use std::io::BufWriter;
-use std::sync::Mutex;
-use tokio::io::BufReader;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
 use tracing::level_filters::LevelFilter;
-use tracing_appender::non_blocking;
+use ts::find_labels;
 
 #[derive(Debug)]
 struct Backend {
@@ -53,16 +50,26 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        info!("textDocument/didOpen");
+        let TextDocumentItem { uri, text, .. } = params.text_document;
 
-        let text = params.text_document.text;
-        self.documents.insert(params.text_document.uri, text);
+        info!(
+            "textDocument/didOpen: {:?}",
+            uri.to_file_path().expect("expected file")
+        );
+        info!("Content:\n{}", &text);
+
+        self.documents.insert(uri, text);
+        info!("docs: {:?}", &self.documents);
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
         info!("textDocument/didChange");
 
         let changes = params.content_changes;
+        for change in &changes {
+            info!("Change:\n{}", &change.text);
+        }
+
         if changes.len() != 1 {
             panic!("You cannot do more than one {:?}", changes);
         }
@@ -71,8 +78,8 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let uri = params.text_document_position.text_document.uri;
-        let position = params.text_document_position.position;
+        //let uri = params.text_document_position.text_document.uri;
+        //let position = params.text_document_position.position;
 
         // Define a list of MIPS assembly instructions and keywords
         let keywords = vec![
@@ -123,18 +130,26 @@ impl LanguageServer for Backend {
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
         let TextDocumentPositionParams {
-            text_document,
             position,
+            text_document,
         } = params.text_document_position_params;
+
+        let tmp = self
+            .documents
+            .get(&text_document.uri)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+        info!("text: {:?}", tmp.as_str());
 
         let text = self
             .documents
             .get(&text_document.uri)
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
 
-        let lang = tree_sitter_asm::language();
         let mut parser = tree_sitter::Parser::new();
-        parser.set_language(&lang).expect("Failed setting language");
+        parser
+            .set_language(&tree_sitter_asm::language())
+            .expect("Error loading asm grammar");
+
         let tree = parser
             .parse(text.as_bytes(), None)
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
@@ -143,20 +158,39 @@ impl LanguageServer for Backend {
         let node = ts::get_node_at_point(&tree, point)
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
 
-        let start = node.start_position();
+        let text = node.utf8_text(tmp.as_bytes()).unwrap_or_default();
 
-        Ok(Some(GotoDefinitionResponse::Scalar(Location {
-            uri: text_document.uri,
-            range: Range {
-                start: ts::point_to_position(&start),
-                end: ts::point_to_position(&start),
-            },
-        })))
+        let root = tree.root_node();
+        let labels = find_labels(root, tmp.as_str());
+
+        for (label, start) in labels {
+            if label == text {
+                return Ok(Some(GotoDefinitionResponse::Scalar(Location {
+                    uri: text_document.uri,
+                    range: Range {
+                        start: ts::point_to_position(&start),
+                        end: ts::point_to_position(&start),
+                    },
+                })));
+
+            }
+        }
+
+
+        //let Position { line, character } = position;
+
+        //let start = node.start_position();
+
+
+        Ok(None)
     }
 }
 
 mod ts {
+    use std::usize;
+
     use tower_lsp::lsp_types::Position;
+    use tracing::info;
     use tree_sitter::{Node, Point};
 
     pub fn position_to_point(position: &Position) -> Point {
@@ -174,7 +208,35 @@ mod ts {
     }
 
     pub fn get_node_at_point(tree: &tree_sitter::Tree, point: Point) -> Option<Node> {
-        return tree.root_node().descendant_for_point_range(point, point);
+        tree.root_node().descendant_for_point_range(point, point)
+    }
+
+    pub fn print_tree(node: tree_sitter::Node, indent: usize) {
+        let mut cursor = node.walk();
+
+        info!("{}Node: {:?}, {:?}", "  ".repeat(indent), node, node.kind());
+
+        for child in node.children(&mut cursor) {
+            if child.kind() == "ident" && node.kind() == "label" {}
+            print_tree(child, indent + 2);
+        }
+    }
+
+    pub fn find_labels(node: tree_sitter::Node, source_code: &str) -> Vec<(String, Point)> {
+        let mut labels = Vec::new();
+        let mut cursor = node.walk();
+
+        for child in node.children(&mut cursor) {
+            if child.kind() == "ident" && node.kind() == "label" {
+                let text = child.utf8_text(source_code.as_bytes()).unwrap_or_default();
+                let start = child.start_position();
+                labels.push((text.to_string(), start));
+            }
+
+            // Recursively check children
+            labels.extend(find_labels(child, source_code));
+        }
+        labels
     }
 }
 
@@ -218,7 +280,6 @@ impl Backend {
     //        .insert(params.uri.to_string(), rope.clone());
     //}
 }
-
 
 #[tokio::main]
 async fn main() {
