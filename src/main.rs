@@ -1,9 +1,14 @@
 //use std::collections::HashMap;
 use dashmap::DashMap;
+use std::io::BufWriter;
 use std::sync::Mutex;
+use tokio::io::BufReader;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
+use tracing::info;
+use tracing::level_filters::LevelFilter;
+use tracing_appender::non_blocking;
 
 #[derive(Debug)]
 struct Backend {
@@ -40,9 +45,7 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, "server initialized!")
-            .await;
+        info!("Server initialized");
     }
 
     async fn shutdown(&self) -> Result<()> {
@@ -50,36 +53,21 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        //debug!("file opened");
-        //self.on_change(TextDocumentItem {
-        //    uri: params.text_document.uri,
-        //    text: &params.text_document.text,
-        //    version: Some(params.text_document.version),
-        //})
-        //.await
-        self.client
-            .log_message(MessageType::INFO, "file opened")
-            .await;
+        info!("textDocument/didOpen");
+
+        let text = params.text_document.text;
+        self.documents.insert(params.text_document.uri, text);
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
+        info!("textDocument/didChange");
+
         let changes = params.content_changes;
         if changes.len() != 1 {
             panic!("You cannot do more than one {:?}", changes);
         }
         let text = changes[0].text.clone();
         self.documents.insert(params.text_document.uri, text);
-
-        self.client
-            .log_message(MessageType::INFO, "file changed")
-            .await;
-
-        //self.on_change(TextDocumentItem {
-        //    text: &params.content_changes[0].text,
-        //    uri: params.text_document.uri,
-        //    version: Some(params.text_document.version),
-        //})
-        //.await
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
@@ -134,19 +122,59 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
+        let TextDocumentPositionParams {
+            text_document,
+            position,
+        } = params.text_document_position_params;
+
+        let text = self
+            .documents
+            .get(&text_document.uri)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+
+        let lang = tree_sitter_asm::language();
+        let mut parser = tree_sitter::Parser::new();
+        parser.set_language(&lang).expect("Failed setting language");
+        let tree = parser
+            .parse(text.as_bytes(), None)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+
+        let point = ts::position_to_point(&position);
+        let node = ts::get_node_at_point(&tree, point)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+
+        let start = node.start_position();
+
         Ok(Some(GotoDefinitionResponse::Scalar(Location {
-            uri: params.text_document_position_params.text_document.uri,
+            uri: text_document.uri,
             range: Range {
-                start: Position {
-                    line: 0,
-                    character: 0,
-                },
-                end: Position {
-                    line: 0,
-                    character: 0,
-                },
+                start: ts::point_to_position(&start),
+                end: ts::point_to_position(&start),
             },
         })))
+    }
+}
+
+mod ts {
+    use tower_lsp::lsp_types::Position;
+    use tree_sitter::{Node, Point};
+
+    pub fn position_to_point(position: &Position) -> Point {
+        Point {
+            row: position.line as usize,
+            column: position.character as usize,
+        }
+    }
+
+    pub fn point_to_position(point: &Point) -> Position {
+        Position {
+            line: point.row as u32,
+            character: point.column as u32,
+        }
+    }
+
+    pub fn get_node_at_point(tree: &tree_sitter::Tree, point: Point) -> Option<Node> {
+        return tree.root_node().descendant_for_point_range(point, point);
     }
 }
 
@@ -191,11 +219,26 @@ impl Backend {
     //}
 }
 
+
 #[tokio::main]
 async fn main() {
     let mut args = std::env::args();
     match args.nth(1).as_deref() {
         None => {
+            let log_file = std::fs::File::create("/home/oskar/git/mips-language-server/lsp.log")
+                .expect("Create file");
+            let log_file = BufWriter::new(log_file);
+            let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
+            let subscriber = tracing_subscriber::fmt()
+                .with_max_level(LevelFilter::DEBUG)
+                .with_writer(non_blocking)
+                .finish();
+
+            tracing::subscriber::set_global_default(subscriber)
+                .expect("Could not set default subscriber");
+
+            info!("Starting mips-language-server");
+
             let stdin = tokio::io::stdin();
             let stdout = tokio::io::stdout();
 
