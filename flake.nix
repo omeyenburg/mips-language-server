@@ -1,30 +1,21 @@
 {
-  description = "Development environment with bear, OpenGL, SDL, and clangd";
-
+  description = "Rust development environment";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            cargo
-            rustup
-          ];
-
-          # Set up environment variables for OpenGL and SDL
-          shellHook = ''
-            export PS1="\[\033[1;32m\][nix-dev:\w]\$ \[\033[0m\]"
-            echo "> Development Environment Activated"
-          '';
-        };
-      }
-    );
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
+    devShells.${system}.default =
+      pkgs.mkShell
+      {
+        packages = with pkgs; [rustc cargo];
+      };
+  };
 }
-
-# vim: sw=2 sts=2 et
