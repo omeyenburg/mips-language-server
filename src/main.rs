@@ -1,18 +1,20 @@
-use dashmap::DashMap;
-use std::io::BufWriter;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
-use tracing::level_filters::LevelFilter;
-use ts::find_labels;
+
+#[derive(Debug)]
+struct Document {
+    text: String,
+    tree: tree_sitter::Tree,
+}
 
 #[derive(Debug)]
 struct Backend {
     client: Client,
-    documents: DashMap<Url, String>,
-    //documents: Mutex<HashMap<String, String>>, // Full text of each document by URI
-    //labels: Mutex<HashMap<String, Vec<(String, usize)>>>, // Jump labels by URI: (label, line number)
+    documents: dashmap::DashMap<Url, Document>,
+    //documents: dashmap::DashMap<Url, String>,
+    //trees: dashmap::DashMap<Url, tree_sitter::Tree>,
 }
 
 #[tower_lsp::async_trait]
@@ -50,31 +52,81 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        let TextDocumentItem { uri, text, .. } = params.text_document;
-
         info!(
             "textDocument/didOpen: {:?}",
-            uri.to_file_path().expect("expected file")
+            params
+                .text_document
+                .uri
+                .to_file_path()
+                .expect("expected file")
         );
-        info!("Content:\n{}", &text);
 
-        self.documents.insert(uri, text);
-        info!("docs: {:?}", &self.documents);
+        let TextDocumentItem { uri, text, .. } = params.text_document;
+
+        // Generate tree using tree-sitter
+        let tree = ts::create_tree(text.as_bytes(), None)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .expect("Expected new tree");
+
+        let root = tree.root_node();
+        ts::print_tree(root, 0);
+
+        // Store document text and tree
+        self.documents.insert(uri, Document { text, tree });
+        //self.documents.insert(uri.clone(), text);
+        //self.trees.insert(uri, tree.clone());
+        //info!("inserted")
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
         info!("textDocument/didChange");
 
+        let uri = params.text_document.uri.clone();
         let changes = params.content_changes;
-        for change in &changes {
-            info!("Change:\n{}", &change.text);
-        }
 
+        // Expect only one change
         if changes.len() != 1 {
             panic!("You cannot do more than one {:?}", changes);
         }
         let text = changes[0].text.clone();
-        self.documents.insert(params.text_document.uri, text);
+
+        info!(" - text generated");
+
+        let old_tree = self
+            .documents
+            .get(&uri)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .expect("Expected old tree")
+            .tree
+            .clone();
+
+        // Retrieve old tree
+        //let old_tree = self
+        //    .trees
+        //    .get(&uri)
+        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+        //    .expect("Expected old tree");
+
+        info!(" - tree found");
+
+        // Generate tree using tree-sitter
+        let tree = ts::create_tree(text.as_bytes(), Some(&old_tree))
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .expect("Expected new tree");
+
+        info!(" - tree generated");
+        let root = tree.root_node();
+        ts::print_tree(root, 0);
+
+        // Update document text and tree
+        //info!("Inserting tree for URI: {:?}", params.text_document.uri);
+        //self.trees
+        //    .insert(params.text_document.uri.clone(), tree.clone());
+        //info!(" - first insert");
+        //self.documents
+        //    .insert(params.text_document.uri.clone(), text);
+        self.documents.insert(uri, Document { text, tree });
+        info!(" - insert successful");
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
@@ -119,6 +171,12 @@ impl LanguageServer for Backend {
     }
 
     async fn hover(&self, _: HoverParams) -> Result<Option<Hover>> {
+        /*
+        Documentation should look like this:
+
+
+                */
+
         Ok(Some(Hover {
             contents: HoverContents::Scalar(MarkedString::String("You're hovering!".to_string())),
             range: None,
@@ -129,42 +187,35 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
+        // Unpack position and text_document
         let TextDocumentPositionParams {
             position,
             text_document,
         } = params.text_document_position_params;
 
-        let tmp = self
+        // Retrieve current content and tree
+        let document = self
             .documents
             .get(&text_document.uri)
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
-        info!("text: {:?}", tmp.as_str());
+        let text = &document.text;
+        let tree = document.tree.clone();
 
-        let text = self
-            .documents
-            .get(&text_document.uri)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
-
-        let mut parser = tree_sitter::Parser::new();
-        parser
-            .set_language(&tree_sitter_asm::language())
-            .expect("Error loading asm grammar");
-
-        let tree = parser
-            .parse(text.as_bytes(), None)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
-
+        // Determine node below cursor and fetch the label name
         let point = ts::position_to_point(&position);
-        let node = ts::get_node_at_point(&tree, point)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+        let cursor_label_name = tree
+            .root_node()
+            .descendant_for_point_range(point, point)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?
+            .utf8_text(text.as_bytes())
+            .unwrap_or_default();
 
-        let text = node.utf8_text(tmp.as_bytes()).unwrap_or_default();
+        // Find all labels in file
+        let labels = ts::find_labels(tree.root_node(), text.as_str());
 
-        let root = tree.root_node();
-        let labels = find_labels(root, tmp.as_str());
-
+        // Filter labels and match label below cursor
         for (label, start) in labels {
-            if label == text {
+            if label == cursor_label_name {
                 return Ok(Some(GotoDefinitionResponse::Scalar(Location {
                     uri: text_document.uri,
                     range: Range {
@@ -172,26 +223,27 @@ impl LanguageServer for Backend {
                         end: ts::point_to_position(&start),
                     },
                 })));
-
             }
         }
 
-
-        //let Position { line, character } = position;
-
-        //let start = node.start_position();
-
-
+        // Return None; no definition found
         Ok(None)
     }
 }
 
 mod ts {
-    use std::usize;
-
     use tower_lsp::lsp_types::Position;
     use tracing::info;
-    use tree_sitter::{Node, Point};
+    use tree_sitter::{Node, Point, Tree};
+
+    pub fn create_tree(text: &[u8], old_tree: Option<&Tree>) -> Option<Tree> {
+        let mut parser = tree_sitter::Parser::new();
+        parser
+            .set_language(&tree_sitter_asm::language())
+            .expect("Error loading asm grammar");
+
+        parser.parse(text, old_tree)
+    }
 
     pub fn position_to_point(position: &Position) -> Point {
         Point {
@@ -205,10 +257,6 @@ mod ts {
             line: point.row as u32,
             character: point.column as u32,
         }
-    }
-
-    pub fn get_node_at_point(tree: &tree_sitter::Tree, point: Point) -> Option<Node> {
-        tree.root_node().descendant_for_point_range(point, point)
     }
 
     pub fn print_tree(node: tree_sitter::Node, indent: usize) {
@@ -244,41 +292,9 @@ impl Backend {
     pub fn new(client: Client) -> Self {
         Self {
             client,
-            documents: DashMap::new(),
-            //documents: Mutex::new(HashMap::new()),
-            //labels: Mutex::new(HashMap::new()),
+            documents: dashmap::DashMap::new(),
         }
     }
-
-    // Parse a document and extract jump labels
-    //fn parse_document(&self, uri: &str, content: &str) {
-    //    let mut labels = Vec::new();
-    //    for (line_number, line) in content.lines().enumerate() {
-    //        if let Some(label) = Self::extract_label(line) {
-    //            labels.push((label, line_number));
-    //        }
-    //    }
-    //    self.labels.lock().unwrap().insert(uri.to_string(), labels);
-    //}
-    //
-    ///// Extract a jump label from a single line (if any)
-    //fn extract_label(line: &str) -> Option<String> {
-    //    // Assume labels end with ':'
-    //    if let Some(index) = line.find(':') {
-    //        let label = &line[..index];
-    //        if !label.trim().is_empty() {
-    //            return Some(label.trim().to_string());
-    //        }
-    //    }
-    //    None
-    //}
-
-    //async fn on_change<'a>(&self, params: TextDocumentItem<'a>) {
-    //    dbg!(&params.version);
-    //    let rope = ropey::Rope::from_str(params.text);
-    //    self.document_map
-    //        .insert(params.uri.to_string(), rope.clone());
-    //}
 }
 
 #[tokio::main]
@@ -288,10 +304,10 @@ async fn main() {
         None => {
             let log_file = std::fs::File::create("/home/oskar/git/mips-language-server/lsp.log")
                 .expect("Create file");
-            let log_file = BufWriter::new(log_file);
+            let log_file = std::io::BufWriter::new(log_file);
             let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
             let subscriber = tracing_subscriber::fmt()
-                .with_max_level(LevelFilter::DEBUG)
+                .with_max_level(tracing::level_filters::LevelFilter::DEBUG)
                 .with_writer(non_blocking)
                 .finish();
 
