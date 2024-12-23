@@ -14,6 +14,8 @@ struct Backend {
     client: Client,
     documents: dashmap::DashMap<Url, Document>,
     instructions: json::Instructions,
+    directives: json::Directives,
+    registers: json::Registers,
 }
 
 #[tower_lsp::async_trait]
@@ -215,24 +217,19 @@ impl LanguageServer for Backend {
                 }));
             }
         } else if kind == "meta_ident" {
-            let documentation;
-            if cursor_node_text == ".data" {
-                documentation = String::from("Data section of the program");
-            } else if cursor_node_text == ".text" {
-                documentation = String::from("Code section of the program");
-            } else {
-                return Ok(None);
+            if let Some(directive) = self.directives.get(cursor_node_text) {
+                return Ok(Some(Hover {
+                    contents: HoverContents::Scalar(MarkedString::String(String::from(directive))),
+                    range: None,
+                }));
             }
-
-            return Ok(Some(Hover {
-                contents: HoverContents::Scalar(MarkedString::String(documentation)),
-                range: None,
-            }));
         } else if kind == "address" {
-            return Ok(Some(Hover {
-                contents: HoverContents::Scalar(MarkedString::String(String::from("This is an address"))),
-                range: None,
-            }));
+            if let Some(register) = self.registers.get(cursor_node_text) {
+                return Ok(Some(Hover {
+                    contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+                    range: None,
+                }));
+            }
         }
 
         Ok(None)
@@ -323,9 +320,21 @@ mod json {
     }
 
     pub type Instructions = std::collections::HashMap<String, Vec<Instruction>>;
+    pub type Directives = std::collections::HashMap<String, String>;
+    pub type Registers = std::collections::HashMap<String, String>;
 
-    pub fn read() -> Instructions {
+    pub fn read_instructions() -> Instructions {
         let json = include_str!("../resources/instructions.json");
+        serde_json::from_str(json).expect("JSON parsing failed")
+    }
+
+    pub fn read_directives() -> Directives {
+        let json = include_str!("../resources/directives.json");
+        serde_json::from_str(json).expect("JSON parsing failed")
+    }
+
+    pub fn read_registers() -> Registers {
+        let json = include_str!("../resources/registers.json");
         serde_json::from_str(json).expect("JSON parsing failed")
     }
 }
@@ -393,12 +402,16 @@ mod ts {
 impl Backend {
     pub fn new(client: Client) -> Self {
         let documents = dashmap::DashMap::new();
-        let instructions = json::read();
+        let instructions = json::read_instructions();
+        let directives = json::read_directives();
+        let registers = json::read_registers();
 
         Self {
             client,
             documents,
             instructions,
+            directives,
+            registers,
         }
     }
 }
