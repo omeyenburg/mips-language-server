@@ -3,7 +3,7 @@
     {
       "syntax": "nop",
       "description": "Null operation : machine code is all zeroes",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 00000 00000 00000 000000"
     }
   ],
@@ -11,7 +11,7 @@
     {
       "syntax": "add $t1,$t2,$t3",
       "description": "Addition with overflow : set $t1 to ($t2 plus $t3)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100000"
     }
   ],
@@ -19,7 +19,7 @@
     {
       "syntax": "sub $t1,$t2,$t3",
       "description": "Subtraction with overflow : set $t1 to ($t2 minus $t3)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100010"
     }
   ],
@@ -27,7 +27,7 @@
     {
       "syntax": "addi $t1,$t2,-100",
       "description": "Addition immediate with overflow : set $t1 to ($t2 plus signed 16-bit immediate)",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001000 sssss fffff tttttttttttttttt"
     }
   ],
@@ -35,7 +35,7 @@
     {
       "syntax": "addu $t1,$t2,$t3",
       "description": "Addition unsigned without overflow : set $t1 to ($t2 plus $t3), no overflow",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100001"
     }
   ],
@@ -43,7 +43,7 @@
     {
       "syntax": "subu $t1,$t2,$t3",
       "description": "Subtraction unsigned without overflow : set $t1 to ($t2 minus $t3), no overflow",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100011"
     }
   ],
@@ -51,7 +51,7 @@
     {
       "syntax": "addiu $t1,$t2,-100",
       "description": "Addition immediate unsigned without overflow : set $t1 to ($t2 plus signed 16-bit immediate), no overflow",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001001 sssss fffff tttttttttttttttt"
     }
   ],
@@ -59,7 +59,7 @@
     {
       "syntax": "mult $t1,$t2",
       "description": "Multiplication : Set hi to high-order 32 bits, lo to low-order 32 bits of the product of $t1 and $t2 (use mfhi to access hi, mflo to access lo)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 011000"
     }
   ],
@@ -67,7 +67,7 @@
     {
       "syntax": "multu $t1,$t2",
       "description": "Multiplication unsigned : Set HI to high-order 32 bits, LO to low-order 32 bits of the product of unsigned $t1 and $t2 (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 011001"
     }
   ],
@@ -75,7 +75,7 @@
     {
       "syntax": "mul $t1,$t2,$t3",
       "description": "Multiplication without overflow  : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and $t3 (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "011100 sssss ttttt fffff 00000 000010"
     }
   ],
@@ -83,7 +83,7 @@
     {
       "syntax": "madd $t1,$t2",
       "description": "Multiply add : Multiply $t1 by $t2 then increment HI by high-order 32 bits of product, increment LO by low-order 32 bits of product (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "011100 fffff sssss 00000 00000 000000"
     }
   ],
@@ -91,7 +91,7 @@
     {
       "syntax": "maddu $t1,$t2",
       "description": "Multiply add unsigned : Multiply $t1 by $t2 then increment HI by high-order 32 bits of product, increment LO by low-order 32 bits of product, unsigned (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "011100 fffff sssss 00000 00000 000001"
     }
   ],
@@ -99,7 +99,7 @@
     {
       "syntax": "msub $t1,$t2",
       "description": "Multiply subtract : Multiply $t1 by $t2 then decrement HI by high-order 32 bits of product, decrement LO by low-order 32 bits of product (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "011100 fffff sssss 00000 00000 000100"
     }
   ],
@@ -107,7 +107,7 @@
     {
       "syntax": "msubu $t1,$t2",
       "description": "Multiply subtract unsigned : Multiply $t1 by $t2 then decrement HI by high-order 32 bits of product, decement LO by low-order 32 bits of product, unsigned (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "011100 fffff sssss 00000 00000 000101"
     }
   ],
@@ -115,7 +115,7 @@
     {
       "syntax": "div $t1,$t2",
       "description": "Division with overflow : Divide $t1 by $t2 then set LO to quotient and HI to remainder (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 011010"
     }
   ],
@@ -123,7 +123,7 @@
     {
       "syntax": "divu $t1,$t2",
       "description": "Division unsigned without overflow : Divide unsigned $t1 by $t2 then set LO to quotient and HI to remainder (use mfhi to access HI, mflo to access LO)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 011011"
     }
   ],
@@ -131,7 +131,7 @@
     {
       "syntax": "mfhi $t1",
       "description": "Move from HI register : Set $t1 to contents of HI (see multiply and divide operations)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 00000 fffff 00000 010000"
     }
   ],
@@ -139,7 +139,7 @@
     {
       "syntax": "mflo $t1",
       "description": "Move from LO register : Set $t1 to contents of LO (see multiply and divide operations)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 00000 fffff 00000 010010"
     }
   ],
@@ -147,7 +147,7 @@
     {
       "syntax": "mthi $t1",
       "description": "Move to HI registerr : Set HI to contents of $t1 (see multiply and divide operations)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff 00000 00000 00000 010001"
     }
   ],
@@ -155,7 +155,7 @@
     {
       "syntax": "mtlo $t1",
       "description": "Move to LO register : Set LO to contents of $t1 (see multiply and divide operations)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff 00000 00000 00000 010011"
     }
   ],
@@ -163,7 +163,7 @@
     {
       "syntax": "and $t1,$t2,$t3",
       "description": "Bitwise AND : Set $t1 to bitwise AND of $t2 and $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100100"
     }
   ],
@@ -171,7 +171,7 @@
     {
       "syntax": "or $t1,$t2,$t3",
       "description": "Bitwise OR : Set $t1 to bitwise OR of $t2 and $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100101"
     }
   ],
@@ -179,7 +179,7 @@
     {
       "syntax": "andi $t1,$t2,100",
       "description": "Bitwise AND immediate : Set $t1 to bitwise AND of $t2 and zero-extended 16-bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001100 sssss fffff tttttttttttttttt"
     }
   ],
@@ -187,7 +187,7 @@
     {
       "syntax": "ori $t1,$t2,100",
       "description": "Bitwise OR immediate : Set $t1 to bitwise OR of $t2 and zero-extended 16-bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001101 sssss fffff tttttttttttttttt"
     }
   ],
@@ -195,7 +195,7 @@
     {
       "syntax": "nor $t1,$t2,$t3",
       "description": "Bitwise NOR : Set $t1 to bitwise NOR of $t2 and $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100111"
     }
   ],
@@ -203,7 +203,7 @@
     {
       "syntax": "xor $t1,$t2,$t3",
       "description": "Bitwise XOR (exclusive OR) : Set $t1 to bitwise XOR of $t2 and $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 100110"
     }
   ],
@@ -211,7 +211,7 @@
     {
       "syntax": "xori $t1,$t2,100",
       "description": "Bitwise XOR immediate : Set $t1 to bitwise XOR of $t2 and zero-extended 16-bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001110 sssss fffff tttttttttttttttt"
     }
   ],
@@ -219,7 +219,7 @@
     {
       "syntax": "sll $t1,$t2,10",
       "description": "Shift left logical : Set $t1 to result of shifting $t2 left by number of bits specified by immediate",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 sssss fffff ttttt 000000"
     }
   ],
@@ -227,7 +227,7 @@
     {
       "syntax": "sllv $t1,$t2,$t3",
       "description": "Shift left logical variable : Set $t1 to result of shifting $t2 left by number of bits specified by value in low-order 5 bits of $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 ttttt sssss fffff 00000 000100"
     }
   ],
@@ -235,7 +235,7 @@
     {
       "syntax": "srl $t1,$t2,10",
       "description": "Shift right logical : Set $t1 to result of shifting $t2 right by number of bits specified by immediate",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 sssss fffff ttttt 000010"
     }
   ],
@@ -243,7 +243,7 @@
     {
       "syntax": "sra $t1,$t2,10",
       "description": "Shift right arithmetic : Set $t1 to result of sign-extended shifting $t2 right by number of bits specified by immediate",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 sssss fffff ttttt 000011"
     }
   ],
@@ -251,7 +251,7 @@
     {
       "syntax": "srav $t1,$t2,$t3",
       "description": "Shift right arithmetic variable : Set $t1 to result of sign-extended shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 ttttt sssss fffff 00000 000111"
     }
   ],
@@ -259,7 +259,7 @@
     {
       "syntax": "srlv $t1,$t2,$t3",
       "description": "Shift right logical variable : Set $t1 to result of shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 ttttt sssss fffff 00000 000110"
     }
   ],
@@ -267,7 +267,7 @@
     {
       "syntax": "lw $t1,-100($t2)",
       "description": "Load word : Set $t1 to contents of effective memory word address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100011 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -275,7 +275,7 @@
     {
       "syntax": "ll $t1,-100($t2)",
       "description": "Load linked : Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "110000 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -283,7 +283,7 @@
     {
       "syntax": "lwl $t1,-100($t2)",
       "description": "Load word left : Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100010 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -291,7 +291,7 @@
     {
       "syntax": "lwr $t1,-100($t2)",
       "description": "Load word right : Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100110 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -299,7 +299,7 @@
     {
       "syntax": "sw $t1,-100($t2)",
       "description": "Store word : Store contents of $t1 into effective memory word address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "101011 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -307,7 +307,7 @@
     {
       "syntax": "sc $t1,-100($t2)",
       "description": "Store conditional : Paired with Load Linked (ll) to perform atomic read-modify-write.  Stores $t1 value into effective address, then sets $t1 to 1 for success.  Always succeeds because MARS does not simulate multiple processors.",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "111000 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -315,7 +315,7 @@
     {
       "syntax": "swl $t1,-100($t2)",
       "description": "Store word left : Store high-order 1 to 4 bytes of $t1 into memory, starting with effective byte address and continuing through the low-order byte of its word",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "101010 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -323,7 +323,7 @@
     {
       "syntax": "swr $t1,-100($t2)",
       "description": "Store word right : Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective byte address and continuing through that byte address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "101110 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -331,7 +331,7 @@
     {
       "syntax": "lui $t1,100",
       "description": "Load upper immediate : Set high-order 16 bits of $t1 to 16-bit immediate and low-order 16 bits to 0",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001111 00000 fffff ssssssssssssssss"
     }
   ],
@@ -339,7 +339,7 @@
     {
       "syntax": "beq $t1,$t2,label",
       "description": "Branch if equal : Branch to statement at label's address if $t1 and $t2 are equal",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000100 fffff sssss tttttttttttttttt"
     }
   ],
@@ -347,7 +347,7 @@
     {
       "syntax": "bne $t1,$t2,label",
       "description": "Branch if not equal : Branch to statement at label's address if $t1 and $t2 are not equal",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000101 fffff sssss tttttttttttttttt"
     }
   ],
@@ -355,7 +355,7 @@
     {
       "syntax": "bgez $t1,label",
       "description": "Branch if greater than or equal to zero : Branch to statement at label's address if $t1 is greater than or equal to zero",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000001 fffff 00001 ssssssssssssssss"
     }
   ],
@@ -363,7 +363,7 @@
     {
       "syntax": "bgezal $t1,label",
       "description": "Branch if greater then or equal to zero and link : If $t1 is greater than or equal to zero, then set $ra to the Program Counter and branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000001 fffff 10001 ssssssssssssssss"
     }
   ],
@@ -371,7 +371,7 @@
     {
       "syntax": "bgtz $t1,label",
       "description": "Branch if greater than zero : Branch to statement at label's address if $t1 is greater than zero",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000111 fffff 00000 ssssssssssssssss"
     }
   ],
@@ -379,7 +379,7 @@
     {
       "syntax": "blez $t1,label",
       "description": "Branch if less than or equal to zero : Branch to statement at label's address if $t1 is less than or equal to zero",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000110 fffff 00000 ssssssssssssssss"
     }
   ],
@@ -387,7 +387,7 @@
     {
       "syntax": "bltz $t1,label",
       "description": "Branch if less than zero : Branch to statement at label's address if $t1 is less than zero",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000001 fffff 00000 ssssssssssssssss"
     }
   ],
@@ -395,7 +395,7 @@
     {
       "syntax": "bltzal $t1,label",
       "description": "Branch if less than zero and link : If $t1 is less than or equal to zero, then set $ra to the Program Counter and branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "000001 fffff 10000 ssssssssssssssss"
     }
   ],
@@ -403,7 +403,7 @@
     {
       "syntax": "slt $t1,$t2,$t3",
       "description": "Set less than : If $t2 is less than $t3, then set $t1 to 1 else set $t1 to 0",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 101010"
     }
   ],
@@ -411,7 +411,7 @@
     {
       "syntax": "sltu $t1,$t2,$t3",
       "description": "Set less than unsigned : If $t2 is less than $t3 using unsigned comparision, then set $t1 to 1 else set $t1 to 0",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 101011"
     }
   ],
@@ -419,7 +419,7 @@
     {
       "syntax": "slti $t1,$t2,-100",
       "description": "Set less than immediate : If $t2 is less than sign-extended 16-bit immediate, then set $t1 to 1 else set $t1 to 0",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001010 sssss fffff tttttttttttttttt"
     }
   ],
@@ -427,7 +427,7 @@
     {
       "syntax": "sltiu $t1,$t2,-100",
       "description": "Set less than immediate unsigned : If $t2 is less than  sign-extended 16-bit immediate using unsigned comparison, then set $t1 to 1 else set $t1 to 0",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "001011 sssss fffff tttttttttttttttt"
     }
   ],
@@ -435,7 +435,7 @@
     {
       "syntax": "movn $t1,$t2,$t3",
       "description": "Move conditional not zero : Set $t1 to $t2 if $t3 is not zero",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 001011"
     }
   ],
@@ -443,7 +443,7 @@
     {
       "syntax": "movz $t1,$t2,$t3",
       "description": "Move conditional zero : Set $t1 to $t2 if $t3 is zero",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttttt fffff 00000 001010"
     }
   ],
@@ -451,13 +451,13 @@
     {
       "syntax": "movf $t1,$t2",
       "description": "Move if FP condition flag 0 false : Set $t1 to $t2 if FPU (Coprocessor 1) condition flag 0 is false (zero)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss 000 00 fffff 00000 000001"
     },
     {
       "syntax": "movf $t1,$t2,1",
       "description": "Move if specified FP condition flag false : Set $t1 to $t2 if FPU (Coprocessor 1) condition flag specified by the immediate is false (zero)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttt 00 fffff 00000 000001"
     }
   ],
@@ -465,13 +465,13 @@
     {
       "syntax": "movt $t1,$t2",
       "description": "Move if FP condition flag 0 true : Set $t1 to $t2 if FPU (Coprocessor 1) condition flag 0 is true (one)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss 000 01 fffff 00000 000001"
     },
     {
       "syntax": "movt $t1,$t2,1",
       "description": "Move if specfied FP condition flag true : Set $t1 to $t2 if FPU (Coprocessor 1) condition flag specified by the immediate is true (one)",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss ttt 01 fffff 00000 000001"
     }
   ],
@@ -479,13 +479,13 @@
     {
       "syntax": "break 100",
       "description": "Break execution with code : Terminate program execution with specified exception code",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 ffffffffffffffffffff 001101"
     },
     {
       "syntax": "break",
       "description": "Break execution : Terminate program execution with exception",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 00000 00000 00000 001101"
     }
   ],
@@ -493,7 +493,7 @@
     {
       "syntax": "syscall",
       "description": "Issue a system call : Execute the system call specified by value in $v0",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 00000 00000 00000 00000 001100"
     }
   ],
@@ -501,7 +501,7 @@
     {
       "syntax": "j target",
       "description": "Jump unconditionally : Jump to statement at target address",
-      "format": "J-format",
+      "format": "Jump format",
       "code": "000010 ffffffffffffffffffffffffff"
     }
   ],
@@ -509,7 +509,7 @@
     {
       "syntax": "jr $t1",
       "description": "Jump register unconditionally : Jump to statement whose address is in $t1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff 00000 00000 00000 001000"
     }
   ],
@@ -517,7 +517,7 @@
     {
       "syntax": "jal target",
       "description": "Jump and link : Set $ra to Program Counter (return address) then jump to statement at target address",
-      "format": "J-format",
+      "format": "Jump format",
       "code": "000011 ffffffffffffffffffffffffff"
     }
   ],
@@ -525,13 +525,13 @@
     {
       "syntax": "jalr $t1,$t2",
       "description": "Jump and link register : Set $t1 to Program Counter (return address) then jump to statement whose address is in $t2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 sssss 00000 fffff 00000 001001"
     },
     {
       "syntax": "jalr $t1",
       "description": "Jump and link register : Set $ra to Program Counter (return address) then jump to statement whose address is in $t1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff 00000 11111 00000 001001"
     }
   ],
@@ -539,7 +539,7 @@
     {
       "syntax": "lb $t1,-100($t2)",
       "description": "Load byte : Set $t1 to sign-extended 8-bit value from effective memory byte address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100000 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -547,7 +547,7 @@
     {
       "syntax": "lh $t1,-100($t2)",
       "description": "Load halfword : Set $t1 to sign-extended 16-bit value from effective memory halfword address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100001 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -555,7 +555,7 @@
     {
       "syntax": "lhu $t1,-100($t2)",
       "description": "Load halfword unsigned : Set $t1 to zero-extended 16-bit value from effective memory halfword address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100101 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -563,7 +563,7 @@
     {
       "syntax": "lbu $t1,-100($t2)",
       "description": "Load byte unsigned : Set $t1 to zero-extended 8-bit value from effective memory byte address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "100100 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -571,7 +571,7 @@
     {
       "syntax": "sb $t1,-100($t2)",
       "description": "Store byte : Store the low-order 8 bits of $t1 into the effective memory byte address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "101000 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -579,7 +579,7 @@
     {
       "syntax": "sh $t1,-100($t2)",
       "description": "Store halfword : Store the low-order 16 bits of $t1 into the effective memory halfword address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "101001 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -587,7 +587,7 @@
     {
       "syntax": "mfc0 $t1,$8",
       "description": "Move from Coprocessor 0 : Set $t1 to the value stored in Coprocessor 0 register $8",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010000 00000 fffff sssss 00000 000000"
     }
   ],
@@ -595,7 +595,7 @@
     {
       "syntax": "mtc0 $t1,$8",
       "description": "Move to Coprocessor 0 : Set Coprocessor 0 register $8 to value stored in $t1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010000 00100 fffff sssss 00000 000000"
     }
   ],
@@ -603,7 +603,7 @@
     {
       "syntax": "add.s $f0,$f1,$f3",
       "description": "Floating point addition single precision : Set $f0 to single-precision floating point value of $f1 plus $f3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 000000"
     }
   ],
@@ -611,7 +611,7 @@
     {
       "syntax": "sub.s $f0,$f1,$f3",
       "description": "Floating point subtraction single precision : Set $f0 to single-precision floating point value of $f1  minus $f3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 000001"
     }
   ],
@@ -619,7 +619,7 @@
     {
       "syntax": "mul.s $f0,$f1,$f3",
       "description": "Floating point multiplication single precision : Set $f0 to single-precision floating point value of $f1 times $f3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 000010"
     }
   ],
@@ -627,7 +627,7 @@
     {
       "syntax": "div.s $f0,$f1,$f3",
       "description": "Floating point division single precision : Set $f0 to single-precision floating point value of $f1 divided by $f3",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 000011"
     }
   ],
@@ -635,7 +635,7 @@
     {
       "syntax": "sqrt.s $f0,$f1",
       "description": "Square root single precision : Set $f0 to single-precision floating point square root of $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 000100"
     }
   ],
@@ -643,7 +643,7 @@
     {
       "syntax": "floor.w.s $f0,$f1",
       "description": "Floor single precision to word : Set $f0 to 32-bit integer floor of single-precision float in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 001111"
     }
   ],
@@ -651,7 +651,7 @@
     {
       "syntax": "ceil.w.s $f0,$f1",
       "description": "Ceiling single precision to word : Set $f0 to 32-bit integer ceiling of single-precision float in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 001110"
     }
   ],
@@ -659,7 +659,7 @@
     {
       "syntax": "round.w.s $f0,$f1",
       "description": "Round single precision to word : Set $f0 to 32-bit integer round of single-precision float in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 001100"
     }
   ],
@@ -667,7 +667,7 @@
     {
       "syntax": "trunc.w.s $f0,$f1",
       "description": "Truncate single precision to word : Set $f0 to 32-bit integer truncation of single-precision float in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 001101"
     }
   ],
@@ -675,7 +675,7 @@
     {
       "syntax": "add.d $f2,$f4,$f6",
       "description": "Floating point addition double precision : Set $f2 to double-precision floating point value of $f4 plus $f6",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 000000"
     }
   ],
@@ -683,7 +683,7 @@
     {
       "syntax": "sub.d $f2,$f4,$f6",
       "description": "Floating point subtraction double precision : Set $f2 to double-precision floating point value of $f4 minus $f6",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 000001"
     }
   ],
@@ -691,7 +691,7 @@
     {
       "syntax": "mul.d $f2,$f4,$f6",
       "description": "Floating point multiplication double precision : Set $f2 to double-precision floating point value of $f4 times $f6",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 000010"
     }
   ],
@@ -699,7 +699,7 @@
     {
       "syntax": "div.d $f2,$f4,$f6",
       "description": "Floating point division double precision : Set $f2 to double-precision floating point value of $f4 divided by $f6",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 000011"
     }
   ],
@@ -707,7 +707,7 @@
     {
       "syntax": "sqrt.d $f2,$f4",
       "description": "Square root double precision : Set $f2 to double-precision floating point square root of $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 000100"
     }
   ],
@@ -715,7 +715,7 @@
     {
       "syntax": "floor.w.d $f1,$f2",
       "description": "Floor double precision to word : Set $f1 to 32-bit integer floor of double-precision float in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 001111"
     }
   ],
@@ -723,7 +723,7 @@
     {
       "syntax": "ceil.w.d $f1,$f2",
       "description": "Ceiling double precision to word : Set $f1 to 32-bit integer ceiling of double-precision float in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 001110"
     }
   ],
@@ -731,7 +731,7 @@
     {
       "syntax": "round.w.d $f1,$f2",
       "description": "Round double precision to word : Set $f1 to 32-bit integer round of double-precision float in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 001100"
     }
   ],
@@ -739,7 +739,7 @@
     {
       "syntax": "trunc.w.d $f1,$f2",
       "description": "Truncate double precision to word : Set $f1 to 32-bit integer truncation of double-precision float in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 001101"
     }
   ],
@@ -747,13 +747,13 @@
     {
       "syntax": "bc1t label",
       "description": "Branch if FP condition flag 0 true (BC1T, not BCLT) : If Coprocessor 1 condition flag 0 is true (one) then branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "010001 01000 00001 ffffffffffffffff"
     },
     {
       "syntax": "bc1t 1,label",
       "description": "Branch if specified FP condition flag true (BC1T, not BCLT) : If Coprocessor 1 condition flag specified by immediate is true (one) then branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "010001 01000 fff 01 ssssssssssssssss"
     }
   ],
@@ -761,13 +761,13 @@
     {
       "syntax": "bc1f label",
       "description": "Branch if FP condition flag 0 false (BC1F, not BCLF) : If Coprocessor 1 condition flag 0 is false (zero) then branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "010001 01000 00000 ffffffffffffffff"
     },
     {
       "syntax": "bc1f 1,label",
       "description": "Branch if specified FP condition flag false (BC1F, not BCLF) : If Coprocessor 1 condition flag specified by immediate is false (zero) then branch to statement at label's address",
-      "format": "I_BRANCH-format",
+      "format": "Immediate branch format",
       "code": "010001 01000 fff 00 ssssssssssssssss"
     }
   ],
@@ -775,13 +775,13 @@
     {
       "syntax": "c.eq.s $f0,$f1",
       "description": "Compare equal single precision : If $f0 is equal to $f1, set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 sssss fffff 00000 110010"
     },
     {
       "syntax": "c.eq.s 1,$f0,$f1",
       "description": "Compare equal single precision : If $f0 is equal to $f1, set Coprocessor 1 condition flag specied by immediate to true else set it to false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fff 00 11 0010"
     }
   ],
@@ -789,13 +789,13 @@
     {
       "syntax": "c.le.s $f0,$f1",
       "description": "Compare less or equal single precision : If $f0 is less than or equal to $f1, set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 sssss fffff 00000 111110"
     },
     {
       "syntax": "c.le.s 1,$f0,$f1",
       "description": "Compare less or equal single precision : If $f0 is less than or equal to $f1, set Coprocessor 1 condition flag specified by immediate to true else set it to false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fff 00 111110"
     }
   ],
@@ -803,13 +803,13 @@
     {
       "syntax": "c.lt.s $f0,$f1",
       "description": "Compare less than single precision : If $f0 is less than $f1, set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 sssss fffff 00000 111100"
     },
     {
       "syntax": "c.lt.s 1,$f0,$f1",
       "description": "Compare less than single precision : If $f0 is less than $f1, set Coprocessor 1 condition flag specified by immediate to true else set it to false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fff 00 111100"
     }
   ],
@@ -817,13 +817,13 @@
     {
       "syntax": "c.eq.d $f2,$f4",
       "description": "Compare equal double precision : If $f2 is equal to $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 sssss fffff 00000 110010"
     },
     {
       "syntax": "c.eq.d 1,$f2,$f4",
       "description": "Compare equal double precision : If $f2 is equal to $f4 (double-precision), set Coprocessor 1 condition flag specified by immediate to true else set it to false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fff 00 110010"
     }
   ],
@@ -831,13 +831,13 @@
     {
       "syntax": "c.le.d $f2,$f4",
       "description": "Compare less or equal double precision : If $f2 is less than or equal to $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 sssss fffff 00000 111110"
     },
     {
       "syntax": "c.le.d 1,$f2,$f4",
       "description": "Compare less or equal double precision : If $f2 is less than or equal to $f4 (double-precision), set Coprocessor 1 condition flag specfied by immediate true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fff 00 111110"
     }
   ],
@@ -845,13 +845,13 @@
     {
       "syntax": "c.lt.d $f2,$f4",
       "description": "Compare less than double precision : If $f2 is less than $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 sssss fffff 00000 111100"
     },
     {
       "syntax": "c.lt.d 1,$f2,$f4",
       "description": "Compare less than double precision : If $f2 is less than $f4 (double-precision), set Coprocessor 1 condition flag specified by immediate to true else set it to false",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fff 00 111100"
     }
   ],
@@ -859,7 +859,7 @@
     {
       "syntax": "abs.s $f0,$f1",
       "description": "Floating point absolute value single precision : Set $f0 to absolute value of $f1, single precision",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 000101"
     }
   ],
@@ -867,7 +867,7 @@
     {
       "syntax": "abs.d $f2,$f4",
       "description": "Floating point absolute value double precision : Set $f2 to absolute value of $f4, double precision",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 000101"
     }
   ],
@@ -875,7 +875,7 @@
     {
       "syntax": "cvt.d.s $f2,$f1",
       "description": "Convert from single precision to double precision : Set $f2 to double precision equivalent of single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 100001"
     }
   ],
@@ -883,7 +883,7 @@
     {
       "syntax": "cvt.d.w $f2,$f1",
       "description": "Convert from word to double precision : Set $f2 to double precision equivalent of 32-bit integer value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10100 00000 sssss fffff 100001"
     }
   ],
@@ -891,7 +891,7 @@
     {
       "syntax": "cvt.s.d $f1,$f2",
       "description": "Convert from double precision to single precision : Set $f1 to single precision equivalent of double precision value in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 100000"
     }
   ],
@@ -899,7 +899,7 @@
     {
       "syntax": "cvt.s.w $f0,$f1",
       "description": "Convert from word to single precision : Set $f0 to single precision equivalent of 32-bit integer value in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10100 00000 sssss fffff 100000"
     }
   ],
@@ -907,7 +907,7 @@
     {
       "syntax": "cvt.w.d $f1,$f2",
       "description": "Convert from double precision to word : Set $f1 to 32-bit integer equivalent of double precision value in $f2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 100100"
     }
   ],
@@ -915,7 +915,7 @@
     {
       "syntax": "cvt.w.s $f0,$f1",
       "description": "Convert from single precision to word : Set $f0 to 32-bit integer equivalent of single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 100100"
     }
   ],
@@ -923,7 +923,7 @@
     {
       "syntax": "mov.d $f2,$f4",
       "description": "Move floating point double precision : Set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 000110"
     }
   ],
@@ -931,13 +931,13 @@
     {
       "syntax": "movf.d $f2,$f4",
       "description": "Move floating point double precision : If condition flag 0 false, set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 000 00 sssss fffff 010001"
     },
     {
       "syntax": "movf.d $f2,$f4,1",
       "description": "Move floating point double precision : If condition flag specified by immediate is false, set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttt 00 sssss fffff 010001"
     }
   ],
@@ -945,13 +945,13 @@
     {
       "syntax": "movt.d $f2,$f4",
       "description": "Move floating point double precision : If condition flag 0 true, set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 000 01 sssss fffff 010001"
     },
     {
       "syntax": "movt.d $f2,$f4,1",
       "description": "Move floating point double precision : If condition flag specified by immediate is true, set double precision $f2 to double precision value in $f4e",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttt 01 sssss fffff 010001"
     }
   ],
@@ -959,7 +959,7 @@
     {
       "syntax": "movn.d $f2,$f4,$t3",
       "description": "Move floating point double precision : If $t3 is not zero, set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 010011"
     }
   ],
@@ -967,7 +967,7 @@
     {
       "syntax": "movz.d $f2,$f4,$t3",
       "description": "Move floating point double precision : If $t3 is zero, set double precision $f2 to double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 ttttt sssss fffff 010010"
     }
   ],
@@ -975,7 +975,7 @@
     {
       "syntax": "mov.s $f0,$f1",
       "description": "Move floating point single precision : Set single precision $f0 to single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 000110"
     }
   ],
@@ -983,13 +983,13 @@
     {
       "syntax": "movf.s $f0,$f1",
       "description": "Move floating point single precision : If condition flag 0 is false, set single precision $f0 to single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 000 00 sssss fffff 010001"
     },
     {
       "syntax": "movf.s $f0,$f1,1",
       "description": "Move floating point single precision : If condition flag specified by immediate is false, set single precision $f0 to single precision value in $f1e",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttt 00 sssss fffff 010001"
     }
   ],
@@ -997,13 +997,13 @@
     {
       "syntax": "movt.s $f0,$f1",
       "description": "Move floating point single precision : If condition flag 0 is true, set single precision $f0 to single precision value in $f1e",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 000 01 sssss fffff 010001"
     },
     {
       "syntax": "movt.s $f0,$f1,1",
       "description": "Move floating point single precision : If condition flag specified by immediate is true, set single precision $f0 to single precision value in $f1e",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttt 01 sssss fffff 010001"
     }
   ],
@@ -1011,7 +1011,7 @@
     {
       "syntax": "movn.s $f0,$f1,$t3",
       "description": "Move floating point single precision : If $t3 is not zero, set single precision $f0 to single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 010011"
     }
   ],
@@ -1019,7 +1019,7 @@
     {
       "syntax": "movz.s $f0,$f1,$t3",
       "description": "Move floating point single precision : If $t3 is zero, set single precision $f0 to single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 ttttt sssss fffff 010010"
     }
   ],
@@ -1027,7 +1027,7 @@
     {
       "syntax": "mfc1 $t1,$f1",
       "description": "Move from Coprocessor 1 (FPU) : Set $t1 to value in Coprocessor 1 register $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 00000 fffff sssss 00000 000000"
     }
   ],
@@ -1035,7 +1035,7 @@
     {
       "syntax": "mtc1 $t1,$f1",
       "description": "Move to Coprocessor 1 (FPU) : Set Coprocessor 1 register $f1 to value in $t1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 00100 fffff sssss 00000 000000"
     }
   ],
@@ -1043,7 +1043,7 @@
     {
       "syntax": "neg.d $f2,$f4",
       "description": "Floating point negate double precision : Set double precision $f2 to negation of double precision value in $f4",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10001 00000 sssss fffff 000111"
     }
   ],
@@ -1051,7 +1051,7 @@
     {
       "syntax": "neg.s $f0,$f1",
       "description": "Floating point negate single precision : Set single precision $f0 to negation of single precision value in $f1",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010001 10000 00000 sssss fffff 000111"
     }
   ],
@@ -1059,7 +1059,7 @@
     {
       "syntax": "lwc1 $f1,-100($t2)",
       "description": "Load word into Coprocessor 1 (FPU) : Set $f1 to 32-bit value from effective memory word address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "110001 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -1067,7 +1067,7 @@
     {
       "syntax": "ldc1 $f2,-100($t2)",
       "description": "Load double word Coprocessor 1 (FPU)) : Set $f2 to 64-bit value from effective memory doubleword address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "110101 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -1075,7 +1075,7 @@
     {
       "syntax": "swc1 $f1,-100($t2)",
       "description": "Store word from Coprocesor 1 (FPU) : Store 32 bit value in $f1 to effective memory word address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "111001 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -1083,7 +1083,7 @@
     {
       "syntax": "sdc1 $f2,-100($t2)",
       "description": "Store double word from Coprocessor 1 (FPU)) : Store 64 bit value in $f2 to effective memory doubleword address",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "111101 ttttt fffff ssssssssssssssss"
     }
   ],
@@ -1091,7 +1091,7 @@
     {
       "syntax": "teq $t1,$t2",
       "description": "Trap if equal : Trap if $t1 is equal to $t2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110100"
     }
   ],
@@ -1099,7 +1099,7 @@
     {
       "syntax": "teqi $t1,-100",
       "description": "Trap if equal to immediate : Trap if $t1 is equal to sign-extended 16 bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01100 ssssssssssssssss"
     }
   ],
@@ -1107,7 +1107,7 @@
     {
       "syntax": "tne $t1,$t2",
       "description": "Trap if not equal : Trap if $t1 is not equal to $t2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110110"
     }
   ],
@@ -1115,7 +1115,7 @@
     {
       "syntax": "tnei $t1,-100",
       "description": "Trap if not equal to immediate : Trap if $t1 is not equal to sign-extended 16 bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01110 ssssssssssssssss"
     }
   ],
@@ -1123,7 +1123,7 @@
     {
       "syntax": "tge $t1,$t2",
       "description": "Trap if greater or equal : Trap if $t1 is greater than or equal to $t2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110000"
     }
   ],
@@ -1131,7 +1131,7 @@
     {
       "syntax": "tgeu $t1,$t2",
       "description": "Trap if greater or equal unsigned : Trap if $t1 is greater than or equal to $t2 using unsigned comparision",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110001"
     }
   ],
@@ -1139,7 +1139,7 @@
     {
       "syntax": "tgei $t1,-100",
       "description": "Trap if greater than or equal to immediate : Trap if $t1 greater than or equal to sign-extended 16 bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01000 ssssssssssssssss"
     }
   ],
@@ -1147,7 +1147,7 @@
     {
       "syntax": "tgeiu $t1,-100",
       "description": "Trap if greater or equal to immediate unsigned : Trap if $t1 greater than or equal to sign-extended 16 bit immediate, unsigned comparison",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01001 ssssssssssssssss"
     }
   ],
@@ -1155,7 +1155,7 @@
     {
       "syntax": "tlt $t1,$t2",
       "description": "Trap if less than: Trap if $t1 less than $t2",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110010"
     }
   ],
@@ -1163,7 +1163,7 @@
     {
       "syntax": "tltu $t1,$t2",
       "description": "Trap if less than unsigned : Trap if $t1 less than $t2, unsigned comparison",
-      "format": "R-format",
+      "format": "Register format",
       "code": "000000 fffff sssss 00000 00000 110011"
     }
   ],
@@ -1171,7 +1171,7 @@
     {
       "syntax": "tlti $t1,-100",
       "description": "Trap if less than immediate : Trap if $t1 less than sign-extended 16-bit immediate",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01010 ssssssssssssssss"
     }
   ],
@@ -1179,7 +1179,7 @@
     {
       "syntax": "tltiu $t1,-100",
       "description": "Trap if less than immediate unsigned : Trap if $t1 less than sign-extended 16-bit immediate, unsigned comparison",
-      "format": "I-format",
+      "format": "Immediate format",
       "code": "000001 fffff 01011 ssssssssssssssss"
     }
   ],
@@ -1187,7 +1187,7 @@
     {
       "syntax": "eret",
       "description": "Exception return : Set Program Counter to Coprocessor 0 EPC register value, set Coprocessor Status register bit 1 (exception level) to zero",
-      "format": "R-format",
+      "format": "Register format",
       "code": "010000 1 0000000000000000000 011000"
     }
   ]
