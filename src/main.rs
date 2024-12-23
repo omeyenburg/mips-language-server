@@ -131,36 +131,98 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        //let uri = params.text_document_position.text_document.uri;
-        //let position = params.text_document_position.position;
+        let mut keywords = Vec::new();
+        keywords.extend(self.instructions.keys().cloned());
+        keywords.extend(self.directives.keys().cloned());
+        keywords.extend(self.registers.keys().cloned());
 
-        // Define a list of MIPS assembly instructions and keywords
-        let keywords = vec![
-            "add", "sub", "mul", "div", "and", "or", "xor", "sll", "srl", "lw", "sw", "beq", "bne",
-            "j", "jal", "jr", "la", "li", "move", "neg", "not", "slt", "slti", "mul", "divu",
-            "mfhi", "mflo", "mthi", "mtlo",
-        ];
+        let line = params.text_document_position.position.line;
+        let character = params.text_document_position.position.character;
 
-        //let line = get_line_from_document(&params.text_document_position).await;
-        //let line = get_line_from_document(self, &params.text_document_position)
-        //    .await
-        //    .unwrap_or_default();
-        //let labels = get_labels_from_document(
-        //    self,
-        //    &params.text_document_position.text_document.uri.to_string(),
-        //)
-        //.await;
+        // Retrieve current content and tree
+        let document = self
+            .documents
+            .get(&params.text_document_position.text_document.uri)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+        let text = &document.text;
+
+        // Split the text into lines and retrieve the specific line
+        let line_content = text
+            .lines()
+            .nth(line as usize)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+
+        // Find starting character of word that should be completed
+        // Looks for '.' and '$' and returns ' ' if no match is found
+        let mut starting_char = ' ';
+        let mut starting_index = 0;
+        for i in 0..character {
+            starting_index = character - i - 1;
+            if let Some(char) = line_content.chars().nth(starting_index as usize) {
+                info!("char: “{}“", char);
+                match char {
+                    ' ' | '$' | '.' => starting_char = char,
+                    _ => continue,
+                }
+                break;
+            }
+        }
+        info!("Starting char: “{}“", starting_char);
 
         // Generate completion items
-        let items: Vec<CompletionItem> = keywords
-            .iter()
-            .map(|&keyword| CompletionItem {
-                label: keyword.to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some("MIPS instruction".to_string()),
-                ..Default::default()
-            })
-            .collect();
+        // Split up in: directive, register and instruction
+        let items: Vec<CompletionItem> = match starting_char {
+            '.' => self
+                .directives
+                .keys()
+                .map(|keyword| CompletionItem {
+                    label: keyword.to_string(),
+                    kind: Some(CompletionItemKind::KEYWORD),
+                    detail: Some("MIPS directive".to_string()),
+                    text_edit: Some(CompletionTextEdit::Edit(TextEdit {
+                        range: Range {
+                            start: Position {
+                                line,
+                                character: starting_index,
+                            },
+                            end: Position { line, character },
+                        },
+                        new_text: keyword.to_string(),
+                    })),
+                    ..Default::default()
+                })
+                .collect(),
+            '$' => self
+                .registers
+                .keys()
+                .map(|keyword| CompletionItem {
+                    label: keyword.to_string(),
+                    kind: Some(CompletionItemKind::KEYWORD),
+                    detail: Some("MIPS register".to_string()),
+                    text_edit: Some(CompletionTextEdit::Edit(TextEdit {
+                        range: Range {
+                            start: Position {
+                                line,
+                                character: starting_index,
+                            },
+                            end: Position { line, character },
+                        },
+                        new_text: keyword.to_string(),
+                    })),
+                    ..Default::default()
+                })
+                .collect(),
+            _ => self
+                .instructions
+                .keys()
+                .map(|keyword| CompletionItem {
+                    label: keyword.to_string(),
+                    kind: Some(CompletionItemKind::KEYWORD),
+                    detail: Some("MIPS instruction".to_string()),
+                    ..Default::default()
+                })
+                .collect(),
+        };
 
         // Return the completion items
         Ok(Some(CompletionResponse::List(
@@ -186,9 +248,6 @@ impl LanguageServer for Backend {
         let text = &document.text;
         let tree = document.tree.clone();
 
-        let root = tree.root_node();
-        ts::print_tree(root, 0);
-
         // Determine node below cursor and fetch the label name
         let point = ts::position_to_point(&position);
         let cursor_node = tree
@@ -203,7 +262,7 @@ impl LanguageServer for Backend {
         if kind == "word" {
             if let Some(instruction) = self.instructions.get(cursor_node_text) {
                 let mut documentation = String::from("");
-                for (i, example) in instruction.iter().enumerate() {
+                for example in instruction {
                     documentation = documentation
                         + format!(
                             "```asm\n{}\n```\n{}\n {}\n Instruction format: {}\n Machine code: {}\n\n",
@@ -342,7 +401,7 @@ mod json {
 mod ts {
     use tower_lsp::lsp_types::Position;
     use tracing::info;
-    use tree_sitter::{Node, Point, Tree};
+    use tree_sitter::{Point, Tree};
 
     pub fn create_tree(text: &[u8], old_tree: Option<&Tree>) -> Option<Tree> {
         let mut parser = tree_sitter::Parser::new();
