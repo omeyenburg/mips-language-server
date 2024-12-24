@@ -1,7 +1,12 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
+use tree_sitter::{InputEdit, Parser, Tree};
 
 #[derive(Debug)]
 struct Document {
@@ -18,6 +23,81 @@ struct Backend {
     registers: json::Registers,
 }
 
+impl Backend {
+    fn apply_changes(&self, uri: &Url, changes: Vec<TextDocumentContentChangeEvent>) {
+        if let Some(mut document) = self.documents.get_mut(uri) {
+            let mut parser = tree_sitter::Parser::new();
+            parser.set_language(&tree_sitter_asm::language()).unwrap();
+            for change in changes {
+                if let Some(range) = change.range {
+                    // Convert LSP range to byte offsets
+                    //let start_offset = byte_offset(&document.text, range.start);
+                    //let end_offset = byte_offset(&document.text, range.end);
+                    //// Apply change to text
+                    //document
+                    //    .text
+                    //    .replace_range(start_offset..end_offset, &change.text);
+
+                    // Convert LSP range to byte offsets
+                    let start_byte = byte_offset(&document.text, range.start);
+                    let old_end_byte = byte_offset(&document.text, range.end);
+                    let new_end_byte = start_byte + change.text.len();
+
+                    // Calculate new text, old text and apply change to text
+                    let old_text = &document.text[start_byte..old_end_byte];
+                    document
+                        .text
+                        .replace_range(start_byte..old_end_byte, &change.text);
+
+                    info!(
+                        "here is the new text of the document (updated):\n{}",
+                        &document.text
+                    );
+
+                    // Create an InputEdit
+                    let input_edit = InputEdit {
+                        start_byte,
+                        old_end_byte,
+                        new_end_byte,
+                        start_position: ts_position(range.start),
+                        old_end_position: ts_position(range.end),
+                        new_end_position: ts_position(Position {
+                            line: range.start.line + change.text.lines().count() as u32, // - 1, // stupid to substract 1. why?!
+                            character: if let Some(last_line) = change.text.lines().last() {
+                                last_line.len() as u32
+                            } else {
+                                range.start.character
+                            },
+                        }),
+                    };
+
+                    // Apply InputEdit to the tree
+                    document.tree.edit(&input_edit);
+
+                    // Update the tree incrementally
+                    let new_tree = parser.parse(&document.text, Some(&document.tree)).unwrap();
+                    ts::print_tree(new_tree.root_node(), 0);
+                    document.tree = new_tree;
+                } else {
+                    // Full text replacement
+                    document.text = change.text.clone();
+                    document.tree = parser.parse(&document.text, None).unwrap();
+                }
+            }
+        } else {
+            // Handle case where the document is not found, if necessary
+        }
+    }
+}
+
+fn byte_offset(text: &str, position: Position) -> usize {
+    text.lines()
+        .take(position.line as usize)
+        .map(|line| line.len() + 1)
+        .sum::<usize>()
+        + position.character as usize
+}
+
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
@@ -27,7 +107,6 @@ impl LanguageServer for Backend {
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
                 definition_provider: Some(OneOf::Left(true)),
                 references_provider: Some(OneOf::Left(true)),
-                //completion_provider: Some(CompletionOptions::default()),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: Some(vec![".".to_string(), "$".to_string()]),
@@ -38,13 +117,39 @@ impl LanguageServer for Backend {
                 text_document_sync: Some(TextDocumentSyncCapability::Options(
                     TextDocumentSyncOptions {
                         open_close: Some(true),
-                        change: Some(TextDocumentSyncKind::FULL),
+                        //change: Some(TextDocumentSyncKind::FULL),
+                        change: Some(TextDocumentSyncKind::INCREMENTAL),
                         save: Some(TextDocumentSyncSaveOptions::SaveOptions(SaveOptions {
                             include_text: Some(true),
                         })),
                         ..Default::default()
                     },
                 )),
+                //semantic_tokens_provider: Some(
+                //    SemanticTokensServerCapabilities::SemanticTokensRegistrationOptions(
+                //        SemanticTokensRegistrationOptions {
+                //            text_document_registration_options: {
+                //                TextDocumentRegistrationOptions {
+                //                    document_selector: Some(vec![DocumentFilter {
+                //                        language: Some("asm".to_string()),
+                //                        scheme: Some("file".to_string()),
+                //                        pattern: None,
+                //                    }]),
+                //                }
+                //            },
+                //            semantic_tokens_options: SemanticTokensOptions {
+                //                work_done_progress_options: WorkDoneProgressOptions::default(),
+                //                legend: SemanticTokensLegend {
+                //                    token_types: LEGEND_TYPE.into(),
+                //                    token_modifiers: vec![],
+                //                },
+                //                range: Some(true),
+                //                full: Some(SemanticTokensFullOptions::Bool(true)),
+                //            },
+                //            static_registration_options: StaticRegistrationOptions::default(),
+                //        },
+                //    ),
+                //),
                 ..ServerCapabilities::default()
             },
             ..Default::default()
@@ -83,59 +188,244 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        info!("textDocument/didChange");
-
-        let uri = params.text_document.uri.clone();
-        let changes = params.content_changes;
-
-        // Expect only one change at once
-        if changes.len() != 1 {
-            panic!("You cannot do more than one {:?}", changes);
-        }
-        let text = changes[0].text.clone();
-
-        // TODO: here we could check, if range.is_none() is true,
-        // then the editor does not properly support incremental
-        // parsing.
-        // my current setup seems to not allow incremental
-        // parsing, so i leave it out for now
-        // info!("Changes: {:?}", &changes);
-
-        // Retrieve old tree
-        //let old_tree = &self
-        //    .documents
-        //    .get(&uri)
-        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
-        //    .expect("Expected old tree")
-        //    .tree
-        //    .clone();
-
-        // Generate new tree using tree-sitter
-        // We pass None here as the old tree.
-        // We would have to pass the old tree from above for incremental
-        // parsing. But for some reason, the tree does not update well,
-        // if we append or remove lines at the end of a file.
-        //let tree = ts::create_tree(text.as_bytes(), Some(&old_tree))
-        let tree = ts::create_tree(text.as_bytes(), None)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
-            .expect("Expected new tree");
-
-        // Update document text and tree
-        self.documents.insert(uri.clone(), Document { text, tree });
-
-        // Debugging output
-        //let document = self
-        //    .documents
-        //    .get(&uri)
-        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
-        //    .expect("Expected document");
-        //let text = &document.text;
-        //let tree = document.tree.clone();
-        //
-        //let root = tree.root_node();
-        //info!("Updated text and tree:\n{}", text);
-        //ts::print_tree(root, 0);
+        self.apply_changes(&params.text_document.uri, params.content_changes);
     }
+
+    //    async fn did_change(&self, params: DidChangeTextDocumentParams) {
+    //        let uri = params.text_document.uri.clone();
+    //        let changes = params.content_changes;
+    //        info!("textDocument/didChange");
+    //        // Retrieve the current document or create a new one
+    //
+    //        //let mut document = self
+    //        //    .documents
+    //        //    .entry(uri.clone())
+    //        //    .or_default();
+    //        let mut document = self
+    //            .documents
+    //            .get_mut(&uri)
+    //            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //            .expect("Expected document");
+    //
+    //        // Process each change
+    //        for change in changes {
+    //            match change.range {
+    //                Some(range) => {
+    //                    // Handle incremental change
+    //                    let start = range.start;
+    //                    let end = range.end;
+    //
+    //                    // Update the text
+    //                    let before_text = &document.text[..start.character as usize];
+    //                    let after_text = &document.text[end.character as usize..];
+    //                    document.text = format!("{}{}{}", before_text, change.text, after_text);
+    //
+    //                    // Rebuild the tree based on the updated text
+    //                    let mut parser = tree_sitter::Parser::new();
+    //                    parser.set_language(&tree_sitter_asm::language()).unwrap();
+    //                    document.tree = parser.parse(&document.text, None).unwrap();
+    //                }
+    //                None => {
+    //                    // Handle full text change
+    //                    document.text = change.text.clone();
+    //
+    //                    // Rebuild the tree based on the updated text
+    //                    let mut parser = tree_sitter::Parser::new();
+    //                    parser.set_language(&tree_sitter_asm::language()).unwrap();
+    //                    document.tree = parser.parse(&document.text, None).unwrap();
+    //                }
+    //            }
+    //        }
+    //
+    //        //let uri = params.text_document.uri.clone();
+    //        //let changes = params.content_changes;
+    //        //
+    //        //// Retrieve the current document once
+    //        //let mut document = self
+    //        //    .documents
+    //        //    .get_mut(&uri)
+    //        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //        //    .expect("Expected document");
+    //        //
+    //        //for change in changes {
+    //        //    let mut old_tree = document.tree.clone();
+    //        //    let mut old_text = document.text.clone();
+    //        //
+    //        //    // Check if a range is provided (incremental update)
+    //        //    let tree: tree_sitter::Tree;
+    //        //    if let Some(range) = change.range {
+    //        //        let start_offset = position_to_offset(&old_text, range.start);
+    //        //        let end_offset = position_to_offset(&old_text, range.end);
+    //        //
+    //        //        // Apply the text change incrementally
+    //        //        old_text.replace_range(start_offset..end_offset, &change.text);
+    //        //
+    //        //        let start_byte = position_to_offset(&old_text, range.start);
+    //        //        let end_byte = position_to_offset(&old_text, range.end);
+    //        //
+    //        //        let mut new_end_position = ts_position(range.start);
+    //        //        new_end_position.column += &change.text.len();
+    //        //
+    //        //        // Create an edit to update the tree
+    //        //        let edit = tree_sitter::InputEdit {
+    //        //            start_byte,
+    //        //            old_end_byte: end_byte,
+    //        //            new_end_byte: start_byte + change.text.len(),
+    //        //            start_position: ts_position(range.start),
+    //        //            old_end_position: ts_position(range.end),
+    //        //            new_end_position,
+    //        //        };
+    //        //
+    //        //        info!("change: {:?}", change.text);
+    //        //        info!("Edit: {:?}", edit);
+    //        //
+    //        //        // Apply the edit to the old tree
+    //        //        old_tree.edit(&edit);
+    //        //
+    //        //        info!("applied edit");
+    //        //
+    //        //        // Re-parse the affected region
+    //        //        tree = ts::create_tree(change.text.as_bytes(), Some(&old_tree))
+    //        //            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //        //            .expect("Expected tree");
+    //        //        info!("recreated tree");
+    //        //    } else {
+    //        //        // Full document replacement
+    //        //        old_text = change.text.clone();
+    //        //
+    //        //        // Re-parse the entire document
+    //        //        tree = ts::create_tree(change.text.as_bytes(), None)
+    //        //            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //        //            .expect("Expected tree");
+    //        //    }
+    //        //
+    //        //    // Update the document with the new text and tree
+    //        //    document.text = old_text;
+    //        //    document.tree = tree;
+    //        //
+    //        //    // Debugging output
+    //        //    // info!("Updated text and tree:\n{}", document.text);
+    //        //    ts::print_tree(document.tree.root_node(), 0);
+    //        info!("printed tree");
+    //    }
+    //
+    //    //async fn did_change(&self, params: DidChangeTextDocumentParams) {
+    //    //    info!("textDocument/didChange");
+    //    //
+    //    //    let uri = params.text_document.uri.clone();
+    //    //    let changes = params.content_changes;
+    //    //
+    //    //    for change in changes {
+    //    //        //let mut text = self.documents.get(&uri).expect("that").text;
+    //    //        //let mut text;
+    //    //
+    //    //        // Retrieve old tree
+    //    //        let mut old_tree = self
+    //    //            .documents
+    //    //            .get(&uri)
+    //    //            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //            .expect("Expected old tree")
+    //    //            .tree
+    //    //            .clone();
+    //    //        let mut old_text = self
+    //    //            .documents
+    //    //            .get(&uri)
+    //    //            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //            .expect("Expected old tree")
+    //    //            .text
+    //    //            .clone();
+    //    //
+    //    //        // Check if a range is provided (incremental),
+    //    //        // otherwise update the whole document (full)
+    //    //        let tree;
+    //    //        //let tmp = change.text.clone();
+    //    //        if let Some(range) = change.range {
+    //    //            let start_offset =
+    //    //                position_to_offset(&self.documents.get(&uri).expect("that").text, range.start);
+    //    //            let end_offset =
+    //    //                position_to_offset(&self.documents.get(&uri).expect("that").text, range.end);
+    //    //            old_text.replace_range(start_offset..end_offset, &change.text);
+    //    //            // text = &self.documents.get(&uri).expect("that").text;
+    //    //
+    //    //            let start_byte =
+    //    //                position_to_offset(&self.documents.get(&uri).expect("that").text, range.start);
+    //    //            let end_byte =
+    //    //                position_to_offset(&self.documents.get(&uri).expect("that").text, range.end);
+    //    //
+    //    //            let mut new_end_position = ts_position(range.start);
+    //    //            new_end_position.column += &change.text.len();
+    //    //
+    //    //            // Calculate the edit
+    //    //            let edit = tree_sitter::InputEdit {
+    //    //                start_byte,
+    //    //                old_end_byte: end_byte,
+    //    //                new_end_byte: start_byte + &change.text.len(),
+    //    //                start_position: ts_position(range.start),
+    //    //                old_end_position: ts_position(range.end),
+    //    //                new_end_position,
+    //    //            };
+    //    //            info!("change: {:?}", change.text);
+    //    //            info!("Edit: {:?}", edit);
+    //    //
+    //    //            // Apply the edit
+    //    //            old_tree.edit(&edit);
+    //    //
+    //    //            // Re-parse the tree starting from the affected region
+    //    //            //*tree = parser.parse(document, Some(old_tree)).unwrap();
+    //    //
+    //    //            tree = ts::create_tree(change.text.as_bytes(), Some(&old_tree))
+    //    //                .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //                .expect("Expected new tree");
+    //    //        } else {
+    //    //            // Full document replacement
+    //    //            //text = &tmp;
+    //    //            old_text = change.text.clone();
+    //    //            //*tree = parser.parse(&document, None).unwrap();
+    //    //
+    //    //            tree = ts::create_tree(change.text.as_bytes(), None)
+    //    //                .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //                .expect("Expected new tree");
+    //    //        }
+    //    //        // TODO: here we could check, if range.is_none() is true,
+    //    //        // then the editor does not properly support incremental
+    //    //        // parsing.
+    //    //        // my current setup seems to not allow incremental
+    //    //        // parsing, so i leave it out for now
+    //    //        // info!("Changes: {:?}", &changes);
+    //    //
+    //    //        // Generate new tree using tree-sitter
+    //    //        // We pass None here as the old tree.
+    //    //        // We would have to pass the old tree from above for incremental
+    //    //        // parsing. But for some reason, the tree does not update well,
+    //    //        // if we append or remove lines at the end of a file.
+    //    //        //let tree = ts::create_tree(text.as_bytes(), Some(&old_tree))
+    //    //        //let tree = ts::create_tree(text.as_bytes(), None)
+    //    //        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //        //    .expect("Expected new tree");
+    //    //
+    //    //        // Update document text and tree
+    //    //        self.documents.insert(
+    //    //            uri.clone(),
+    //    //            Document {
+    //    //                text: old_text.to_string(),
+    //    //                tree,
+    //    //            },
+    //    //        );
+    //    //
+    //    //        // Debugging output
+    //    //        //let document = self
+    //    //        //    .documents
+    //    //        //    .get(&uri)
+    //    //        //    .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+    //    //        //    .expect("Expected document");
+    //    //        //let text = &document.text;
+    //    //        //let tree = document.tree.clone();
+    //    //        //
+    //    //        //let root = tree.root_node();
+    //    //        //info!("Updated text and tree:\n{}", text);
+    //    //        //ts::print_tree(root, 0);
+    //    //    }
+    //    //}
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
         let mut keywords = Vec::new();
@@ -168,13 +458,17 @@ impl LanguageServer for Backend {
             if let Some(char) = line_content.chars().nth(starting_index as usize) {
                 info!("char: “{}“", char);
                 match char {
-                    ' ' | '$' | '.' => starting_char = char,
-                    _ => continue,
+                    '$' | '.' => starting_char = char,
+                    ' ' => {
+                        // This is necessary to diffentiate from the loop
+                        // ending, because the beginning of the line is reached
+                        starting_index += 1;
+                        break;
+                    }
+                    _ => starting_char = ' ',
                 }
-                break;
             }
         }
-        info!("Starting char: “{}“", starting_char);
 
         // Generate completion items
         // Split up in: directive, register and instruction
@@ -374,6 +668,24 @@ impl LanguageServer for Backend {
     }
 }
 
+fn position_to_offset(text: &str, position: tower_lsp::lsp_types::Position) -> usize {
+    let mut offset = 0;
+    for (line_idx, line) in text.lines().enumerate() {
+        if line_idx == position.line as usize {
+            return offset + position.character as usize;
+        }
+        offset += line.len() + 1; // +1 for the newline character
+    }
+    offset
+}
+
+fn ts_position(position: tower_lsp::lsp_types::Position) -> tree_sitter::Point {
+    tree_sitter::Point {
+        row: position.line as usize,
+        column: position.character as usize,
+    }
+}
+
 mod json {
     use serde::{Deserialize, Serialize};
 
@@ -438,7 +750,7 @@ mod ts {
 
         //info!("{}Node: {:?}, {:?}", "  ".repeat(indent), node, node.kind());
         if node.kind() != "\n" {
-            info!("{}{:?}", "  ".repeat(indent), node.kind());
+            info!("|{}{:?}", "  ".repeat(indent), node.kind());
         }
 
         for child in node.children(&mut cursor) {
