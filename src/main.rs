@@ -6,7 +6,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
-use tree_sitter::{InputEdit, Parser, Tree};
+use tree_sitter::{InputEdit, Parser, Query, QueryCursor, Tree};
 
 #[derive(Debug)]
 struct Document {
@@ -108,10 +108,15 @@ impl LanguageServer for Backend {
             .expect("Expected new tree");
 
         // Store document text and tree
-        self.documents.insert(uri, Document { text, tree });
+        self.documents.insert(uri.clone(), Document { text, tree });
 
-        // Parse the document
-        self.parse();
+        // Parse the document and generate diagnostics
+        let diagnostics = self.parse(&uri);
+
+        // Publish diagnostics
+        self.client
+            .publish_diagnostics(uri, diagnostics, None)
+            .await;
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
@@ -179,8 +184,13 @@ impl LanguageServer for Backend {
             }
         }
 
-        // Parse the document
-        self.parse();
+        // Parse the document and generate diagnostics
+        let diagnostics = self.parse(uri);
+
+        // Publish diagnostics
+        self.client
+            .publish_diagnostics(uri.clone(), diagnostics, None)
+            .await;
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
@@ -234,7 +244,10 @@ impl LanguageServer for Backend {
                 .map(|keyword| CompletionItem {
                     label: keyword.to_string(),
                     kind: Some(CompletionItemKind::KEYWORD),
-                    detail: Some("MIPS directive".to_string()),
+                    detail: Some(format!(
+                        "MIPS directive: {}",
+                        self.directives.get(keyword).unwrap()
+                    )),
                     text_edit: Some(CompletionTextEdit::Edit(TextEdit {
                         range: Range {
                             start: Position {
@@ -253,8 +266,11 @@ impl LanguageServer for Backend {
                 .keys()
                 .map(|keyword| CompletionItem {
                     label: keyword.to_string(),
-                    kind: Some(CompletionItemKind::KEYWORD),
-                    detail: Some("MIPS register".to_string()),
+                    kind: Some(CompletionItemKind::VALUE),
+                    detail: Some(format!(
+                        "MIPS register: {}",
+                        self.registers.get(keyword).unwrap().to_string()
+                    )),
                     text_edit: Some(CompletionTextEdit::Edit(TextEdit {
                         range: Range {
                             start: Position {
@@ -274,7 +290,9 @@ impl LanguageServer for Backend {
                 .map(|keyword| CompletionItem {
                     label: keyword.to_string(),
                     kind: Some(CompletionItemKind::KEYWORD),
-                    detail: Some("MIPS instruction".to_string()),
+                    detail: Some(
+                        self.get_instruction_docs(self.instructions.get(keyword).unwrap()),
+                    ),
                     ..Default::default()
                 })
                 .collect(),
@@ -317,14 +335,7 @@ impl LanguageServer for Backend {
 
         if kind == "word" {
             if let Some(instruction) = self.instructions.get(cursor_node_text) {
-                let mut documentation = String::from("");
-                for example in instruction {
-                    documentation = documentation
-                        + format!(
-                            "```asm\n{}\n```\n{}\n {}\n Instruction format: {}\n Machine code: {}\n\n",
-                            example.syntax, "─".repeat(example.syntax.len()), example.description, example.format, example.code
-                        ).as_str();
-                }
+                let documentation = self.get_instruction_docs(instruction);
 
                 return Ok(Some(Hover {
                     contents: HoverContents::Scalar(MarkedString::String(documentation)),
@@ -511,7 +522,7 @@ impl Backend {
         }
     }
 
-    fn parse(&self) {
+    fn parse(&self, uri: &Url) -> Vec<Diagnostic> {
         /* Parse the document (for now not incrementally)
 
         - find sections
@@ -528,6 +539,88 @@ impl Backend {
                     - maybe give corrections using pseudo instructions
                     - check if immediate values are in correct ranges
                 */
+
+        // Vector of diagnostics that is published at the end
+        let mut diagnostics = Vec::new();
+
+        // Retrieve current content and tree
+        let document = &self
+            .documents
+            .get(uri)
+            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .unwrap();
+        let tree = &document.tree;
+        let text = &document.text;
+
+        // Create language for queries
+        let language = &tree_sitter_asm::language();
+
+        // Find labels
+        let query_source = r#"(label) @label"#;
+        let query = Query::new(language, query_source).expect("Error compiling query");
+
+        let mut query_cursor = QueryCursor::new();
+        let root_node = tree.root_node();
+
+        // Execute the query
+        let matches = query_cursor.matches(&query, root_node, text.as_bytes());
+
+        let mut label_texts = std::collections::HashSet::new();
+
+        // Iterate over the matches
+        for m in matches {
+            for capture in m.captures {
+                let node = capture.node;
+                let text = &text[node.start_byte()..node.end_byte()];
+
+                if label_texts.contains(text) {
+                    info!("Duplicate label! {}", text);
+                    let start_position = node.start_position();
+                    let end_position = node.end_position();
+
+                    diagnostics.push(Diagnostic {
+                        range: Range {
+                            start: Position {
+                                line: start_position.row as u32,
+                                character: start_position.column as u32,
+                            },
+                            end: Position {
+                                line: end_position.row as u32,
+                                character: end_position.column as u32,
+                            },
+                        },
+                        severity: Some(DiagnosticSeverity::ERROR),
+                        code: None,
+                        code_description: None,
+                        source: Some("mips-language-server".to_string()),
+                        message: "Duplicate label".to_string(),
+                        related_information: None,
+                        tags: None,
+                        data: None,
+                    });
+                } else {
+                    label_texts.insert(text);
+                }
+            }
+        }
+
+        diagnostics
+    }
+
+    fn get_instruction_docs(&self, instruction: &Vec<json::Instruction>) -> String {
+        let mut docs = String::from("");
+        for part in instruction {
+            docs = format!(
+                "{}```asm\n{}\n```\n{}\n{}\nInstruction format: {}\nMachine code: {}\n\n",
+                docs,
+                part.syntax,
+                "─".repeat(part.syntax.len()),
+                part.description,
+                part.format,
+                part.code
+            );
+        }
+        docs
     }
 }
 
