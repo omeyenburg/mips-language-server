@@ -29,7 +29,12 @@ struct Backend {
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
-    async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
+    async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
+        if let Some(options) = params.initialization_options {
+            info!("Received initialization options:");
+            info!("{}", options);
+        }
+
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
                 inlay_hint_provider: Some(OneOf::Left(true)),
@@ -93,9 +98,17 @@ impl LanguageServer for Backend {
         Ok(())
     }
 
+    async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
+        info!("workspace/didChangeConfiguration");
+
+        let settings = params.settings;
+        info!("nopts {}", settings);
+    }
+
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
+        info!("textDocument/didOpen");
         info!(
-            "textDocument/didOpen: {:?}",
+            "{:?}",
             params
                 .text_document
                 .uri
@@ -335,9 +348,14 @@ impl LanguageServer for Backend {
                         .filter_map(|i| {
                             if i.starts_with(prefix) {
                                 info!("{} {} {}", character, dot_position, starting_index);
-                                info!("{} : {}", prefix, &i[dot_position - starting_index as usize..]);
+                                info!(
+                                    "{} : {}",
+                                    prefix,
+                                    &i[dot_position - starting_index as usize..]
+                                );
                                 Some(good_named_func(
-                                    &(prefix.to_owned() + &i[character as usize - starting_index as usize..]),
+                                    &(prefix.to_owned()
+                                        + &i[character as usize - starting_index as usize..]),
                                 ))
                             } else {
                                 None

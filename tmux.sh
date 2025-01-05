@@ -13,7 +13,6 @@ if [ $? != 0 ]; then
     tmux send-keys -t $session:1 'nix develop' C-m
 
     tmux new-window -t $session:2
-    tmux send-keys -t $session:2 'nix develop' C-m
 
     tmux new-window -t $session:3
     tmux split-window -h
