@@ -10,6 +10,8 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
 use tree_sitter::{InputEdit, Parser, Query, QueryCursor, Tree};
 
+use streaming_iterator::StreamingIterator;
+
 mod types {
     #[derive(Debug)]
     pub struct Document {
@@ -463,19 +465,29 @@ impl LanguageServer for Backend {
             .utf8_text(text.as_bytes())
             .unwrap_or_default();
 
-        // Find all labels in file
-        let labels = tree::find_labels(tree.root_node(), text.as_str());
+        // Generate query to find labels
+        let query = Query::new(&tree_sitter_mips::language(), r#"(label) @label"#)
+            .expect("Error compiling query");
 
-        // Filter labels and match label below cursor
-        for (label, start) in labels {
-            if label == cursor_label_name {
-                return Ok(Some(GotoDefinitionResponse::Scalar(Location {
-                    uri: text_document.uri,
-                    range: Range {
-                        start: tree::point_to_position(&start),
-                        end: tree::point_to_position(&start),
-                    },
-                })));
+        // Execute the query
+        let mut query_cursor = QueryCursor::new();
+        let mut matches = query_cursor.matches(&query, tree.root_node(), text.as_bytes());
+
+        // Iterate over the matches
+        while let Some(m) = matches.next() {
+            if let Some(capture) = m.captures.first() {
+                let node = capture.node;
+                let label_text = &text[node.start_byte()..node.end_byte() - 1];
+
+                if label_text == cursor_label_name {
+                    return Ok(Some(GotoDefinitionResponse::Scalar(Location {
+                        uri: text_document.uri,
+                        range: Range {
+                            start: tree::point_to_position(&node.start_position()),
+                            end: tree::point_to_position(&node.end_position()),
+                        },
+                    })));
+                }
             }
         }
 
@@ -577,16 +589,6 @@ mod tree {
         }
         labels
     }
-
-    // Execute a query on a tree and return all matches
-    //pub fn query<'a, T, I>(root: Node, content: &'a str, query_string: &str) -> QueryMatches<'a, 'a, T, I> {
-    //    // Generate query
-    //    let query =
-    //        Query::new(&tree_sitter_mips::language(), query_string).expect("Error compiling query");
-    //
-    //    // Execute the query
-    //    QueryCursor::new().matches(&query, root, content.as_bytes())
-    //}
 }
 
 impl Backend {
@@ -745,7 +747,7 @@ mod parser {
     ) {
         let types::Document { tree, text } = document;
 
-        // Generate query to find labels
+        // Generate query to find directives
         let query = Query::new(&tree_sitter_mips::language(), r#"(meta) @meta"#)
             .expect("Error compiling query");
 
@@ -776,7 +778,7 @@ mod parser {
                     add_diagnostic(
                         diagnostics,
                         &node,
-                        "Unregistered directive",
+                        "Unknown directive",
                         DiagnosticSeverity::ERROR,
                     );
                     continue;
@@ -813,7 +815,7 @@ mod parser {
     ) {
         let types::Document { tree, text } = document;
 
-        // Generate query to find labels
+        // Generate query to find instructions
         let query = Query::new(
             &tree_sitter_mips::language(),
             r#"(instruction) @instruction"#,
@@ -825,11 +827,9 @@ mod parser {
         let mut matches = query_cursor.matches(&query, tree.root_node(), text.as_bytes());
 
         // Iterate over the matches
-        //for m in matches {
         while let Some(m) = matches.next() {
             if let Some(capture) = m.captures.first() {
                 let node = capture.node;
-                //let instruction_name = &text[node.start_byte()..node.end_byte()];
                 let mut cursor = node.walk();
                 let mut instruction_name;
 
@@ -868,7 +868,6 @@ mod parser {
         let mut label_texts = std::collections::HashSet::new();
 
         // Iterate over the matches
-        //for m in matches {
         while let Some(m) = matches.next() {
             if let Some(capture) = m.captures.first() {
                 let node = capture.node;
