@@ -16,6 +16,7 @@
     s/100(\$t2)//g
     s/(\$t2)//g
     s/label//g
+    s/target//g # only for real instructions (j and jal); not in pseudo instruction
     s/\$t1//g
     s/\$t2//g
     s/\$t3//g

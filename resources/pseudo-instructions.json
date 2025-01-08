@@ -15,7 +15,7 @@
         "addi RG1, RG2, VL3"
       ],
       "description": "ADDition: set $t1 to ($t2 plus 16-bit immediate)"
-    }
+    },
     {
       "pattern": "add $t1,$t2,100000",
       "replacement": [
