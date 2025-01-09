@@ -15,7 +15,7 @@
     devShells.${system}.default =
       pkgs.mkShell
       {
-        packages = with pkgs; [rustc cargo];
+        packages = with pkgs; [rustc rustup cargo];
       };
   };
 }
