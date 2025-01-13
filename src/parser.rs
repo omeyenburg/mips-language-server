@@ -198,7 +198,7 @@ pub fn parse_labels(diagnostics: &mut Vec<Diagnostic>, document: &types::Documen
                 add_diagnostic(
                     diagnostics,
                     &node,
-                    "Duplicate jump label",
+                    "Duplicate label",
                     DiagnosticSeverity::ERROR,
                 );
             } else {

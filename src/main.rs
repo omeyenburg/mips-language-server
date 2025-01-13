@@ -30,36 +30,6 @@ mod types {
         pub text: String,
         pub tree: tree_sitter::Tree,
     }
-
-    // TODO: work in progress, not yet utilized
-    // should be the new format of instrutions
-    struct InstructionVariant {
-        operands: Vec<String>, // List of operand types
-        descriptions: String,  // Description of this variant
-        code: String,          // Machine code
-    }
-
-    // NOTE: Maybe simplify this and put "format" into InstructionVariant
-    // would be redundant, but easier to work with.
-    // But this would introduce one problem: format is not accessable before
-    // parsing the first variant, but it should be printed first and only once.
-    // Conclusion: only store format once
-    struct Instruction {
-        variants: Vec<InstructionVariant>, // List of all variants
-        format: String,                    // Type of instruction, e.g. Register-Type
-    }
-
-    // TODO: we need also to somehow handle the COMPACT thingy
-    // would be again redundant but easy, to split all COMPACTS
-    // and gegenrate an extra description
-    struct PseudoInstructionVariant {
-        operands: Vec<String>,    // List of operand types
-        replacement: Vec<String>, // List of instructions that would be substituted
-        descriptions: String,     // Description of this variant
-    }
-
-    // NOTE: Format is always: Pseudo-Instruction, no need to store this information
-    type PseudoInstruction = Vec<PseudoInstructionVariant>;
 }
 
 #[derive(Debug)]
@@ -255,11 +225,6 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        //let mut keywords = Vec::new();
-        //keywords.extend(self.instructions.keys().cloned());
-        //keywords.extend(self.directives.keys().cloned());
-        //keywords.extend(self.registers.keys().cloned());
-
         let line = params.text_document_position.position.line;
         let character = params.text_document_position.position.character;
 
@@ -324,41 +289,46 @@ impl LanguageServer for Backend {
                 })
                 .collect(),
             '$' => {
-                let good_named_func = |keyword: &str| CompletionItem {
-                    label: keyword.to_string(),
-                    kind: Some(CompletionItemKind::VALUE),
-                    detail: Some(format!(
-                        "MIPS register: {}",
-                        self.registers.get(keyword).unwrap()
-                    )),
-                    text_edit: Some(CompletionTextEdit::Edit(TextEdit {
-                        range: Range {
-                            start: Position {
-                                line,
-                                character: starting_index,
-                            },
-                            end: Position { line, character },
-                        },
-                        new_text: keyword.to_string(),
-                    })),
-                    ..Default::default()
-                };
-                if character - starting_index == 1 {
-                    self.registers
-                        .keys()
-                        .filter(|r| {
-                            r.as_bytes()
-                                .get(1)
-                                .map_or(false, |&b| b.is_ascii_alphabetic())
-                        })
-                        .map(|keyword| good_named_func(keyword))
-                        .collect()
+                let mut registers_common_float = self.registers.common.clone();
+                let registers = if character - starting_index == 1 {
+                    // Return common & float
+                    for (key, value) in &self.registers.float {
+                        registers_common_float.insert(key.to_string(), value.to_string());
+                    }
+                    &registers_common_float
+                } else if let Some(char) = line_content.chars().nth(starting_index as usize + 1) {
+                    match char {
+                        '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
+                            &self.registers.numeric
+                        }
+                        'f' => &self.registers.float,
+                        _ => &self.registers.common,
+                    }
                 } else {
-                    self.registers
-                        .keys()
-                        .map(|keyword| good_named_func(keyword))
-                        .collect()
-                }
+                    &self.registers.common
+                };
+                registers
+                    .keys()
+                    .map(|keyword| CompletionItem {
+                        label: keyword.to_string(),
+                        kind: Some(CompletionItemKind::VALUE),
+                        detail: Some(format!(
+                            "MIPS register: {}",
+                            registers.get(keyword).unwrap()
+                        )),
+                        text_edit: Some(CompletionTextEdit::Edit(TextEdit {
+                            range: Range {
+                                start: Position {
+                                    line,
+                                    character: starting_index,
+                                },
+                                end: Position { line, character },
+                            },
+                            new_text: keyword.to_string(),
+                        })),
+                        ..Default::default()
+                    })
+                    .collect()
             }
             _ => {
                 let good_named_func = |keyword: &str| {
@@ -450,29 +420,57 @@ impl LanguageServer for Backend {
         let kind = cursor_node.kind();
         let cursor_node_text = cursor_node.utf8_text(text.as_bytes()).unwrap_or_default();
 
-        if kind == "opcode" {
-            if let Some(instruction) = self.instructions.get(cursor_node_text) {
-                let documentation = self.get_instruction_docs(instruction);
+        match kind {
+            "opcode" => {
+                if let Some(instruction) = self.instructions.get(cursor_node_text) {
+                    let documentation = self.get_instruction_docs(instruction);
 
-                return Ok(Some(Hover {
-                    contents: HoverContents::Scalar(MarkedString::String(documentation)),
-                    range: None,
-                }));
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(MarkedString::String(documentation)),
+                        range: None,
+                    }));
+                }
             }
-        } else if kind == "meta" {
-            if let Some(directive) = self.directives.get(cursor_node_text) {
-                return Ok(Some(Hover {
-                    contents: HoverContents::Scalar(MarkedString::String(String::from(directive))),
-                    range: None,
-                }));
+            "meta" => {
+                if let Some(directive) = self.directives.get(cursor_node_text) {
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(MarkedString::String(String::from(
+                            directive,
+                        ))),
+                        range: None,
+                    }));
+                }
             }
-        } else if kind == "register" {
-            if let Some(register) = self.registers.get(cursor_node_text) {
-                return Ok(Some(Hover {
-                    contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
-                    range: None,
-                }));
+            "register" => {
+                if let Some(register) = self.registers.numeric.get(cursor_node_text) {
+                    //if let Some(register) = self.registers.get("numeric").unwrap().get(cursor_node_text) {
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(MarkedString::String(String::from(
+                            register,
+                        ))),
+                        range: None,
+                    }));
+                }
+                if let Some(register) = self.registers.common.get(cursor_node_text) {
+                    //if let Some(register) = self.registers.get("common").unwrap().get(cursor_node_text) {
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(MarkedString::String(String::from(
+                            register,
+                        ))),
+                        range: None,
+                    }));
+                }
+                if let Some(register) = self.registers.float.get(cursor_node_text) {
+                    //if let Some(register) = self.registers.get("float").unwrap().get(cursor_node_text) {
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Scalar(MarkedString::String(String::from(
+                            register,
+                        ))),
+                        range: None,
+                    }));
+                }
             }
+            _ => {}
         }
 
         Ok(None)
@@ -542,6 +540,7 @@ impl Backend {
     pub fn new(client: Client) -> Self {
         let documents = dashmap::DashMap::new();
         let instructions = json::read_instructions();
+        //let pseudo_instructions = json::read_pseudo_instructions();
         let directives = json::read_directives();
         let registers = json::read_registers();
 
@@ -615,17 +614,17 @@ impl Backend {
     [description]
     [machine code]
     */
-    fn get_instruction_docs(&self, instruction: &Vec<json::Instruction>) -> String {
-        let mut docs = String::from("");
-        for part in instruction {
+    fn get_instruction_docs(&self, instruction: &json::Instruction) -> String {
+        let mut docs = format!("{} Format Instruction\n", instruction.format);
+
+        for variant in &instruction.variants {
             docs = format!(
-                "{}```asm\n{}\n```\n{}\n{}\nInstruction format: {}\nMachine code: {}\n\n",
+                "{}```asm\nhere the operands may be\n```\n{}\nMachine code: {}\n\n",
                 docs,
-                part.syntax,
-                "─".repeat(part.syntax.len()),
-                part.description,
-                part.format,
-                part.code
+                //variant.operands,
+                //"─".repeat(variant.syntax.len()),
+                variant.description,
+                variant.code
             );
         }
         docs
