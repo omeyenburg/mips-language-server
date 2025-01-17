@@ -1,14 +1,10 @@
-use std::str::Bytes;
-
 use crate::json::Directives;
 use crate::json::Instructions;
 use crate::tree;
 use crate::types;
-use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
-use tree_sitter::{InputEdit, Language, Node, Parser, Query, QueryCursor, Tree};
+use tree_sitter::{Node, Query, QueryCursor};
 
 use streaming_iterator::StreamingIterator;
 

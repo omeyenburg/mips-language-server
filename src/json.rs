@@ -61,7 +61,6 @@ pub struct Registers {
     pub common: HashMap<String, String>,
     pub float: HashMap<String, String>,
 }
-//pub type Registers = HashMap<String, HashMap<String, String>>;
 pub fn read_registers() -> Registers {
     let json = include_str!("../resources/registers.json");
     serde_json::from_str(json).expect("JSON parsing failed")

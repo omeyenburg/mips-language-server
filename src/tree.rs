@@ -29,15 +29,3 @@ pub fn point_to_position(point: &Point) -> Position {
         character: point.column as u32,
     }
 }
-
-pub fn print_tree(node: tree_sitter::Node, indent: usize) {
-    let mut cursor = node.walk();
-
-    if node.kind() != "\n" {
-        info!("|{}{:?}", "  ".repeat(indent), node.kind());
-    }
-
-    for child in node.children(&mut cursor) {
-        print_tree(child, indent + 2);
-    }
-}

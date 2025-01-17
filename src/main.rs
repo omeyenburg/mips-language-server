@@ -3,12 +3,11 @@
 #![allow(unused_variables)]
 
 use crate::types::*;
-use std::ops::Deref;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use tracing::info;
-use tree_sitter::{InputEdit, Parser, Query, QueryCursor, Tree};
+use tree_sitter::{InputEdit, Query, QueryCursor};
 
 use streaming_iterator::StreamingIterator;
 
@@ -18,7 +17,6 @@ mod tree;
 
 /*
  TODO:
-* Split this file up into distinct modules
 * Handle Pseudo instructions
 * Store labels and use them for goto_definition
 * Distinguish between text & data sections
@@ -257,7 +255,6 @@ impl LanguageServer for Backend {
                         break;
                     }
                     _ => starting_char = ' ',
-                    //_ => {}
                 }
             }
         }
@@ -297,6 +294,7 @@ impl LanguageServer for Backend {
                     }
                     &registers_common_float
                 } else if let Some(char) = line_content.chars().nth(starting_index as usize + 1) {
+                    // check_context
                     match char {
                         '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
                             &self.registers.numeric
@@ -305,7 +303,11 @@ impl LanguageServer for Backend {
                         _ => &self.registers.common,
                     }
                 } else {
-                    &self.registers.common
+                    // Return common & float
+                    for (key, value) in &self.registers.float {
+                        registers_common_float.insert(key.to_string(), value.to_string());
+                    }
+                    &registers_common_float
                 };
                 registers
                     .keys()
@@ -587,8 +589,6 @@ impl Backend {
             .get(uri)
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
             .unwrap();
-        let tree = &document.tree;
-        let text = &document.text;
 
         parser::parse_directives(&mut diagnostics, document, &self.directives);
         parser::parse_instructions(&mut diagnostics, document, &self.instructions);

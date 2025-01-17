@@ -5,18 +5,21 @@ edition = "2021"
 
 [dependencies]
 dashmap = "6.1.0"
-serde = "1.0.216"
-serde_json = "1.0.134"
-streaming-iterator = "0.1.9"
-# serde = { version = "1.0.216", features = ["derive"] }
-# serde_json = "1.0.134"
 tokio = { version = "1.42.0", features = ["full"] }
 tower-lsp = "0.20.0"
+tree-sitter = "0.24.3"
+streaming-iterator = "0.1.9"
+
+## Json
+serde = "1.0.216"
+serde_json = "1.0.134"
+
+## Debugging
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = "0.3.19"
-tree-sitter = "0.24.3"
+
+## Tree-sitter Grammar
 # tree-sitter-asm = "0.22.6"
 # tree-sitter-mips = { git = "https://github.com/omeyenburg/tree-sitter-mips", rev = "51993537719e91619c8b6514dac1ed42fcef18be" }
 tree-sitter-mips = { path = "/home/oskar/git/tree-sitter-mips/" }
-
