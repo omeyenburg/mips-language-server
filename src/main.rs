@@ -3,6 +3,7 @@
 #![allow(unused_variables)]
 
 use crate::types::*;
+use serde::de::value;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
@@ -619,10 +620,9 @@ impl Backend {
 
         for variant in &instruction.variants {
             docs = format!(
-                "{}```asm\nhere the operands may be\n```\n{}\nMachine code: {}\n\n",
+                "{}```asm\n[opcode] {}\n```\n{}\nMachine code: {}\n\n",
                 docs,
-                //variant.operands,
-                //"─".repeat(variant.syntax.len()),
+                variant.operands.join(", "),
                 variant.description,
                 variant.code
             );
