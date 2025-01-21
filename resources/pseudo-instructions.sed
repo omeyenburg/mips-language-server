@@ -9,9 +9,9 @@
     s/label+100000(\$t2)//g
     s/label+100000//g
     s/100000//g # 32 bit signed immediate
-    s/-100//g # 16 bit signed immediate (line 70) or zero-extended 8bit (line 1867)???
-    s/100//g # 16 bit unsigned immediate (line 130) or sign-extended 8bit (line 1606)???
-    s/10//g # 5 bit immediate, signed?
+    s/-100//g # 16 bit signed immediate
+    s/100//g # 16 bit unsigned immediate
+    s/10//g # 5 bit immediate, unsigned
     s/100000(\$t2)//g
     s/100(\$t2)//g
     s/(\$t2)//g

@@ -1,0 +1,7094 @@
+{
+  "not": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Bitwise NOT (bit inversion)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "replacement": [
+          "nor RG1, RG2, $0"
+        ]
+      }
+    ]
+  },
+  "add": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Addition with overflow: set $t1 to ($t2 plus $t3)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100000"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "ADDition: set $t1 to ($t2 plus 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi RG1, RG2, VL3"
+        ]
+      },
+      {
+        "description": "ADDition: set $t1 to ($t2 plus 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "add RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "addu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Addition unsigned without overflow: set $t1 to ($t2 plus $t3), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100001"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "ADDition Unsigned: set $t1 to ($t2 plus 32-bit immediate), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "addu RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "addi": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Addition immediate with overflow: set $t1 to ($t2 plus signed 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "code": "001000 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "ADDition Immediate: set $t1 to ($t2 plus 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "add RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "addiu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Addition immediate unsigned without overflow: set $t1 to ($t2 plus signed 16-bit immediate), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "code": "001001 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "ADDition Immediate Unsigned: set $t1 to ($t2 plus 32-bit immediate), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "addu RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "sub": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Subtraction with overflow: set $t1 to ($t2 minus $t3)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100010"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "SUBtraction: set $t1 to ($t2 minus 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "",
+          "addi $1, $0, VL3",
+          "sub RG1, RG2, $1"
+        ]
+      },
+      {
+        "description": "SUBtraction: set $t1 to ($t2 minus 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "sub RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "subu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Subtraction unsigned without overflow: set $t1 to ($t2 minus $t3), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100011"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "SUBtraction Unsigned: set $t1 to ($t2 minus 32-bit immediate), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "subu RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "subi": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "SUBtraction Immediate: set $t1 to ($t2 minus 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "",
+          "addi $1, $0, VL3",
+          "sub RG1, RG2, $1"
+        ]
+      },
+      {
+        "description": "SUBtraction Immediate: set $t1 to ($t2 minus 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "sub RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "subiu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "SUBtraction Immediate Unsigned: set $t1 to ($t2 minus 32-bit immediate), no overflow",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "subu RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "and": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Bitwise AND: Set $t1 to bitwise AND of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100100"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "AND: set $t1 to ($t2 bitwise-AND 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "replacement": [
+          "andi RG1, RG2, VL3U"
+        ]
+      },
+      {
+        "description": "AND: set $t1 to ($t1 bitwise-AND 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "andi RG1, RG1, VL2U"
+        ]
+      }
+    ]
+  },
+  "or": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Bitwise OR: Set $t1 to bitwise OR of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100101"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "OR: set $t1 to ($t2 bitwise-OR 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "replacement": [
+          "ori RG1, RG2, VL3U"
+        ]
+      },
+      {
+        "description": "OR: set $t1 to ($t1 bitwise-OR 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori RG1, RG1, VL2U"
+        ]
+      }
+    ]
+  },
+  "xor": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Bitwise XOR (exclusive OR): Set $t1 to bitwise XOR of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100110"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "XOR: set $t1 to ($t2 bitwise-exclusive-OR 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "replacement": [
+          "xori RG1, RG2, VL3U"
+        ]
+      },
+      {
+        "description": "XOR: set $t1 to ($t1 bitwise-exclusive-OR 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "xori RG1, RG1, VL2U"
+        ]
+      }
+    ]
+  },
+  "xori": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Bitwise XOR immediate: Set $t1 to bitwise XOR of $t2 and zero-extended 16-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "code": "001110 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "XOR Immediate: set $t1 to ($t1 bitwise-exclusive-OR 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "xor RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "andi": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Bitwise AND immediate: Set $t1 to bitwise AND of $t2 and zero-extended 16-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "code": "001100 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "AND Immediate: set $t1 to ($t2 bitwise-AND 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "and RG1, RG2, $1"
+        ]
+      },
+      {
+        "description": "AND Immediate: set $t1 to ($t1 bitwise-AND 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "andi RG1, RG1, VL2U"
+        ]
+      },
+      {
+        "description": "AND Immediate: set $t1 to ($t1 bitwise-AND 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "and RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "ori": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Bitwise OR immediate: Set $t1 to bitwise OR of $t2 and zero-extended 16-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100"
+        ],
+        "code": "001101 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "OR Immediate: set $t1 to ($t2 bitwise-OR 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "or RG1, RG2, $1",
+          ""
+        ]
+      },
+      {
+        "description": "OR Immediate: set $t1 to ($t1 bitwise-OR 16-bit unsigned immediate)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori RG1, RG1, VL2U"
+        ]
+      },
+      {
+        "description": "OR Immediate: set $t1 to ($t1 bitwise-OR 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "or RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "seq": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set EQual: if $t2 equal to $t3 then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "subu RG1, RG2, RG3",
+          "ori $1, $0, 1",
+          "sltu RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Set EQual: if $t2 equal to 16-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "subu RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "sltu RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Set EQual: if $t2 equal to 32-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "subu RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "sltu RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "sne": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Not Equal: if $t2 not equal to $t3 then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "subu RG1, RG2, RG3",
+          "sltu RG1, $0, RG1"
+        ]
+      },
+      {
+        "description": "Set Not Equal: if $t2 not equal to 16-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "subu RG1, RG2, $1",
+          "sltu RG1, $0, RG1"
+        ]
+      },
+      {
+        "description": "Set Not Equal: if $t2 not equal to 32-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "subu RG1, RG2, $1",
+          "sltu RG1, $0, RG1"
+        ]
+      }
+    ]
+  },
+  "sge": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Greater or Equal: if $t2 greater or equal to $t3 then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "slt RG1, RG2, RG3",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Greater or Equal: if $t2 greater or equal to 16-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "slt RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Greater or Equal: if $t2 greater or equal to 32-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "slt RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      }
+    ]
+  },
+  "sgeu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Greater or Equal Unsigned: if $t2 greater or equal to $t3 (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "sltu RG1, RG2, RG3",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Greater or Equal Unsigned: if $t2 greater or equal to 16-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "sltu RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Greater or Equal Unsigned: if $t2 greater or equal to 32-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "sltu RG1, RG2, $1",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      }
+    ]
+  },
+  "sgt": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Greater Than: if $t2 greater than $t3 then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "slt RG1, RG3, RG2"
+        ]
+      },
+      {
+        "description": "Set Greater Than: if $t2 greater than 16-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "slt RG1, $1, RG2"
+        ]
+      },
+      {
+        "description": "Set Greater Than: if $t2 greater than 32-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "slt RG1, $1, RG2"
+        ]
+      }
+    ]
+  },
+  "sgtu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Greater Than Unsigned: if $t2 greater than $t3 (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "sltu RG1, RG3, RG2"
+        ]
+      },
+      {
+        "description": "Set Greater Than Unsigned: if $t2 greater than 16-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "sltu RG1, $1, RG2"
+        ]
+      },
+      {
+        "description": "Set Greater Than Unsigned: if $t2 greater than 32-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "sltu RG1, $1, RG2"
+        ]
+      }
+    ]
+  },
+  "sle": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Less or Equal: if $t2 less or equal to $t3 then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "slt RG1, RG3, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Less or Equal: if $t2 less or equal to 16-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "slt RG1, $1, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Less or Equal: if $t2 less or equal to 32-bit immediate then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "slt RG1, $1, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      }
+    ]
+  },
+  "sleu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Set Less or Equal Unsigned: if $t2 less or equal to $t3 (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "sltu RG1, RG3, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Less or Equal Unsigned: if $t2 less or equal to 16-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "sltu RG1, $1, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      },
+      {
+        "description": "Set Less or Equal Unsigned: if $t2 less or equal to 32-bit immediate (unsigned compare) then set $t1 to 1 else 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "sltu RG1, $1, RG2",
+          "ori $1, $0, 1",
+          "subu RG1, $1, RG1"
+        ]
+      }
+    ]
+  },
+  "move": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "MOVE: Set $t1 to contents of $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "replacement": [
+          "addu RG1, $0, RG2"
+        ]
+      }
+    ]
+  },
+  "abs": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "ABSolute value: Set $t1 to absolute value of $t2 (algorithm from Hacker's Delight) ",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "replacement": [
+          "sra $1, RG2, 31",
+          "xor RG1, $1, RG2",
+          "subu RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "neg": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "NEGate: Set $t1 to negation of $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "replacement": [
+          "sub RG1, $0, RG2"
+        ]
+      }
+    ]
+  },
+  "negu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "NEGate Unsigned: Set $t1 to negation of $t2, no overflow",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "replacement": [
+          "subu RG1, $0, RG2"
+        ]
+      }
+    ]
+  },
+  "b": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch: Branch to statement at label unconditionally",
+        "operands": [
+          "label"
+        ],
+        "replacement": [
+          "bgez $0, LAB"
+        ]
+      }
+    ]
+  },
+  "beqz": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if EQual Zero: Branch to statement at label if $t1 is equal to zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "beq RG1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Not Equal Zero: Branch to statement at label if $t1 is not equal to zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "bne RG1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "beq": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if equal: Branch to statement at label's address if $t1 and $t2 are equal",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "code": "000100 fffff sssss tttttttttttttttt"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Branch if EQual: Branch to statement at label if $t1 is equal to 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, $0, VL2",
+          "beq $1, RG1, LAB"
+        ]
+      },
+      {
+        "description": "Branch if EQual: Branch to statement at label if $t1 is equal to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "beq $1, RG1, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Not Equal: Branch to statement at label if $t1 is not equal to 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, $0, VL2",
+          "bne $1, RG1, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Not Equal: Branch to statement at label if $t1 is not equal to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "bne $1, RG1, LAB"
+        ]
+      }
+    ]
+  },
+  "bge": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Greater or Equal: Branch to statement at label if $t1 is greater or equal to $t2",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "slt $1, RG1, RG2",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater or Equal: Branch to statement at label if $t1 is greater or equal to 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "slti $1, RG1, VL2",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater or Equal: Branch to statement at label if $t1 is greater or equal to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "slt $1, RG1, $1",
+          "beq $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "bgeu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Greater or Equal Unsigned: Branch to statement at label if $t1 is greater or equal to $t2 (unsigned compare)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "sltu $1, RG1, RG2",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater or Equal Unsigned: Branch to statement at label if $t1 is greater or equal to 16-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "sltiu $1, RG1, VL2",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater or Equal Unsigned: Branch to statement at label if $t1 is greater or equal to 32-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "sltu $1, RG1, $1",
+          "beq $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "bgt": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Greater Than: Branch to statement at label if $t1 is greater than $t2",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "slt $1, RG2, RG1",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater Than: Branch to statement at label if $t1 is greater than 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, $0, VL2",
+          "slt $1, $1, RG1",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater Than: Branch to statement at label if $t1 is greater than 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2P1",
+          "ori $1, $1, VL2P1U",
+          "slt $1, RG1, $1",
+          "beq $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "bgtu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than $t2 (unsigned compare)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "sltu $1, RG2, RG1",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than 16-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, $0, VL2",
+          "sltu $1, $1, RG1",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Greater Than Unsigned: Branch to statement at label if $t1 is greater than 16-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "sltu $1, $1, RG1",
+          "bne $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "ble": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Less or Equal: Branch to statement at label if $t1 is less than or equal to $t2",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "slt $1, RG2, RG1",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less or Equal: Branch to statement at label if $t1 is less than or equal to 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, RG1, -1",
+          "slti $1, $1, VL2",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less or Equal: Branch to statement at label if $t1 is less than or equal to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2P1",
+          "ori $1, $1, VL2P1U",
+          "slt $1, RG1, $1",
+          "bne $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "bleu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Less or Equal Unsigned: Branch to statement at label if $t1 is less than or equal to $t2 (unsigned compare)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "sltu $1, RG2, RG1",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less or Equal Unsigned: Branch to statement at label if $t1 is less than or equal to 16-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "addi $1, $0, VL2",
+          "sltu $1, $1, RG1",
+          "beq $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less or Equal Unsigned: Branch to statement at label if $t1 is less than or equal to 32-bit immediate (unsigned compare)",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "sltu $1, $1, RG1",
+          "beq $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "blt": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Less Than: Branch to statement at label if $t1 is less than $t2",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "slt $1, RG1, RG2",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less Than: Branch to statement at label if $t1 is less than 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "slti $1, RG1, VL2",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less Than: Branch to statement at label if $t1 is less than 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "slt $1, RG1, $1",
+          "bne $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "bltu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Branch if Less Than Unsigned: Branch to statement at label if $t1 is less than $t2",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "replacement": [
+          "sltu $1, RG1, RG2",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less Than Unsigned: Branch to statement at label if $t1 is less than 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100",
+          "label"
+        ],
+        "replacement": [
+          "sltiu $1, RG1, VL2",
+          "bne $1, $0, LAB"
+        ]
+      },
+      {
+        "description": "Branch if Less Than Unsigned: Branch to statement at label if $t1 is less than 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "sltu $1, RG1, $1",
+          "bne $1, $0, LAB"
+        ]
+      }
+    ]
+  },
+  "rol": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "ROtate Left: Set $t1 to ($t2 rotated left by number of bit positions specified in $t3)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "subu $1, $0, RG3",
+          "srlv $1, RG2, $1",
+          "sllv RG1, RG2, RG3",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "ROtate Left: Set $t1 to ($t2 rotated left by number of bit positions specified in 5-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "10"
+        ],
+        "replacement": [
+          "srl $1, RG2, S32",
+          "sll RG1, RG2, OP3",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "ROtate Right: Set $t1 to ($t2 rotated right by number of bit positions specified in $t3)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "subu $1, $0, RG3",
+          "sllv $1, RG2, $1",
+          "srlv RG1, RG2, RG3",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "ROtate Right: Set $t1 to ($t2 rotated right by number of bit positions specified in 5-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "10"
+        ],
+        "replacement": [
+          "sll $1, RG2, S32",
+          "srl RG1, RG2, OP3",
+          "or RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "mfc1.d": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Move From Coprocessor 1 Double: Set $t1 to contents of $f2, set next higher register from $t1 to contents of next higher register from $f2",
+        "operands": [
+          "$t1",
+          "$f2"
+        ],
+        "replacement": [
+          "mfc1 RG1, RG2",
+          "mfc1 NR1, NR2"
+        ]
+      },
+      {
+        "description": "Move To Coprocessor 1 Double: Set $f2 to contents of $t1, set next higher register from $f2 to contents of next higher register from $t1",
+        "operands": [
+          "$t1",
+          "$f2"
+        ],
+        "replacement": [
+          "mtc1 RG1, RG2",
+          "mtc1 NR1, NR2"
+        ]
+      }
+    ]
+  },
+  "mul": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiplication without overflow : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and $t3 (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "011100 sssss ttttt fffff 00000 000010"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "MULtiplication: Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 16-bit signed immediate (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "mul RG1, RG2, $1"
+        ]
+      },
+      {
+        "description": "MULtiplication: Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "mul RG1, RG2, $1"
+        ]
+      }
+    ]
+  },
+  "mulu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "MULtiplication Unsigned: Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by $t3, unsigned multiplication)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "multu RG2, RG3",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication Unsigned:  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 16-bit immediate, unsigned multiplication)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "multu RG2, $1",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication Unsigned:  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 32-bit immediate, unsigned multiplication)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "multu RG2, $1",
+          "mflo RG1"
+        ]
+      }
+    ]
+  },
+  "mulo": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "MULtiplication with Overflow: Set $t1 to low-order 32 bits of the product of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "mult RG2, RG3",
+          "mfhi $1",
+          "mflo RG1",
+          "sra RG1, RG1, 31",
+          "beq $1, RG1, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication with Overflow: Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "mult RG2, $1",
+          "mfhi $1",
+          "mflo RG1",
+          "sra RG1, RG1, 31",
+          "beq $1, RG1, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication with Overflow: Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "mult RG2, $1",
+          "mfhi $1",
+          "mflo RG1",
+          "sra RG1, RG1, 31",
+          "beq $1, RG1, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      }
+    ]
+  },
+  "mulou": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "MULtiplication with Overflow Unsigned: Set $t1 to low-order 32 bits of the product of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "multu RG2, RG3",
+          "mfhi $1",
+          "beq $1,$0, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication with Overflow Unsigned: Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "multu RG2, $1",
+          "mfhi $1",
+          "beq $1,$0, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "MULtiplication with Overflow Unsigned: Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "multu RG2, $1",
+          "mfhi $1",
+          "beq $1,$0, BROFF12",
+          "DBNOP",
+          "break",
+          "mflo RG1"
+        ]
+      }
+    ]
+  },
+  "div": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Division with overflow: Divide $t1 by $t2 then set LO to quotient and HI to remainder (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 011010"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "DIVision: Set $t1 to ($t2 divided by $t3, integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "bne RG3, $0, BROFF12",
+          "DBNOP",
+          "break",
+          "div RG2, RG3",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "DIVision: Set $t1 to ($t2 divided by 16-bit immediate, integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "div RG2, $1",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "DIVision: Set $t1 to ($t2 divided by 32-bit immediate, integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "div RG2, $1",
+          "mflo RG1"
+        ]
+      }
+    ]
+  },
+  "divu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Division unsigned without overflow: Divide unsigned $t1 by $t2 then set LO to quotient and HI to remainder (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 011011"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "DIVision Unsigned:  Set $t1 to ($t2 divided by $t3, unsigned integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "bne RG3, $0, BROFF12",
+          "DBNOP",
+          "break",
+          "divu RG2, RG3",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "DIVision Unsigned:  Set $t1 to ($t2 divided by 16-bit immediate, unsigned integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "divu RG2, $1",
+          "mflo RG1"
+        ]
+      },
+      {
+        "description": "DIVision Unsigned:  Set $t1 to ($t2 divided by 32-bit immediate, unsigned integer division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "divu RG2, $1",
+          "mflo RG1"
+        ]
+      }
+    ]
+  },
+  "rem": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by $t3)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "bne RG3, $0, BROFF12",
+          "DBNOP",
+          "break",
+          "div RG2, RG3",
+          "mfhi RG1"
+        ]
+      },
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "div RG2, $1",
+          "mfhi RG1"
+        ]
+      },
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "div RG2, $1",
+          "mfhi RG1"
+        ]
+      }
+    ]
+  },
+  "remu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by $t3, unsigned division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "replacement": [
+          "bne RG3, $0, BROFF12",
+          "DBNOP",
+          "break",
+          "divu RG2, RG3",
+          "mfhi RG1"
+        ]
+      },
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by 16-bit immediate, unsigned division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "replacement": [
+          "addi $1, $0, VL3",
+          "divu RG2, $1",
+          "mfhi RG1"
+        ]
+      },
+      {
+        "description": "REMainder: Set $t1 to (remainder of $t2 divided by 32-bit immediate, unsigned division)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL3",
+          "ori $1, $1, VL3U",
+          "divu RG2, $1",
+          "mfhi RG1"
+        ]
+      }
+    ]
+  },
+  "li": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Load Immediate: Set $t1 to 16-bit immediate (sign-extended)",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "addiu RG1, $0, VL2"
+        ]
+      },
+      {
+        "description": "Load Immediate: Set $t1 to unsigned 16-bit immediate (zero-extended)",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori RG1, $0, VL2U"
+        ]
+      },
+      {
+        "description": "Load Immediate: Set $t1 to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori RG1, $1, VL2U"
+        ]
+      }
+    ]
+  },
+  "la": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Load Address: Set $t1 to contents of $t2",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "addi RG1, RG3, 0"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to 16-bit immediate (sign-extended) ",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "addiu RG1, $0, VL2"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to 16-bit immediate (zero-extended) ",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori RG1, $0, VL2U"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to 32-bit immediate",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori RG1, $1, VL2U"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to sum (of $t2 and 16-bit immediate)",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "add RG1, RG4, $1"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to sum (of $t2 and 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VHL2",
+          "ori $1, $1, VL2U",
+          "add RG1, RG4, $1"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to label's address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LHL",
+          "ori RG1, $1, LL2U",
+          "COMPACT",
+          "addi RG1, $0, LL2"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to sum (of $t2 and label's address)",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHL",
+          "ori $1, $1, LL2U",
+          "add RG1, RG4, $1",
+          "COMPACT",
+          "addi RG1, RG4, LL2"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to sum (of label's address and 32-bit immediate)",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPN",
+          "ori RG1, $1, LLPU"
+        ]
+      },
+      {
+        "description": "Load Address: Set $t1 to sum (of label's address, 32-bit immediate, and $t2)",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPN",
+          "ori $1, $1, LLPU",
+          "add RG1, RG6, $1"
+        ]
+      }
+    ]
+  },
+  "lw": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100011 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lw RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lw RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lw RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lw RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lw RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lw RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of memory word at label's address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lw RG1, LL2($1)",
+          "COMPACT",
+          "lw RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lw RG1, LL2($1)",
+          "COMPACT",
+          "lw RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address ",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lw RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Word: Set $t1 to contents of effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lw RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "sw": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store word: Store contents of $t1 into effective memory word address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "101011 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sw RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "sw RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "sw RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sw RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "sw RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sw RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into memory word at label's address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sw RG1, LL2($1)",
+          "COMPACT",
+          "sw RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sw RG1, LL2($1)",
+          "COMPACT",
+          "sw RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sw RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Word: Store $t1 contents into effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sw RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lh": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100001 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lh RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lh RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lh RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lh RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lh RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lh RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lh RG1, LL2($1)",
+          "COMPACT",
+          "lh RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lh RG1, LL2($1)",
+          "COMPACT",
+          "lh RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lh RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword: Set $t1 to sign-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lh RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "sh": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "101001 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sh RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "sh RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "sh RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sh RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "sh RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sh RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sh RG1, LL2($1)",
+          "COMPACT",
+          "sh RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sh RG1, LL2($1)",
+          "COMPACT",
+          "sh RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sh RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Halfword: Store the low-order 16 bits of $t1 into the effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sh RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lb": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100000 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lb RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lb RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lb RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lb RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lb RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lb RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lb RG1, LL2($1)",
+          "COMPACT",
+          "lb RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lb RG1, LL2($1)",
+          "COMPACT",
+          "lb RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lb RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Byte: Set $t1 to sign-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lb RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "sb": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "101000 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sb RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "sb RG1, VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "sb RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sb RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "sb RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sb RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sb RG1, LL2($1)",
+          "COMPACT",
+          "sb RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sb RG1, LL2($1)",
+          "COMPACT",
+          "sb RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sb RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Byte: Store the low-order 8 bits of $t1 into the effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sb RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lhu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load halfword unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100101 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lhu RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lhu RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lhu RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lhu RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lhu RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lhu RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lhu RG1, LL2($1)",
+          "COMPACT",
+          "lhu RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lhu RG1, LL2($1)",
+          "COMPACT",
+          "lhu RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lhu RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Halfword Unsigned: Set $t1 to zero-extended 16-bit value from effective memory halfword address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lhu RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lbu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load byte unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100100 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lbu RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lbu RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lbu RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lbu RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lbu RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lbu RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lbu RG1, LL2($1)",
+          "COMPACT",
+          "lbu RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lbu RG1, LL2($1)",
+          "COMPACT",
+          "lbu RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lbu RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Byte Unsigned: Set $t1 to zero-extended 8-bit value from effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lbu RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lwl": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load word left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100010 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lwl RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lwl RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lwl RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lwl RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lwl RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lwl RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lwl RG1, LL2($1)",
+          "COMPACT",
+          "lwl RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lwl RG1, LL2($1)",
+          "COMPACT",
+          "lwl RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lwl RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Word Left: Load from 1 to 4 bytes left-justified into $t1, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lwl RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "swl": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store word left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "101010 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "swl RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "swl RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "swl RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "swl RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "swl RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "swl RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "swl RG1, LL2($1)",
+          "COMPACT",
+          "swl RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "swl RG1, LL2($1)",
+          "COMPACT",
+          "swl RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "swl RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Word Left: Store high-order 1 to 4 bytes of $t1 into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "swl RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "lwr": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load word right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "100110 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lwr RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "lwr RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "lwr RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lwr RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "lwr RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lwr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lwr RG1, LL2($1)",
+          "COMPACT",
+          "lwr RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lwr RG1, LL2($1)",
+          "COMPACT",
+          "lwr RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lwr RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Word Right: Load from 1 to 4 bytes right-justified into $t1, starting with effective memory byte address and continuing through the high-order byte of its word",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lwr RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "swr": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store word right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "101110 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "swr RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "swr RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "swr RG1, 0"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "swr RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "swr RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "swr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "swr RG1, LL2($1)",
+          "COMPACT",
+          "swr RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "swr RG1, LL2($1)",
+          "COMPACT",
+          "swr RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "swr RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Word Right: Store low-order 1 to 4 bytes of $t1 into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "swr RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "ll": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "110000 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "ll RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "ll RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "ll RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "ll RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "ll RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "ll RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "ll RG1, LL2($1)",
+          "COMPACT",
+          "ll RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "ll RG1, LL2($1)",
+          "COMPACT",
+          "ll RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "ll RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Linked: Paired with Store Conditional (sc) to perform atomic read-modify-write.  Treated as equivalent to Load Word (lw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "ll RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "sc": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Stores $t1 value into effective address, then sets $t1 to 1 for success.  Always succeeds because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "-100($t2)"
+        ],
+        "code": "111000 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sc RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "replacement": [
+          "sc RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "sc RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sc RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100($t2)"
+        ],
+        "replacement": [
+          "ori $1, $0, VL2U",
+          "addu $1, $1, RG4",
+          "sc RG1, 0($1)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sc RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sc RG1, LL2($1)",
+          "COMPACT",
+          "sc RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sc RG1, LL2($1)",
+          "COMPACT",
+          "sc RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sc RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Conditional: Paired with Load Linked (ll) to perform atomic read-modify-write.  Treated as equivalent to Store Word (sw) because MARS does not simulate multiple processors.",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sc RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "ulw": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2P3",
+          "lwl RG1, VL2P3($1)",
+          "lui $1, VH2",
+          "lwr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2P3",
+          "lwl RG1, LL2P3($1)",
+          "lui $1, LH2",
+          "lwr RG1, LL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPAP3",
+          "lwl RG1, LLPP3($1)",
+          "lui $1, LHPA",
+          "lwr RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lwl RG1, 3(RG3)",
+          "lwr RG1, 0(RG3)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2P3",
+          "addu $1, $1, RG4",
+          "lwl RG1, VL2P3($1)",
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lwr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2P3",
+          "addu $1, $1, RG4",
+          "lwl RG1, LL2P3($1)",
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lwr RG1, LL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Load Word: Set $t1 to the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPAP3",
+          "addu $1, $1, RG6",
+          "lwl RG1, LLPP3($1)",
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lwr RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "ulh": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2P1",
+          "lb RG1, VL2P1($1)",
+          "lui $1, VH2",
+          "lbu $1, VL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2P1",
+          "lb RG1, LL2P1($1)",
+          "lui $1, LH2",
+          "lbu $1, LL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPAP1",
+          "lb RG1, LLPP1($1)",
+          "lui $1, LHPA",
+          "lbu $1, LLP($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lb RG1, 1(RG3)",
+          "lbu $1, 0(RG3)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          ""
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2P1",
+          "addu $1, $1, RG4",
+          "lb RG1, VL2P1($1)",
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lbu $1, VL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2P1",
+          "addu $1, $1, RG4",
+          "lb RG1, LL2P1($1)",
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lbu $1, LL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, sign-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPAP1",
+          "addu $1, $1, RG6",
+          "lb RG1, LLPP1($1)",
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lbu $1, LLP($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "ulhu": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2P1",
+          "lbu RG1, VL2P1($1)",
+          "lui $1, VH2",
+          "lbu $1, VL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2P1",
+          "lbu RG1, LL2P1($1)",
+          "lui $1, LH2",
+          "lbu $1, LL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPAP1",
+          "lbu RG1, LLPP1($1)",
+          "lui $1, LHPA",
+          "lbu $1, LLP($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lbu RG1, 1(RG3)",
+          "lbu $1, 0(RG3)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          ""
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2P1",
+          "addu $1, $1, RG4",
+          "lbu RG1, VL2P1($1)",
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lbu $1, VL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2P1",
+          "addu $1, $1, RG4",
+          "lbu RG1, LL2P1($1)",
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lbu $1, LL2($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Load Halfword: Set $t1 to the 16 bits, zero-extended, starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPAP1",
+          "addu $1, $1, RG6",
+          "lbu RG1, LLPP1($1)",
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lbu $1, LLP($1)",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "ld": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lw RG1, VL2($1)",
+          "lui $1, VH2P4",
+          "lw NR1, VL2P4($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lw RG1, LL2($1)",
+          "lui $1, LH2P4",
+          "lw NR1, LL2P4($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lw RG1, LLP($1)",
+          "lui $1, LHPAP4",
+          "lw NR1, LLPP4($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lw RG1, 0(RG3)",
+          "lw NR1, 4(RG3)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lw RG1, VL2($1)",
+          "lui $1, VH2P4",
+          "addu $1, $1, RG4",
+          "lw NR1, VL2P4($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lw RG1, LL2($1)",
+          "lui $1, LH2P4",
+          "addu $1, $1, RG4",
+          "lw NR1, LL2P4($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword: Set $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lw RG1, LLP($1)",
+          "lui $1, LHPAP4",
+          "addu $1, $1, RG6",
+          "lw NR1, LLPP4($1)"
+        ]
+      }
+    ]
+  },
+  "usw": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2P3",
+          "swl RG1, VL2P3($1)",
+          "lui $1, VH2",
+          "swr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2P3",
+          "swl RG1, LL2P3($1)",
+          "lui $1, LH2",
+          "swr RG1, LL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPAP3",
+          "swl RG1, LLPP3($1)",
+          "lui $1, LHPA",
+          "swr RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "swl RG1, 3(RG3)",
+          "swr RG1, 0(RG3)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2P3",
+          "addu $1, $1, RG4",
+          "swl RG1, VL2P3($1)",
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "swr RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2P3",
+          "addu $1, $1, RG4",
+          "swl RG1, LL2P3($1)",
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "swr RG1, LL2($1)"
+        ]
+      },
+      {
+        "description": "Unaligned Store Word: Store $t1 contents into the 32 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPAP3",
+          "addu $1, $1, RG6",
+          "swl RG1, LLPP3($1)",
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "swr RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "ush": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sb RG1, VL2($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, VH2P1",
+          "sb RG1, VL2P1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sb RG1, LL2($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, LH2P1",
+          "sb RG1, LL2P1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sb RG1, LLP($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, LHPAP1",
+          "sb RG1, LLPP1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sb RG1, 0(RG3)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "sb RG1, 1(RG3)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sb RG1, VL2($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, VH2P1",
+          "addu $1, $1, RG4",
+          "sb RG1, VL2P1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sb RG1, LL2($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, LH2P1",
+          "addu $1, $1, RG4",
+          "sb RG1, LL2P1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      },
+      {
+        "description": "Unaligned Store Halfword: Store low-order halfword $t1 contents into the 16 bits starting at effective memory byte address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sb RG1, LLP($1)",
+          "sll $1, RG1, 24",
+          "srl RG1, RG1, 8",
+          "or RG1, RG1, $1",
+          "lui $1, LHPAP1",
+          "addu $1, $1, RG6",
+          "sb RG1, LLPP1($1)",
+          "srl $1, RG1, 24",
+          "sll RG1, RG1, 8",
+          "or RG1, RG1, $1"
+        ]
+      }
+    ]
+  },
+  "sd": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sw RG1, VL2($1)",
+          "lui $1, VH2P4",
+          "sw NR1, VL2P4($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sw RG1, LL2($1)",
+          "lui $1, LH2P4",
+          "sw NR1, LL2P4($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sw RG1, LLP($1)",
+          "lui $1, LHPAP4",
+          "sw NR1, LLPP4($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "($t2)"
+        ],
+        "replacement": [
+          "sw RG1, 0(RG3)",
+          "sw NR1, 4(RG3)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sw RG1, VL2($1)",
+          "lui $1, VH2P4",
+          "addu $1, $1, RG4",
+          "sw NR1, VL2P4($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sw RG1, LL2($1)",
+          "lui $1, LH2P4",
+          "addu $1, $1, RG4",
+          "sw NR1, LL2P4($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword: Store contents of $t1 and the next register to the 64 bits starting at effective memory word address",
+        "operands": [
+          "$t1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sw RG1, LLP($1)",
+          "lui $1, LHPAP4",
+          "addu $1, $1, RG6",
+          "sw NR1, LLPP4($1)"
+        ]
+      }
+    ]
+  },
+  "lwc1": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load word into Coprocessor 1 (FPU): Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "-100($t2)"
+        ],
+        "code": "110001 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lwc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "-100"
+        ],
+        "replacement": [
+          "lwc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lwc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lwc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lwc1 RG1, LL2($1)",
+          "COMPACT",
+          "lwc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lwc1 RG1, LL2($1)",
+          "COMPACT",
+          "lwc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lwc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Word Coprocessor 1: Set $f1 to 32-bit value from effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lwc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "ldc1": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load double word Coprocessor 1 (FPU)): Set $f2 to 64-bit value from effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100($t2)"
+        ],
+        "code": "110101 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "($t2)"
+        ],
+        "replacement": [
+          "ldc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100"
+        ],
+        "replacement": [
+          "ldc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "ldc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "ldc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "ldc1 RG1, LL2($1)",
+          "COMPACT",
+          "ldc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "ldc1 RG1, LL2($1)",
+          "COMPACT",
+          "ldc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "ldc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load Doubleword Coprocessor 1: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "ldc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "swc1": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store word from Coprocesor 1 (FPU): Store 32 bit value in $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "-100($t2)"
+        ],
+        "code": "111001 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "($t2)"
+        ],
+        "replacement": [
+          "swc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "-100"
+        ],
+        "replacement": [
+          "swc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "swc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "swc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "swc1 RG1, LL2($1)",
+          "COMPACT",
+          "swc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "swc1 RG1, LL2($1)",
+          "COMPACT",
+          "swc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "swc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Word Coprocessor 1: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "swc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "sdc1": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Store double word from Coprocessor 1 (FPU)): Store 64 bit value in $f2 to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100($t2)"
+        ],
+        "code": "111101 ttttt fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": [
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "($t2)"
+        ],
+        "replacement": [
+          "sdc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100"
+        ],
+        "replacement": [
+          "sdc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sdc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sdc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sdc1 RG1, LL2($1)",
+          "COMPACT",
+          "sdc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sdc1 RG1, LL2($1)",
+          "COMPACT",
+          "sdc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sdc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store Doubleword Coprocessor 1: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sdc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "l.s": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "($t2)"
+        ],
+        "replacement": [
+          "lwc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "-100"
+        ],
+        "replacement": [
+          "lwc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "lwc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "lwc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "lwc1 RG1, LL2($1)",
+          "COMPACT",
+          "lwc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "lwc1 RG1, LL2($1)",
+          "COMPACT",
+          "lwc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "lwc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Single precision: Set $f1 to 32-bit value at effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "lwc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "s.s": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "($t2)"
+        ],
+        "replacement": [
+          "swc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "-100"
+        ],
+        "replacement": [
+          "swc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "swc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "swc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "swc1 RG1, LL2($1)",
+          "COMPACT",
+          "swc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "swc1 RG1, LL2($1)",
+          "COMPACT",
+          "swc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "swc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Single precision: Store 32-bit value from $f1 to effective memory word address",
+        "operands": [
+          "$f1",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "swc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "l.d": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "($t2)"
+        ],
+        "replacement": [
+          "ldc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100"
+        ],
+        "replacement": [
+          "ldc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "ldc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "ldc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "ldc1 RG1, LL2($1)",
+          "COMPACT",
+          "ldc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "ldc1 RG1, LL2($1)",
+          "COMPACT",
+          "ldc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "ldc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Load floating point Double precision: Set $f2 and $f3 register pair to 64-bit value at effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "ldc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "s.d": {
+    "format": "",
+    "native": [],
+    "pseudo": [
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "($t2)"
+        ],
+        "replacement": [
+          "sdc1 RG1,0(RG3)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "-100"
+        ],
+        "replacement": [
+          "sdc1 RG1,VL2($0)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "sdc1 RG1,VL2($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, VH2",
+          "addu $1, $1, RG4",
+          "sdc1 RG1, VL2($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "sdc1 RG1, LL2($1)",
+          "COMPACT",
+          "sdc1 RG1, LL2($0)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label($t2)"
+        ],
+        "replacement": [
+          "lui $1, LH2",
+          "addu $1, $1, RG4",
+          "sdc1 RG1, LL2($1)",
+          "COMPACT",
+          "sdc1 RG1, LL2(RG4)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "sdc1 RG1, LLP($1)"
+        ]
+      },
+      {
+        "description": "Store floating point Double precision: Store 64 bits from $f2 and $f3 register pair to effective memory doubleword address",
+        "operands": [
+          "$f2",
+          "label+100000($t2)"
+        ],
+        "replacement": [
+          "lui $1, LHPA",
+          "addu $1, $1, RG6",
+          "sdc1 RG1, LLP($1)"
+        ]
+      }
+    ]
+  },
+  "nop": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Null operation: machine code is all zeroes",
+        "operands": [],
+        "code": "000000 00000 00000 00000 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "mult": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiplication: Set hi to high-order 32 bits, lo to low-order 32 bits of the product of $t1 and $t2 (use mfhi to access hi, mflo to access lo)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 011000"
+      }
+    ],
+    "pseudo": []
+  },
+  "multu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiplication unsigned: Set HI to high-order 32 bits, LO to low-order 32 bits of the product of unsigned $t1 and $t2 (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 011001"
+      }
+    ],
+    "pseudo": []
+  },
+  "madd": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiply add: Multiply $t1 by $t2 then increment HI by high-order 32 bits of product, increment LO by low-order 32 bits of product (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "011100 fffff sssss 00000 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "maddu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiply add unsigned: Multiply $t1 by $t2 then increment HI by high-order 32 bits of product, increment LO by low-order 32 bits of product, unsigned (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "011100 fffff sssss 00000 00000 000001"
+      }
+    ],
+    "pseudo": []
+  },
+  "msub": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiply subtract: Multiply $t1 by $t2 then decrement HI by high-order 32 bits of product, decrement LO by low-order 32 bits of product (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "011100 fffff sssss 00000 00000 000100"
+      }
+    ],
+    "pseudo": []
+  },
+  "msubu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Multiply subtract unsigned: Multiply $t1 by $t2 then decrement HI by high-order 32 bits of product, decement LO by low-order 32 bits of product, unsigned (use mfhi to access HI, mflo to access LO)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "011100 fffff sssss 00000 00000 000101"
+      }
+    ],
+    "pseudo": []
+  },
+  "mfhi": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move from HI register: Set $t1 to contents of HI (see multiply and divide operations)",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 00000 00000 fffff 00000 010000"
+      }
+    ],
+    "pseudo": []
+  },
+  "mflo": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move from LO register: Set $t1 to contents of LO (see multiply and divide operations)",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 00000 00000 fffff 00000 010010"
+      }
+    ],
+    "pseudo": []
+  },
+  "mthi": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move to HI registerr: Set HI to contents of $t1 (see multiply and divide operations)",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 fffff 00000 00000 00000 010001"
+      }
+    ],
+    "pseudo": []
+  },
+  "mtlo": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move to LO register: Set LO to contents of $t1 (see multiply and divide operations)",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 fffff 00000 00000 00000 010011"
+      }
+    ],
+    "pseudo": []
+  },
+  "nor": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Bitwise NOR: Set $t1 to bitwise NOR of $t2 and $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 100111"
+      }
+    ],
+    "pseudo": []
+  },
+  "sll": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift left logical: Set $t1 to result of shifting $t2 left by number of bits specified by immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "10"
+        ],
+        "code": "000000 00000 sssss fffff ttttt 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "sllv": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift left logical variable: Set $t1 to result of shifting $t2 left by number of bits specified by value in low-order 5 bits of $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 ttttt sssss fffff 00000 000100"
+      }
+    ],
+    "pseudo": []
+  },
+  "srl": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift right logical: Set $t1 to result of shifting $t2 right by number of bits specified by immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "10"
+        ],
+        "code": "000000 00000 sssss fffff ttttt 000010"
+      }
+    ],
+    "pseudo": []
+  },
+  "sra": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift right arithmetic: Set $t1 to result of sign-extended shifting $t2 right by number of bits specified by immediate",
+        "operands": [
+          "$t1",
+          "$t2",
+          "10"
+        ],
+        "code": "000000 00000 sssss fffff ttttt 000011"
+      }
+    ],
+    "pseudo": []
+  },
+  "srav": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift right arithmetic variable: Set $t1 to result of sign-extended shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 ttttt sssss fffff 00000 000111"
+      }
+    ],
+    "pseudo": []
+  },
+  "srlv": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Shift right logical variable: Set $t1 to result of shifting $t2 right by number of bits specified by value in low-order 5 bits of $t3",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 ttttt sssss fffff 00000 000110"
+      }
+    ],
+    "pseudo": []
+  },
+  "lui": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Load upper immediate: Set high-order 16 bits of $t1 to 16-bit immediate and low-order 16 bits to 0",
+        "operands": [
+          "$t1",
+          "100"
+        ],
+        "code": "001111 00000 fffff ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bne": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if not equal: Branch to statement at label's address if $t1 and $t2 are not equal",
+        "operands": [
+          "$t1",
+          "$t2",
+          "label"
+        ],
+        "code": "000101 fffff sssss tttttttttttttttt"
+      }
+    ],
+    "pseudo": []
+  },
+  "bgez": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if greater than or equal to zero: Branch to statement at label's address if $t1 is greater than or equal to zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000001 fffff 00001 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bgezal": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if greater then or equal to zero and link: If $t1 is greater than or equal to zero, then set $ra to the Program Counter and branch to statement at label's address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000001 fffff 10001 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bgtz": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if greater than zero: Branch to statement at label's address if $t1 is greater than zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000111 fffff 00000 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "blez": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if less than or equal to zero: Branch to statement at label's address if $t1 is less than or equal to zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000110 fffff 00000 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bltz": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if less than zero: Branch to statement at label's address if $t1 is less than zero",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000001 fffff 00000 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bltzal": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if less than zero and link: If $t1 is less than or equal to zero, then set $ra to the Program Counter and branch to statement at label's address",
+        "operands": [
+          "$t1",
+          "label"
+        ],
+        "code": "000001 fffff 10000 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "slt": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Set less than: If $t2 is less than $t3, then set $t1 to 1 else set $t1 to 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 101010"
+      }
+    ],
+    "pseudo": []
+  },
+  "sltu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Set less than unsigned: If $t2 is less than $t3 using unsigned comparision, then set $t1 to 1 else set $t1 to 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 101011"
+      }
+    ],
+    "pseudo": []
+  },
+  "slti": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Set less than immediate: If $t2 is less than sign-extended 16-bit immediate, then set $t1 to 1 else set $t1 to 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "code": "001010 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": []
+  },
+  "sltiu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Set less than immediate unsigned: If $t2 is less than  sign-extended 16-bit immediate using unsigned comparison, then set $t1 to 1 else set $t1 to 0",
+        "operands": [
+          "$t1",
+          "$t2",
+          "-100"
+        ],
+        "code": "001011 sssss fffff tttttttttttttttt"
+      }
+    ],
+    "pseudo": []
+  },
+  "movn": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move conditional not zero: Set $t1 to $t2 if $t3 is not zero",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 001011"
+      }
+    ],
+    "pseudo": []
+  },
+  "movz": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move conditional zero: Set $t1 to $t2 if $t3 is zero",
+        "operands": [
+          "$t1",
+          "$t2",
+          "$t3"
+        ],
+        "code": "000000 sssss ttttt fffff 00000 001010"
+      }
+    ],
+    "pseudo": []
+  },
+  "movf": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move if FP condition flag 0 false: Set $t1 to $t2 if FPU (Coprocessor 1) condition flag 0 is false (zero)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 sssss 000 00 fffff 00000 000001"
+      },
+      {
+        "description": "Move if specified FP condition flag false: Set $t1 to $t2 if FPU (Coprocessor 1) condition flag specified by the immediate is false (zero)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "1"
+        ],
+        "code": "000000 sssss ttt 00 fffff 00000 000001"
+      }
+    ],
+    "pseudo": []
+  },
+  "movt": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move if FP condition flag 0 true: Set $t1 to $t2 if FPU (Coprocessor 1) condition flag 0 is true (one)",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 sssss 000 01 fffff 00000 000001"
+      },
+      {
+        "description": "Move if specfied FP condition flag true: Set $t1 to $t2 if FPU (Coprocessor 1) condition flag specified by the immediate is true (one)",
+        "operands": [
+          "$t1",
+          "$t2",
+          "1"
+        ],
+        "code": "000000 sssss ttt 01 fffff 00000 000001"
+      }
+    ],
+    "pseudo": []
+  },
+  "break": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Break execution with code: Terminate program execution with specified exception code",
+        "operands": [
+          "100"
+        ],
+        "code": "000000 ffffffffffffffffffff 001101"
+      },
+      {
+        "description": "Break execution: Terminate program execution with exception",
+        "operands": [],
+        "code": "000000 00000 00000 00000 00000 001101"
+      }
+    ],
+    "pseudo": []
+  },
+  "syscall": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Issue a system call: Execute the system call specified by value in $v0",
+        "operands": [],
+        "code": "000000 00000 00000 00000 00000 001100"
+      }
+    ],
+    "pseudo": []
+  },
+  "j": {
+    "format": "Jump",
+    "native": [
+      {
+        "description": "Jump unconditionally: Jump to statement at target address",
+        "operands": [
+          "target"
+        ],
+        "code": "000010 ffffffffffffffffffffffffff"
+      }
+    ],
+    "pseudo": []
+  },
+  "jr": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Jump register unconditionally: Jump to statement whose address is in $t1",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 fffff 00000 00000 00000 001000"
+      }
+    ],
+    "pseudo": []
+  },
+  "jal": {
+    "format": "Jump",
+    "native": [
+      {
+        "description": "Jump and link: Set $ra to Program Counter (return address) then jump to statement at target address",
+        "operands": [
+          "target"
+        ],
+        "code": "000011 ffffffffffffffffffffffffff"
+      }
+    ],
+    "pseudo": []
+  },
+  "jalr": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Jump and link register: Set $t1 to Program Counter (return address) then jump to statement whose address is in $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 sssss 00000 fffff 00000 001001"
+      },
+      {
+        "description": "Jump and link register: Set $ra to Program Counter (return address) then jump to statement whose address is in $t1",
+        "operands": [
+          "$t1"
+        ],
+        "code": "000000 fffff 00000 11111 00000 001001"
+      }
+    ],
+    "pseudo": []
+  },
+  "mfc0": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move from Coprocessor 0: Set $t1 to the value stored in Coprocessor 0 register $8",
+        "operands": [
+          "$t1",
+          "$8"
+        ],
+        "code": "010000 00000 fffff sssss 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "mtc0": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move to Coprocessor 0: Set Coprocessor 0 register $8 to value stored in $t1",
+        "operands": [
+          "$t1",
+          "$8"
+        ],
+        "code": "010000 00100 fffff sssss 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "add.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point addition single precision: Set $f0 to single-precision floating point value of $f1 plus $f3",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$f3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "sub.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point subtraction single precision: Set $f0 to single-precision floating point value of $f1  minus $f3",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$f3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 000001"
+      }
+    ],
+    "pseudo": []
+  },
+  "mul.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point multiplication single precision: Set $f0 to single-precision floating point value of $f1 times $f3",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$f3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 000010"
+      }
+    ],
+    "pseudo": []
+  },
+  "div.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point division single precision: Set $f0 to single-precision floating point value of $f1 divided by $f3",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$f3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 000011"
+      }
+    ],
+    "pseudo": []
+  },
+  "sqrt.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Square root single precision: Set $f0 to single-precision floating point square root of $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 000100"
+      }
+    ],
+    "pseudo": []
+  },
+  "floor.w.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floor single precision to word: Set $f0 to 32-bit integer floor of single-precision float in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 001111"
+      }
+    ],
+    "pseudo": []
+  },
+  "ceil.w.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Ceiling single precision to word: Set $f0 to 32-bit integer ceiling of single-precision float in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 001110"
+      }
+    ],
+    "pseudo": []
+  },
+  "round.w.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Round single precision to word: Set $f0 to 32-bit integer round of single-precision float in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 001100"
+      }
+    ],
+    "pseudo": []
+  },
+  "trunc.w.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Truncate single precision to word: Set $f0 to 32-bit integer truncation of single-precision float in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 001101"
+      }
+    ],
+    "pseudo": []
+  },
+  "add.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point addition double precision: Set $f2 to double-precision floating point value of $f4 plus $f6",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$f6"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "sub.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point subtraction double precision: Set $f2 to double-precision floating point value of $f4 minus $f6",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$f6"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 000001"
+      }
+    ],
+    "pseudo": []
+  },
+  "mul.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point multiplication double precision: Set $f2 to double-precision floating point value of $f4 times $f6",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$f6"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 000010"
+      }
+    ],
+    "pseudo": []
+  },
+  "div.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point division double precision: Set $f2 to double-precision floating point value of $f4 divided by $f6",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$f6"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 000011"
+      }
+    ],
+    "pseudo": []
+  },
+  "sqrt.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Square root double precision: Set $f2 to double-precision floating point square root of $f4",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 00000 sssss fffff 000100"
+      }
+    ],
+    "pseudo": []
+  },
+  "floor.w.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floor double precision to word: Set $f1 to 32-bit integer floor of double-precision float in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 001111"
+      }
+    ],
+    "pseudo": []
+  },
+  "ceil.w.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Ceiling double precision to word: Set $f1 to 32-bit integer ceiling of double-precision float in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 001110"
+      }
+    ],
+    "pseudo": []
+  },
+  "round.w.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Round double precision to word: Set $f1 to 32-bit integer round of double-precision float in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 001100"
+      }
+    ],
+    "pseudo": []
+  },
+  "trunc.w.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Truncate double precision to word: Set $f1 to 32-bit integer truncation of double-precision float in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 001101"
+      }
+    ],
+    "pseudo": []
+  },
+  "bc1t": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if FP condition flag 0 true (BC1T, not BCLT): If Coprocessor 1 condition flag 0 is true (one) then branch to statement at label's address",
+        "operands": [
+          "label"
+        ],
+        "code": "010001 01000 00001 ffffffffffffffff"
+      },
+      {
+        "description": "Branch if specified FP condition flag true (BC1T, not BCLT): If Coprocessor 1 condition flag specified by immediate is true (one) then branch to statement at label's address",
+        "operands": [
+          "1",
+          "label"
+        ],
+        "code": "010001 01000 fff 01 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "bc1f": {
+    "format": "Immediate branch",
+    "native": [
+      {
+        "description": "Branch if FP condition flag 0 false (BC1F, not BCLF): If Coprocessor 1 condition flag 0 is false (zero) then branch to statement at label's address",
+        "operands": [
+          "label"
+        ],
+        "code": "010001 01000 00000 ffffffffffffffff"
+      },
+      {
+        "description": "Branch if specified FP condition flag false (BC1F, not BCLF): If Coprocessor 1 condition flag specified by immediate is false (zero) then branch to statement at label's address",
+        "operands": [
+          "1",
+          "label"
+        ],
+        "code": "010001 01000 fff 00 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.eq.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare equal single precision: If $f0 is equal to $f1, set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 sssss fffff 00000 110010"
+      },
+      {
+        "description": "Compare equal single precision: If $f0 is equal to $f1, set Coprocessor 1 condition flag specied by immediate to true else set it to false",
+        "operands": [
+          "1",
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 ttttt sssss fff 00 11 0010"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.le.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare less or equal single precision: If $f0 is less than or equal to $f1, set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 sssss fffff 00000 111110"
+      },
+      {
+        "description": "Compare less or equal single precision: If $f0 is less than or equal to $f1, set Coprocessor 1 condition flag specified by immediate to true else set it to false",
+        "operands": [
+          "1",
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 ttttt sssss fff 00 111110"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.lt.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare less than single precision: If $f0 is less than $f1, set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 sssss fffff 00000 111100"
+      },
+      {
+        "description": "Compare less than single precision: If $f0 is less than $f1, set Coprocessor 1 condition flag specified by immediate to true else set it to false",
+        "operands": [
+          "1",
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 ttttt sssss fff 00 111100"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.eq.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare equal double precision: If $f2 is equal to $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 sssss fffff 00000 110010"
+      },
+      {
+        "description": "Compare equal double precision: If $f2 is equal to $f4 (double-precision), set Coprocessor 1 condition flag specified by immediate to true else set it to false",
+        "operands": [
+          "1",
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 ttttt sssss fff 00 110010"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.le.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare less or equal double precision: If $f2 is less than or equal to $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 sssss fffff 00000 111110"
+      },
+      {
+        "description": "Compare less or equal double precision: If $f2 is less than or equal to $f4 (double-precision), set Coprocessor 1 condition flag specfied by immediate true else set it false",
+        "operands": [
+          "1",
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 ttttt sssss fff 00 111110"
+      }
+    ],
+    "pseudo": []
+  },
+  "c.lt.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Compare less than double precision: If $f2 is less than $f4 (double-precision), set Coprocessor 1 condition flag 0 true else set it false",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 sssss fffff 00000 111100"
+      },
+      {
+        "description": "Compare less than double precision: If $f2 is less than $f4 (double-precision), set Coprocessor 1 condition flag specified by immediate to true else set it to false",
+        "operands": [
+          "1",
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 ttttt sssss fff 00 111100"
+      }
+    ],
+    "pseudo": []
+  },
+  "abs.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point absolute value single precision: Set $f0 to absolute value of $f1, single precision",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 000101"
+      }
+    ],
+    "pseudo": []
+  },
+  "abs.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point absolute value double precision: Set $f2 to absolute value of $f4, double precision",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 00000 sssss fffff 000101"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.d.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from single precision to double precision: Set $f2 to double precision equivalent of single precision value in $f1",
+        "operands": [
+          "$f2",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 100001"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.d.w": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from word to double precision: Set $f2 to double precision equivalent of 32-bit integer value in $f1",
+        "operands": [
+          "$f2",
+          "$f1"
+        ],
+        "code": "010001 10100 00000 sssss fffff 100001"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.s.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from double precision to single precision: Set $f1 to single precision equivalent of double precision value in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 100000"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.s.w": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from word to single precision: Set $f0 to single precision equivalent of 32-bit integer value in $f2",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10100 00000 sssss fffff 100000"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.w.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from double precision to word: Set $f1 to 32-bit integer equivalent of double precision value in $f2",
+        "operands": [
+          "$f1",
+          "$f2"
+        ],
+        "code": "010001 10001 00000 sssss fffff 100100"
+      }
+    ],
+    "pseudo": []
+  },
+  "cvt.w.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Convert from single precision to word: Set $f0 to 32-bit integer equivalent of single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 100100"
+      }
+    ],
+    "pseudo": []
+  },
+  "mov.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point double precision: Set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 00000 sssss fffff 000110"
+      }
+    ],
+    "pseudo": []
+  },
+  "movf.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point double precision: If condition flag 0 false, set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 000 00 sssss fffff 010001"
+      },
+      {
+        "description": "Move floating point double precision: If condition flag specified by immediate is false, set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4",
+          "1"
+        ],
+        "code": "010001 10001 ttt 00 sssss fffff 010001"
+      }
+    ],
+    "pseudo": []
+  },
+  "movt.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point double precision: If condition flag 0 true, set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 000 01 sssss fffff 010001"
+      },
+      {
+        "description": "Move floating point double precision: If condition flag specified by immediate is true, set double precision $f2 to double precision value in $f4e",
+        "operands": [
+          "$f2",
+          "$f4",
+          "1"
+        ],
+        "code": "010001 10001 ttt 01 sssss fffff 010001"
+      }
+    ],
+    "pseudo": []
+  },
+  "movn.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point double precision: If $t3 is not zero, set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$t3"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 010011"
+      }
+    ],
+    "pseudo": []
+  },
+  "movz.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point double precision: If $t3 is zero, set double precision $f2 to double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4",
+          "$t3"
+        ],
+        "code": "010001 10001 ttttt sssss fffff 010010"
+      }
+    ],
+    "pseudo": []
+  },
+  "mov.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point single precision: Set single precision $f0 to single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 000110"
+      }
+    ],
+    "pseudo": []
+  },
+  "movf.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point single precision: If condition flag 0 is false, set single precision $f0 to single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 000 00 sssss fffff 010001"
+      },
+      {
+        "description": "Move floating point single precision: If condition flag specified by immediate is false, set single precision $f0 to single precision value in $f1e",
+        "operands": [
+          "$f0",
+          "$f1",
+          "1"
+        ],
+        "code": "010001 10000 ttt 00 sssss fffff 010001"
+      }
+    ],
+    "pseudo": []
+  },
+  "movt.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point single precision: If condition flag 0 is true, set single precision $f0 to single precision value in $f1e",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 000 01 sssss fffff 010001"
+      },
+      {
+        "description": "Move floating point single precision: If condition flag specified by immediate is true, set single precision $f0 to single precision value in $f1e",
+        "operands": [
+          "$f0",
+          "$f1",
+          "1"
+        ],
+        "code": "010001 10000 ttt 01 sssss fffff 010001"
+      }
+    ],
+    "pseudo": []
+  },
+  "movn.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point single precision: If $t3 is not zero, set single precision $f0 to single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$t3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 010011"
+      }
+    ],
+    "pseudo": []
+  },
+  "movz.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move floating point single precision: If $t3 is zero, set single precision $f0 to single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1",
+          "$t3"
+        ],
+        "code": "010001 10000 ttttt sssss fffff 010010"
+      }
+    ],
+    "pseudo": []
+  },
+  "mfc1": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move from Coprocessor 1 (FPU): Set $t1 to value in Coprocessor 1 register $f1",
+        "operands": [
+          "$t1",
+          "$f1"
+        ],
+        "code": "010001 00000 fffff sssss 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "mtc1": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Move to Coprocessor 1 (FPU): Set Coprocessor 1 register $f1 to value in $t1",
+        "operands": [
+          "$t1",
+          "$f1"
+        ],
+        "code": "010001 00100 fffff sssss 00000 000000"
+      }
+    ],
+    "pseudo": []
+  },
+  "neg.d": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point negate double precision: Set double precision $f2 to negation of double precision value in $f4",
+        "operands": [
+          "$f2",
+          "$f4"
+        ],
+        "code": "010001 10001 00000 sssss fffff 000111"
+      }
+    ],
+    "pseudo": []
+  },
+  "neg.s": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Floating point negate single precision: Set single precision $f0 to negation of single precision value in $f1",
+        "operands": [
+          "$f0",
+          "$f1"
+        ],
+        "code": "010001 10000 00000 sssss fffff 000111"
+      }
+    ],
+    "pseudo": []
+  },
+  "teq": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if equal: Trap if $t1 is equal to $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110100"
+      }
+    ],
+    "pseudo": []
+  },
+  "teqi": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if equal to immediate: Trap if $t1 is equal to sign-extended 16 bit immediate",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01100 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "tne": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if not equal: Trap if $t1 is not equal to $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110110"
+      }
+    ],
+    "pseudo": []
+  },
+  "tnei": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if not equal to immediate: Trap if $t1 is not equal to sign-extended 16 bit immediate",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01110 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "tge": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if greater or equal: Trap if $t1 is greater than or equal to $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110000"
+      }
+    ],
+    "pseudo": []
+  },
+  "tgeu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if greater or equal unsigned: Trap if $t1 is greater than or equal to $t2 using unsigned comparision",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110001"
+      }
+    ],
+    "pseudo": []
+  },
+  "tgei": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if greater than or equal to immediate: Trap if $t1 greater than or equal to sign-extended 16 bit immediate",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01000 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "tgeiu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if greater or equal to immediate unsigned: Trap if $t1 greater than or equal to sign-extended 16 bit immediate, unsigned comparison",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01001 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "tlt": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if less than: Trap if $t1 less than $t2",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110010"
+      }
+    ],
+    "pseudo": []
+  },
+  "tltu": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Trap if less than unsigned: Trap if $t1 less than $t2, unsigned comparison",
+        "operands": [
+          "$t1",
+          "$t2"
+        ],
+        "code": "000000 fffff sssss 00000 00000 110011"
+      }
+    ],
+    "pseudo": []
+  },
+  "tlti": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if less than immediate: Trap if $t1 less than sign-extended 16-bit immediate",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01010 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "tltiu": {
+    "format": "Immediate",
+    "native": [
+      {
+        "description": "Trap if less than immediate unsigned: Trap if $t1 less than sign-extended 16-bit immediate, unsigned comparison",
+        "operands": [
+          "$t1",
+          "-100"
+        ],
+        "code": "000001 fffff 01011 ssssssssssssssss"
+      }
+    ],
+    "pseudo": []
+  },
+  "eret": {
+    "format": "Register",
+    "native": [
+      {
+        "description": "Exception return: Set Program Counter to Coprocessor 0 EPC register value, set Coprocessor Status register bit 1 (exception level) to zero",
+        "operands": [],
+        "code": "010000 1 0000000000000000000 011000"
+      }
+    ],
+    "pseudo": []
+  }
+}

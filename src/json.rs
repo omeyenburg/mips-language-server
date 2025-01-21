@@ -1,6 +1,39 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+mod future_instruction {
+    use serde::{Deserialize, Serialize};
+    use std::collections::HashMap;
+
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct NativeInstruction {
+        pub description: String,   // Description of this variant
+        pub operands: Vec<String>, // List of operand types
+        pub code: String,          // Machine code
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct PseudoInstruction {
+        pub description: String,      // Description of this variant
+        pub operands: Vec<String>,    // List of operand types
+        pub replacement: Vec<String>, // List of instructions that would be substituted
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct Instruction {
+        pub format: String,
+        pub native: Vec<NativeInstruction>,
+        pub pseudo: Vec<PseudoInstruction>
+    }
+
+    pub type Instructions = HashMap<String, Instruction>;
+
+    pub fn read_instructions() -> Instructions {
+        let json = include_str!("../resources/instructions.json");
+        serde_json::from_str(json).expect("JSON parsing failed")
+    }
+}
+
 /*
  *! Instructions
  */
