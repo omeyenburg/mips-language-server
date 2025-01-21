@@ -1,79 +1,79 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-mod future_instruction {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NativeInstruction {
+    pub description: String,   // Description of this variant
+    pub operands: Vec<String>, // List of operand types
+    pub code: String,          // Machine code
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PseudoInstruction {
+    pub description: String,      // Description of this variant
+    pub operands: Vec<String>,    // List of operand types
+    pub replacement: Vec<String>, // List of instructions that would be substituted
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Instruction {
+    pub format: String,
+    pub native: Vec<NativeInstruction>,
+    pub pseudo: Vec<PseudoInstruction>,
+}
+
+pub type Instructions = HashMap<String, Instruction>;
+
+pub fn read_instructions() -> Instructions {
+    let json = include_str!("../resources/merged.json");
+    serde_json::from_str(json).expect("JSON parsing failed")
+}
+
+mod old {
     use serde::{Deserialize, Serialize};
     use std::collections::HashMap;
 
+    /*
+     *! Instructions
+     */
     #[derive(Debug, Serialize, Deserialize)]
-    pub struct NativeInstruction {
-        pub description: String,   // Description of this variant
+    pub struct InstructionVariant {
         pub operands: Vec<String>, // List of operand types
+        pub description: String,   // Description of this variant
         pub code: String,          // Machine code
     }
-
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct PseudoInstruction {
-        pub description: String,      // Description of this variant
-        pub operands: Vec<String>,    // List of operand types
-        pub replacement: Vec<String>, // List of instructions that would be substituted
-    }
-
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Instruction {
-        pub format: String,
-        pub native: Vec<NativeInstruction>,
-        pub pseudo: Vec<PseudoInstruction>
+        pub format: String,                    // Type of instruction, e.g. Register-Type
+        pub variants: Vec<InstructionVariant>, // List of all variants
     }
-
     pub type Instructions = HashMap<String, Instruction>;
-
     pub fn read_instructions() -> Instructions {
         let json = include_str!("../resources/instructions.json");
         serde_json::from_str(json).expect("JSON parsing failed")
     }
-}
 
-/*
- *! Instructions
- */
-#[derive(Debug, Serialize, Deserialize)]
-pub struct InstructionVariant {
-    pub operands: Vec<String>, // List of operand types
-    pub description: String,   // Description of this variant
-    pub code: String,          // Machine code
-}
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Instruction {
-    pub format: String,                    // Type of instruction, e.g. Register-Type
-    pub variants: Vec<InstructionVariant>, // List of all variants
-}
-pub type Instructions = HashMap<String, Instruction>;
-pub fn read_instructions() -> Instructions {
-    let json = include_str!("../resources/instructions.json");
-    serde_json::from_str(json).expect("JSON parsing failed")
-}
+    /*
+     *! Pseudo Instructions
+     *
+     * we need also to somehow handle the COMPACT thingy
+     * would be again redundant but easy, to split all COMPACTS
+     * and gegenrate an extra description
+     */
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct PseudoInstructionVariant {
+        pub operands: Vec<String>,    // List of operand types
+        pub replacement: Vec<String>, // List of instructions that would be substituted
+        pub descriptions: String,     // Description of this variant
+    }
 
-/*
- *! Pseudo Instructions
- *
- * we need also to somehow handle the COMPACT thingy
- * would be again redundant but easy, to split all COMPACTS
- * and gegenrate an extra description
- */
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PseudoInstructionVariant {
-    pub operands: Vec<String>,    // List of operand types
-    pub replacement: Vec<String>, // List of instructions that would be substituted
-    pub descriptions: String,     // Description of this variant
-}
-
-// Format is always: Pseudo-Instruction, no need to store this information
-pub type PseudoInstruction = Vec<PseudoInstructionVariant>;
-pub type PseudoInstructions = HashMap<String, Vec<PseudoInstruction>>;
-pub fn read_pseudo_instructions() -> PseudoInstructions {
-    let json = include_str!("../resources/pseudo-instructions.json");
-    serde_json::from_str(json).expect("JSON parsing failed")
+    // Format is always: Pseudo-Instruction, no need to store this information
+    pub type PseudoInstruction = Vec<PseudoInstructionVariant>;
+    pub type PseudoInstructions = HashMap<String, Vec<PseudoInstruction>>;
+    pub fn read_pseudo_instructions() -> PseudoInstructions {
+        let json = include_str!("../resources/pseudo-instructions.json");
+        serde_json::from_str(json).expect("JSON parsing failed")
+    }
 }
 
 /*
