@@ -21,8 +21,7 @@ This language server is specific to the 32 bit instruction set
 This was mostly tested with the latest neovim release together with the plugins lsp-config, nvim-cmp and blink.nvim.
 Further testing in different environments is highly appreciated.
 
-## Ressources
-https://www.cs.cornell.edu/courses/cs3410/2008fa/MIPS_Vol2.pdf
-https://en.wikibooks.org/wiki/MIPS_Assembly/Instruction_Formats#Opcodes
-http://www.cs.unibo.it/~solmi/teaching/arch_2002-2003/AssemblyLanguageProgDoc.pdf
-https://users.informatik.haw-hamburg.de/~krabat/FH-Labor/gnupro/7_GNUPro_Embedded_Development/embAssembler_options_for_mips.html
+## Further resources
+- https://www.cs.cornell.edu/courses/cs3410/2008fa/MIPS_Vol2.pdf
+- http://www.cs.unibo.it/~solmi/teaching/arch_2002-2003/AssemblyLanguageProgDoc.pdf
+- https://en.wikibooks.org/wiki/MIPS_Assembly/Instruction_Formats
