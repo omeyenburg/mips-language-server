@@ -2,9 +2,11 @@ use crate::json::Directives;
 use crate::json::Instructions;
 use crate::tree;
 use crate::types;
-use tower_lsp::lsp_types::*;
+//use tower_lsp::lsp_types::*;
 use tracing::info;
 use tree_sitter::{Node, Query, QueryCursor};
+
+use lsp_types::*;
 
 use streaming_iterator::StreamingIterator;
 
