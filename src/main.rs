@@ -2,16 +2,13 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-use logging::logging_init;
-use lsif::ResultSet;
-use std::{collections::HashMap, error::Error};
-use streaming_iterator::StreamingIterator;
-
 use lsp_server::{
     Connection, ErrorCode, ExtractError, Message, Notification, Request, RequestId, Response,
     ResponseError,
 };
 use lsp_types::*;
+use std::collections::HashMap;
+use std::error::Error;
 
 mod logging;
 
@@ -28,29 +25,12 @@ struct Document {
 }
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
-    // TODO: Note that  we must have our logging only write out to stderr.
-    // log!("...")
-
+    // Initialize logging
     log_init!();
+    log!("Starting generic LSP server");
 
-    // Set up log file
-    //let log_file =
-    //    std::fs::File::create("/home/oskar/git/mips-language-server/lsp.log").expect("Create file");
-    //let log_file = std::io::BufWriter::new(log_file);
-    //let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
-    //let subscriber = tracing_subscriber::fmt()
-    //    .with_max_level(tracing::level_filters::LevelFilter::DEBUG)
-    //    .with_writer(non_blocking)
-    //    .without_time() // Compact log messages
-    //    .with_level(false)
-    //    .with_target(false)
-    //    .finish();
-    //tracing::subscriber::set_global_default(subscriber).expect("Could not set default subscriber");
-    tracing::info!("Test!");
-    log!("starting generic LSP server");
-
-    // Create the transport. Includes the stdio (stdin and stdout) versions but this could
-    // also be implemented to use sockets or HTTP.
+    // Create the transport. Includes the stdio (stdin and stdout) versions but
+    // this could also be implemented to use sockets or HTTP.
     let (connection, io_threads) = Connection::stdio();
 
     // Run the server and wait for the two threads to end (typically by trigger LSP Exit event).
