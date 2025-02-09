@@ -2,9 +2,10 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-use std::error::Error;
+use logging::logging_init;
+use lsif::ResultSet;
+use std::{collections::HashMap, error::Error};
 use streaming_iterator::StreamingIterator;
-use tracing::info;
 
 use lsp_server::{
     Connection, ErrorCode, ExtractError, Message, Notification, Request, RequestId, Response,
@@ -12,9 +13,25 @@ use lsp_server::{
 };
 use lsp_types::*;
 
+mod logging;
+
+struct Backend {
+    connection: Connection,
+    documents: HashMap<Uri, Document>,
+    params: InitializeParams,
+}
+
+#[derive(Debug)]
+struct Document {
+    text: String,
+    tree: tree_sitter::Tree,
+}
+
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // TODO: Note that  we must have our logging only write out to stderr.
-    // eprintln!("...")
+    // log!("...")
+
+    log_init!();
 
     // Set up log file
     //let log_file =
@@ -29,7 +46,8 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     //    .with_target(false)
     //    .finish();
     //tracing::subscriber::set_global_default(subscriber).expect("Could not set default subscriber");
-    eprintln!("starting generic LSP server");
+    tracing::info!("Test!");
+    log!("starting generic LSP server");
 
     // Create the transport. Includes the stdio (stdin and stdout) versions but this could
     // also be implemented to use sockets or HTTP.
@@ -77,7 +95,7 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     io_threads.join()?;
 
     // Shut down gracefully.
-    eprintln!("shutting down server");
+    log!("shutting down server");
     Ok(())
 }
 
@@ -108,14 +126,15 @@ fn main_loop(
                             handle_hover,
                         );
                     }
-                    _ => eprintln!("Unimplemented request: {}", req.method),
+                    _ => log!("Unimplemented request: {}", req.method),
                 }
             }
             Message::Response(res) => {
-                eprintln!("Got response: {:?}", res);
+                log!("Got response: {:?}", res);
             }
             Message::Notification(not) => {
-                eprintln!("Got notification: {:?}", not);
+                //log!("Got notification: {:?}", not);
+                log!("Got notification");
                 match not.method.as_str() {
                     "textDocument/didChange" => {
                         handle_notification::<notification::DidChangeTextDocument, _, _>(
@@ -142,23 +161,18 @@ where
     F: FnOnce(RequestId, R::Params) -> Result<T, Box<dyn Error + Send + Sync>>,
 {
     let Ok((id, params)) = req.clone().extract(R::METHOD) else {
-        eprintln!("Failed to extract request.");
-        send_response::<T>(
-            &req.id,
-            connection,
-            None,
-            Some("Failed to extract request."),
-        );
+        log!("Failed to extract request.");
+        send_response::<T>(&req.id, connection, Err("Failed to extract request."));
         return;
     };
 
     let Ok(result) = handler(id.clone(), params) else {
-        eprintln!("Failed to execute request.");
-        send_response::<T>(&id, connection, None, Some("Failed to execute request."));
+        log!("Failed to execute request.");
+        send_response::<T>(&id, connection, Err("Failed to execute request."));
         return;
     };
 
-    send_response::<T>(&id, connection, Some(result), None)
+    send_response::<T>(&id, connection, Ok(result))
 }
 
 fn handle_notification<R, T, F>(notification: &Notification, handler: F)
@@ -169,7 +183,7 @@ where
     F: FnOnce(R::Params) -> Result<T, Box<dyn Error + Send + Sync>>,
 {
     let Ok(params) = notification.clone().extract(R::METHOD) else {
-        eprintln!("Failed to extract notification.");
+        log!("Failed to extract notification.");
         return;
     };
 
@@ -179,18 +193,17 @@ where
 fn handle_notification_document_change(
     params: DidChangeTextDocumentParams,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    eprintln!("Handle doc change");
+    log!("Handle doc change");
     Ok(())
 }
 
 fn send_response<T: serde::Serialize>(
     id: &RequestId,
     connection: &Connection,
-    result: Option<T>,
-    error: Option<&str>,
+    result: Result<T, &str>,
 ) {
-    let (result, error) = match (result, error) {
-        (Some(value), _) => match serde_json::to_value(value) {
+    let (result, error) = match result {
+        Ok(value) => match serde_json::to_value(value) {
             Ok(serialized) => (Some(serialized), None),
             Err(err) => (
                 None,
@@ -201,19 +214,11 @@ fn send_response<T: serde::Serialize>(
                 }),
             ),
         },
-        (None, Some(err)) => (
+        Err(err) => (
             None,
             Some(ResponseError {
                 code: ErrorCode::RequestFailed as i32,
                 message: err.to_string(),
-                data: None,
-            }),
-        ),
-        (None, None) => (
-            None,
-            Some(ResponseError {
-                code: ErrorCode::InternalError as i32,
-                message: "Unexpected missing result and error.".to_string(),
                 data: None,
             }),
         ),
@@ -224,7 +229,7 @@ fn send_response<T: serde::Serialize>(
         result,
         error,
     })) {
-        eprintln!("Failed to send response: {err}");
+        log!("Failed to send response: {err}");
     }
 }
 
@@ -232,12 +237,12 @@ fn handle_goto_definition(
     id: RequestId,
     params: GotoDefinitionParams,
 ) -> Result<GotoDefinitionResponse, Box<dyn Error + Send + Sync>> {
-    //eprintln!("Handling GotoDefinition: {:?}", params);
+    log!("Handling GotoDefinition: {:?}", params);
     Ok(GotoDefinitionResponse::Array(Vec::new()))
 }
 
 fn handle_hover(id: RequestId, params: HoverParams) -> Result<Hover, Box<dyn Error + Send + Sync>> {
-    //eprintln!("Handling Hover request: {:?}", params);
+    log!("Handling Hover request: {:?}", params);
     Ok(Hover {
         contents: HoverContents::Scalar(MarkedString::String("Hover info".to_string())),
         range: None,
