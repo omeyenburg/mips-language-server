@@ -7,7 +7,8 @@ use streaming_iterator::StreamingIterator;
 use tracing::info;
 
 use lsp_server::{
-    Connection, ErrorCode, ExtractError, Message, Request, RequestId, Response, ResponseError,
+    Connection, ErrorCode, ExtractError, Message, Notification, Request, RequestId, Response,
+    ResponseError,
 };
 use lsp_types::*;
 
@@ -16,19 +17,19 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // eprintln!("...")
 
     // Set up log file
-    let log_file =
-        std::fs::File::create("/home/oskar/git/mips-language-server/lsp.log").expect("Create file");
-    let log_file = std::io::BufWriter::new(log_file);
-    let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
-    let subscriber = tracing_subscriber::fmt()
-        .with_max_level(tracing::level_filters::LevelFilter::DEBUG)
-        .with_writer(non_blocking)
-        .without_time() // Compact log messages
-        .with_level(false)
-        .with_target(false)
-        .finish();
-    tracing::subscriber::set_global_default(subscriber).expect("Could not set default subscriber");
-    info!("starting generic LSP server");
+    //let log_file =
+    //    std::fs::File::create("/home/oskar/git/mips-language-server/lsp.log").expect("Create file");
+    //let log_file = std::io::BufWriter::new(log_file);
+    //let (non_blocking, _guard) = tracing_appender::non_blocking(log_file);
+    //let subscriber = tracing_subscriber::fmt()
+    //    .with_max_level(tracing::level_filters::LevelFilter::DEBUG)
+    //    .with_writer(non_blocking)
+    //    .without_time() // Compact log messages
+    //    .with_level(false)
+    //    .with_target(false)
+    //    .finish();
+    //tracing::subscriber::set_global_default(subscriber).expect("Could not set default subscriber");
+    eprintln!("starting generic LSP server");
 
     // Create the transport. Includes the stdio (stdin and stdout) versions but this could
     // also be implemented to use sockets or HTTP.
@@ -76,7 +77,7 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     io_threads.join()?;
 
     // Shut down gracefully.
-    info!("shutting down server");
+    eprintln!("shutting down server");
     Ok(())
 }
 
@@ -91,7 +92,6 @@ fn main_loop(
                 if connection.handle_shutdown(&req)? {
                     return Ok(());
                 }
-                info!("Got request: {:?}", req);
 
                 match req.method.as_str() {
                     "textDocument/definition" => {
@@ -108,14 +108,26 @@ fn main_loop(
                             handle_hover,
                         );
                     }
-                    _ => info!("Unimplemented request: {}", req.method),
+                    _ => eprintln!("Unimplemented request: {}", req.method),
                 }
             }
-            Message::Response(resp) => {
-                info!("Got response: {:?}", resp);
+            Message::Response(res) => {
+                eprintln!("Got response: {:?}", res);
             }
             Message::Notification(not) => {
-                info!("Got notification: {:?}", not);
+                eprintln!("Got notification: {:?}", not);
+                match not.method.as_str() {
+                    "textDocument/didChange" => {
+                        handle_notification::<notification::DidChangeTextDocument, _, _>(
+                            &not,
+                            handle_notification_document_change,
+                        )
+                    }
+                    "textDocument/didOpen" => (),
+                    "textDocument/didSave" => (),
+                    "workspace/didChangeConfiguration" => (),
+                    &_ => todo!(),
+                }
             }
         }
     }
@@ -130,7 +142,7 @@ where
     F: FnOnce(RequestId, R::Params) -> Result<T, Box<dyn Error + Send + Sync>>,
 {
     let Ok((id, params)) = req.clone().extract(R::METHOD) else {
-        info!("Failed to extract request.");
+        eprintln!("Failed to extract request.");
         send_response::<T>(
             &req.id,
             connection,
@@ -141,12 +153,34 @@ where
     };
 
     let Ok(result) = handler(id.clone(), params) else {
-        info!("Failed to execute request.");
+        eprintln!("Failed to execute request.");
         send_response::<T>(&id, connection, None, Some("Failed to execute request."));
         return;
     };
 
     send_response::<T>(&id, connection, Some(result), None)
+}
+
+fn handle_notification<R, T, F>(notification: &Notification, handler: F)
+where
+    R: lsp_types::notification::Notification,
+    R::Params: serde::de::DeserializeOwned,
+    T: serde::Serialize,
+    F: FnOnce(R::Params) -> Result<T, Box<dyn Error + Send + Sync>>,
+{
+    let Ok(params) = notification.clone().extract(R::METHOD) else {
+        eprintln!("Failed to extract notification.");
+        return;
+    };
+
+    handler(params);
+}
+
+fn handle_notification_document_change(
+    params: DidChangeTextDocumentParams,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    eprintln!("Handle doc change");
+    Ok(())
 }
 
 fn send_response<T: serde::Serialize>(
@@ -190,7 +224,7 @@ fn send_response<T: serde::Serialize>(
         result,
         error,
     })) {
-        info!("Failed to send response: {err}");
+        eprintln!("Failed to send response: {err}");
     }
 }
 
@@ -198,12 +232,12 @@ fn handle_goto_definition(
     id: RequestId,
     params: GotoDefinitionParams,
 ) -> Result<GotoDefinitionResponse, Box<dyn Error + Send + Sync>> {
-    info!("Handling GotoDefinition: {:?}", params);
+    //eprintln!("Handling GotoDefinition: {:?}", params);
     Ok(GotoDefinitionResponse::Array(Vec::new()))
 }
 
 fn handle_hover(id: RequestId, params: HoverParams) -> Result<Hover, Box<dyn Error + Send + Sync>> {
-    info!("Handling Hover request: {:?}", params);
+    //eprintln!("Handling Hover request: {:?}", params);
     Ok(Hover {
         contents: HoverContents::Scalar(MarkedString::String("Hover info".to_string())),
         range: None,
