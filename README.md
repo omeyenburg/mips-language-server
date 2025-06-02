@@ -1,6 +1,6 @@
 # mips-language-server
 A fast language server for the MIPS Instruction Set.
-Written in Rust with tower-lsp and Tree-sitter.
+Written in Rust with tower-lsp (async) / lsp-server (sync) and tree-sitter.
 This language server is specific to the 32 bit instruction set
 
 ## ⚡️ Features
@@ -16,6 +16,10 @@ This language server is specific to the 32 bit instruction set
 - Documentation
 - Possibly macros (like in Mars)
 - 64-bit instruction set
+
+## Building from source
+Rust is required.
+Run `cargo build --features "async"` (or with `--features "sync"`)
 
 ## 📈 Testing
 This was mostly tested with the latest neovim release together with the plugins lsp-config, nvim-cmp and blink.nvim.

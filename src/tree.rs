@@ -1,8 +1,6 @@
-//use tower_lsp::lsp_types::Position;
-use tracing::info;
-use tree_sitter::*;
-
 use lsp_types::Position;
+//use tower_lsp::lsp_types::Position;
+use tree_sitter::*;
 
 pub fn create_parser() -> Parser {
     let mut parser = tree_sitter::Parser::new();
