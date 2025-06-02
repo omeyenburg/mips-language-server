@@ -2,13 +2,11 @@ use crate::json::Directives;
 use crate::json::Instructions;
 use crate::tree;
 use crate::types;
+
 //use tower_lsp::lsp_types::*;
-use tracing::info;
-use tree_sitter::{Node, Query, QueryCursor};
-
 use lsp_types::*;
-
 use streaming_iterator::StreamingIterator;
+use tree_sitter::{Node, Query, QueryCursor};
 
 fn add_diagnostic(
     diagnostics: &mut Vec<Diagnostic>,
@@ -152,7 +150,7 @@ pub fn parse_instructions(
             for child in node.children(&mut cursor) {
                 if child.kind() == "opcode" {
                     instruction_name = &text[child.start_byte()..child.end_byte()];
-                    info!("inst:{}!", instruction_name);
+                    log!("inst:{}!", instruction_name);
                     if !instructions.contains_key(instruction_name) {
                         let start = tree::point_to_position(&node.start_position());
                         let end = tree::point_to_position(&node.end_position());
@@ -190,7 +188,7 @@ pub fn parse_labels(diagnostics: &mut Vec<Diagnostic>, document: &types::Documen
             let label_text = &text[node.start_byte()..node.end_byte()];
 
             if label_texts.contains(label_text) {
-                info!("Duplicate label! {}", label_text);
+                log!("Duplicate label! {}", label_text);
                 let start = tree::point_to_position(&node.start_position());
                 let end = tree::point_to_position(&node.end_position());
                 add_diagnostic(
