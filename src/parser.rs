@@ -1,12 +1,11 @@
-use crate::json::Directives;
-use crate::json::Instructions;
-use crate::tree;
-use crate::types;
+use streaming_iterator::StreamingIterator;
 use tower_lsp::lsp_types::*;
-use tracing::info;
 use tree_sitter::{Node, Query, QueryCursor};
 
-use streaming_iterator::StreamingIterator;
+use crate::json::Directives;
+use crate::json::Instructions;
+use crate::lsp::Document;
+use crate::tree;
 
 fn add_diagnostic(
     diagnostics: &mut Vec<Diagnostic>,
@@ -31,10 +30,10 @@ fn add_diagnostic(
 
 pub fn parse_directives(
     diagnostics: &mut Vec<Diagnostic>,
-    document: &types::Document,
+    document: &Document,
     directives: &Directives,
 ) {
-    let types::Document { tree, text } = document;
+    let Document { tree, text } = document;
 
     // Generate query to find directives
     let query = Query::new(&tree_sitter_mips::language(), r#"(meta) @meta"#)
@@ -124,10 +123,10 @@ pub fn parse_directives(
 
 pub fn parse_instructions(
     diagnostics: &mut Vec<Diagnostic>,
-    document: &types::Document,
+    document: &Document,
     instructions: &Instructions,
 ) {
-    let types::Document { tree, text } = document;
+    let Document { tree, text } = document;
 
     // Generate query to find instructions
     let query = Query::new(
@@ -150,7 +149,7 @@ pub fn parse_instructions(
             for child in node.children(&mut cursor) {
                 if child.kind() == "opcode" {
                     instruction_name = &text[child.start_byte()..child.end_byte()];
-                    info!("inst:{}!", instruction_name);
+                    log!("inst:{}!", instruction_name);
                     if !instructions.contains_key(instruction_name) {
                         let start = tree::point_to_position(&node.start_position());
                         let end = tree::point_to_position(&node.end_position());
@@ -167,8 +166,8 @@ pub fn parse_instructions(
     }
 }
 
-pub fn parse_labels(diagnostics: &mut Vec<Diagnostic>, document: &types::Document) {
-    let types::Document { tree, text } = document;
+pub fn parse_labels(diagnostics: &mut Vec<Diagnostic>, document: &Document) {
+    let Document { tree, text } = document;
 
     // Generate query to find labels
     let query = Query::new(&tree_sitter_mips::language(), r#"(label) @label"#)
@@ -188,7 +187,7 @@ pub fn parse_labels(diagnostics: &mut Vec<Diagnostic>, document: &types::Documen
             let label_text = &text[node.start_byte()..node.end_byte()];
 
             if label_texts.contains(label_text) {
-                info!("Duplicate label! {}", label_text);
+                log!("Duplicate label! {}", label_text);
                 let start = tree::point_to_position(&node.start_position());
                 let end = tree::point_to_position(&node.end_position());
                 add_diagnostic(

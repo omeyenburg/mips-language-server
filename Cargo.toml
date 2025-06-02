@@ -4,22 +4,31 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dashmap = "6.1.0"
-tokio = { version = "1.42.0", features = ["full"] }
-tower-lsp = "0.20.0"
-tree-sitter = "0.24.3"
 streaming-iterator = "0.1.9"
+
+## LSP Utilities
+lsp-types = "0.97.0"
+tower-lsp = { version = "0.20.0", default-features = true }
+
+## Async
+dashmap = { version = "6.1.0" }
+tokio = { version = "1.42.0", features = ["full"] }
 
 ## Json
 serde = "1.0.216"
 serde_json = "1.0.134"
 
-## Debugging
-tracing = "0.1.41"
-tracing-appender = "0.2.3"
-tracing-subscriber = "0.3.19"
+## Logging
+tracing = { version = "0.1.41", optional = true }
+tracing-appender = { version = "0.2.3", optional = true }
+tracing-subscriber = { version = "0.3.19", optional = true }
 
-## Tree-sitter Grammar
+## Tree-sitter
+tree-sitter = "0.25.1"
 # tree-sitter-asm = "0.22.6"
 # tree-sitter-mips = { git = "https://github.com/omeyenburg/tree-sitter-mips", rev = "51993537719e91619c8b6514dac1ed42fcef18be" }
 tree-sitter-mips = { path = "/home/oskar/git/tree-sitter-mips/" }
+
+[features]
+default = []
+log-file = ["dep:tracing", "dep:tracing-appender", "dep:tracing-subscriber"]
