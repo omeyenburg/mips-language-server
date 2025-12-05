@@ -10,13 +10,9 @@
   in {
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
-        # rust-analyzer
-        # cargo
-        # clippy
-        # rustfmt
-        # rustc
         rustup
       ];
+
       shellHook = ''
         export SHELL=${pkgs.bashInteractive}/bin/bash
       '';
