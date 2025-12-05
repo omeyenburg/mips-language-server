@@ -25,9 +25,7 @@ tracing-subscriber = { version = "0.3.19", optional = true }
 
 ## Tree-sitter
 tree-sitter = "0.25.1"
-# tree-sitter-asm = "0.22.6"
-# tree-sitter-mips = { git = "https://github.com/omeyenburg/tree-sitter-mips", rev = "51993537719e91619c8b6514dac1ed42fcef18be" }
-tree-sitter-mips = { path = "/home/oskar/git/tree-sitter-mips/" }
+tree-sitter-mips = "0.3.0"
 
 [features]
 default = []
