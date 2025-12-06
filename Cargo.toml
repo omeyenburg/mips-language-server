@@ -7,8 +7,7 @@ edition = "2021"
 streaming-iterator = "0.1.9"
 
 ## LSP Utilities
-lsp-types = "0.97.0"
-tower-lsp = { version = "0.20.0", default-features = true }
+tower-lsp-server = { version = "0.22.1", default-features = true }
 
 ## Async
 dashmap = { version = "6.1.0" }

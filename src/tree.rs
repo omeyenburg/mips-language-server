@@ -1,4 +1,4 @@
-use tower_lsp::lsp_types::Position;
+use tower_lsp_server::lsp_types::Position;
 use tree_sitter::{Parser, Point};
 
 pub fn create_parser() -> Parser {

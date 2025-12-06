@@ -4,4 +4,4 @@ pub struct Document {
     pub tree: tree_sitter::Tree,
 }
 
-pub type Documents = dashmap::DashMap<tower_lsp::lsp_types::Url, Document>;
+pub type Documents = dashmap::DashMap<tower_lsp_server::lsp_types::Uri, Document>;

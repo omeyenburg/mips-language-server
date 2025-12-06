@@ -1,7 +1,7 @@
 use serde::de::value;
-use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
-use tower_lsp::{Client, LanguageServer, LspService, Server};
+use tower_lsp_server::jsonrpc;
+use tower_lsp_server::lsp_types::*;
+use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
 use crate::json;
@@ -28,9 +28,8 @@ struct Backend {
     registers: json::Registers,
 }
 
-#[tower_lsp::async_trait]
 impl LanguageServer for Backend {
-    async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
+    async fn initialize(&self, params: InitializeParams) -> jsonrpc::Result<InitializeResult> {
         if let Some(options) = params.initialization_options {
             log!("Received initialization options:");
             log!("{}", options);
@@ -105,7 +104,7 @@ impl LanguageServer for Backend {
         log!("Server initialized");
     }
 
-    async fn shutdown(&self) -> Result<()> {
+    async fn shutdown(&self) -> jsonrpc::Result<()> {
         Ok(())
     }
 
@@ -123,8 +122,7 @@ impl LanguageServer for Backend {
             params
                 .text_document
                 .uri
-                .to_file_path()
-                .expect("expected file")
+                .path() // might panic - dont call in prod
         );
 
         let TextDocumentItem { uri, text, .. } = params.text_document;
@@ -132,7 +130,7 @@ impl LanguageServer for Backend {
         // Generate tree using tree-sitter
         let tree = tree::create_parser()
             .parse(text.as_bytes(), None)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .ok_or(jsonrpc::Error::invalid_request())
             .expect("Expected new tree");
 
         // Store document text and tree
@@ -221,7 +219,7 @@ impl LanguageServer for Backend {
             .await;
     }
 
-    async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
+    async fn completion(&self, params: CompletionParams) -> jsonrpc::Result<Option<CompletionResponse>> {
         let line = params.text_document_position.position.line;
         let character = params.text_document_position.position.character;
 
@@ -229,14 +227,14 @@ impl LanguageServer for Backend {
         let document = self
             .documents
             .get(&params.text_document_position.text_document.uri.into())
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+            .ok_or(jsonrpc::Error::invalid_request())?;
         let text = &document.text;
 
         // Split the text into lines and retrieve the specific line
         let line_content = text
             .lines()
             .nth(line as usize)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+            .ok_or(jsonrpc::Error::invalid_request())?;
 
         // Find starting character of word that should be completed
         // Looks for '.' and '$' and returns ' ' if no match is found
@@ -409,14 +407,14 @@ impl LanguageServer for Backend {
 
         // Return the completion items
         Ok(Some(CompletionResponse::List(
-            tower_lsp::lsp_types::CompletionList {
+            tower_lsp_server::lsp_types::CompletionList {
                 is_incomplete: false,
                 items,
             },
         )))
     }
 
-    async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
+    async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
         // Unpack position and text_document
         let TextDocumentPositionParams {
             position,
@@ -427,7 +425,7 @@ impl LanguageServer for Backend {
         let document = self
             .documents
             .get(&text_document.uri)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+            .ok_or(jsonrpc::Error::invalid_request())?;
         let text = &document.text;
         let tree = document.tree.clone();
 
@@ -436,7 +434,7 @@ impl LanguageServer for Backend {
         let cursor_node = tree
             .root_node()
             .descendant_for_point_range(point, point)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+            .ok_or(jsonrpc::Error::invalid_request())?;
 
         // Get label kind and text
         let kind = cursor_node.kind();
@@ -502,7 +500,7 @@ impl LanguageServer for Backend {
     async fn goto_definition(
         &self,
         params: GotoDefinitionParams,
-    ) -> Result<Option<GotoDefinitionResponse>> {
+    ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {
         // Goto definition: searches for word below cursor among all labels
 
         // Unpack position and text_document
@@ -515,7 +513,7 @@ impl LanguageServer for Backend {
         let document = self
             .documents
             .get(&text_document.uri)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?;
+            .ok_or(jsonrpc::Error::invalid_request())?;
         let text = &document.text;
         let tree = &document.tree;
 
@@ -524,7 +522,7 @@ impl LanguageServer for Backend {
         let cursor_label_name = tree
             .root_node()
             .descendant_for_point_range(point, point)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())?
+            .ok_or(jsonrpc::Error::invalid_request())?
             .utf8_text(text.as_bytes())
             .unwrap_or_default();
 
@@ -558,7 +556,7 @@ impl LanguageServer for Backend {
         Ok(None)
     }
 
-    async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
+    async fn inlay_hint(&self, params: InlayHintParams) -> jsonrpc::Result<Option<Vec<InlayHint>>> {
         Ok(Some(vec![InlayHint {
             position: Position {
                 line: 3,
@@ -577,7 +575,7 @@ impl LanguageServer for Backend {
     async fn diagnostic(
         &self,
         params: DocumentDiagnosticParams,
-    ) -> Result<DocumentDiagnosticReportResult> {
+    ) -> jsonrpc::Result<DocumentDiagnosticReportResult> {
         Ok(DocumentDiagnosticReportResult::Report(
             DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
                 full_document_diagnostic_report: FullDocumentDiagnosticReport {
@@ -606,7 +604,7 @@ impl Backend {
         }
     }
 
-    fn parse(&self, uri: &Url) -> Vec<Diagnostic> {
+    fn parse(&self, uri: &Uri) -> Vec<Diagnostic> {
         /* Parse the document
 
         // NOT INCREMENTALLY: this would be very difficult and compared to its advantages in mips assembly files.
@@ -640,7 +638,7 @@ impl Backend {
         let document = &self
             .documents
             .get(uri)
-            .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
+            .ok_or(jsonrpc::Error::invalid_request())
             .unwrap();
 
         // parser::parse_directives(&mut diagnostics, document, &self.directives);

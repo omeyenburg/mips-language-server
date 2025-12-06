@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use streaming_iterator::StreamingIterator;
-use tower_lsp::lsp_types::*;
+use tower_lsp_server::lsp_types::*;
 use tree_sitter::{Node, Query, QueryCursor, TreeCursor};
 
 use crate::json::Directives;
