@@ -3,7 +3,7 @@ use tree_sitter::{Parser, Point};
 
 pub fn create_parser() -> Parser {
     let mut parser = tree_sitter::Parser::new();
-    parser.set_language(&tree_sitter_mips::language()).unwrap();
+    parser.set_language(&tree_sitter_mips::LANGUAGE.into()).unwrap();
     parser
 }
 

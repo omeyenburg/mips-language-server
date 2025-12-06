@@ -1,7 +1,7 @@
 # mips-language-server
 A fast language server for the MIPS Instruction Set.
 Written in Rust with tower-lsp and Tree-sitter.
-This language server is specific to the 32 bit instruction set
+This language server is specific to the 32 bit instruction set.
 
 ## ⚡️ Features
 - General completions for instructions, registers and directives

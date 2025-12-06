@@ -62,7 +62,7 @@ impl LanguageServer for Backend {
                 text_document_sync: Some(TextDocumentSyncCapability::Options(
                     TextDocumentSyncOptions {
                         open_close: Some(true),
-                        //change: Some(TextDocumentSyncKind::FULL),
+                        // change: Some(TextDocumentSyncKind::FULL),
                         change: Some(TextDocumentSyncKind::INCREMENTAL),
                         save: Some(TextDocumentSyncSaveOptions::SaveOptions(SaveOptions {
                             include_text: Some(true),
@@ -136,8 +136,7 @@ impl LanguageServer for Backend {
             .expect("Expected new tree");
 
         // Store document text and tree
-        self.documents
-            .insert(uri.clone(), Document { text, tree });
+        self.documents.insert(uri.clone(), Document { text, tree });
 
         // Parse the document and generate diagnostics
         let diagnostics = self.parse(&uri);
@@ -530,7 +529,7 @@ impl LanguageServer for Backend {
             .unwrap_or_default();
 
         // Generate query to find labels
-        let query = Query::new(&tree_sitter_mips::language(), r#"(label) @label"#)
+        let query = Query::new(&tree_sitter_mips::LANGUAGE.into(), r#"(label) @label"#)
             .expect("Error compiling query");
 
         // Execute the query
@@ -558,6 +557,37 @@ impl LanguageServer for Backend {
         // Return None; no definition found
         Ok(None)
     }
+
+    async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
+        Ok(Some(vec![InlayHint {
+            position: Position {
+                line: 3,
+                character: 3,
+            },
+            label: InlayHintLabel::String(String::from("Test")),
+            kind: Some(InlayHintKind::PARAMETER),
+            text_edits: None,
+            tooltip: None,
+            padding_left: Some(true),
+            padding_right: Some(true),
+            data: None,
+        }]))
+    }
+
+    async fn diagnostic(
+        &self,
+        params: DocumentDiagnosticParams,
+    ) -> Result<DocumentDiagnosticReportResult> {
+        Ok(DocumentDiagnosticReportResult::Report(
+            DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    items: vec![],
+                    result_id: None,
+                },
+                related_documents: None,
+            }),
+        ))
+    }
 }
 
 impl Backend {
@@ -577,7 +607,9 @@ impl Backend {
     }
 
     fn parse(&self, uri: &Url) -> Vec<Diagnostic> {
-        /* Parse the document (for now not incrementally)
+        /* Parse the document
+
+        // NOT INCREMENTALLY: this would be very difficult and compared to its advantages in mips assembly files.
 
         value types:
         [register]: $t0, $s1, $a0, $v0
@@ -611,9 +643,11 @@ impl Backend {
             .ok_or(tower_lsp::jsonrpc::Error::invalid_request())
             .unwrap();
 
-        parser::parse_directives(&mut diagnostics, document, &self.directives);
-        parser::parse_instructions(&mut diagnostics, document, &self.instructions);
-        parser::parse_labels(&mut diagnostics, document);
+        // parser::parse_directives(&mut diagnostics, document, &self.directives);
+        // parser::parse_instructions(&mut diagnostics, document, &self.instructions);
+        // parser::parse_labels(&mut diagnostics, document);
+
+        parser::parse(&mut diagnostics, document);
 
         diagnostics
     }
