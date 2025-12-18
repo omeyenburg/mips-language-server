@@ -1,6 +1,8 @@
 # mips-language-server
 
-A fast language server for the MIPS Instruction Set Architecture. Currently only supporting the 32 bit instruction set.
+A fast language server for the MIPS32/MIPS64 Instruction Set Architecture.
+
+Supported assemblers: GAS, MARS, SPIM
 
 Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/tower-lsp-server) and [tree-sitter](https://github.com/tree-sitter/tree-sitter).
 
@@ -24,6 +26,6 @@ This was mostly tested with the latest neovim release together with the plugins 
 Further testing in different environments is highly appreciated.
 
 ## Further reading
-- https://www.cs.cornell.edu/courses/cs3410/2008fa/MIPS_Vol2.pdf
-- http://www.cs.unibo.it/~solmi/teaching/arch_2002-2003/AssemblyLanguageProgDoc.pdf
-- https://en.wikibooks.org/wiki/MIPS_Assembly/Instruction_Formats
+- MIPS64 VolII: https://www.cipunited.com/xlx/files/document/202008/1205490289250.pdf
+- MIPS Assembly/Instruction Formats: https://en.wikibooks.org/wiki/MIPS_Assembly/Instruction_Formats
+- Assembly Language Programmer’s Guide: http://www.cs.unibo.it/~solmi/teaching/arch_2002-2003/AssemblyLanguageProgDoc.pdf
