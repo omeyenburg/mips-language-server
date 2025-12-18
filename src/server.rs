@@ -123,7 +123,7 @@ impl LanguageServer for Backend {
         &self,
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
-        completion::completion(self, params)
+        completion::get_completions(self, params)
     }
 
     async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
@@ -142,7 +142,7 @@ impl LanguageServer for Backend {
         log!("workspace/didChangeConfiguration");
 
         let settings = params.settings;
-        log!("nopts {}", settings);
+        log!("options {}", settings);
     }
 
     async fn diagnostic(
@@ -278,63 +278,6 @@ impl Backend {
             // registers,
         }
     }
-
-    // /**
-    //  * Returns a long description of an instruction as a String.
-    //  * Prepends a short description with the instruction format.
-    //  */
-    // fn long_instruction_docs(&self, opcode: String, instruction: &instruction::Instruction) -> String {
-    //     let instruction_format = &instruction.format;
-    //     format!(
-    //         "{}: `{}`\n---\n{}",
-    //         if instruction_format.is_empty() {
-    //             "Pseudo Instruction".to_string()
-    //         } else {
-    //             format!("{} Format Instruction", instruction_format)
-    //         },
-    //         opcode,
-    //         self.short_instruction_docs(opcode.as_str(), instruction)
-    //     )
-    // }
-
-    // /**
-    //  * Returns a short description of an instruction as a String.
-    //  */
-    // fn short_instruction_docs(&self, opcode: &str, instruction: &instruction::Instruction) -> String {
-    //     let native_instruction = !instruction.native.is_empty();
-    //     let pseudo_instruction = !instruction.pseudo.is_empty();
-
-    //     let mut docs = "".to_string();
-
-    //     if native_instruction {
-    //         for variant in &instruction.native {
-    //             docs = format!(
-    //                 "{}\n{}\n```asm\n{} {}\n```\n",
-    //                 docs,
-    //                 variant.description,
-    //                 opcode,
-    //                 variant.operands.join(", "),
-    //             );
-    //         }
-    //     }
-
-    //     if pseudo_instruction {
-    //         if native_instruction {
-    //             docs = format!("{}\n---\n**Pseudo Instruction Alternative**\n&nbsp;", docs);
-    //         }
-
-    //         for variant in &instruction.pseudo {
-    //             docs = format!(
-    //                 "{}\n{}\n```asm\n{} {}\n```",
-    //                 docs,
-    //                 variant.description,
-    //                 opcode,
-    //                 variant.operands.join(", "),
-    //             );
-    //         }
-    //     }
-    //     docs
-    // }
 }
 
 pub async fn serve() {

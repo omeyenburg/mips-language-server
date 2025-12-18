@@ -1,7 +1,7 @@
 use crate::lang::{Dialect, ISA};
 use crate::settings::{Settings, SettingsError};
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
+use std::fmt::{format, Debug};
 use std::{any, collections::HashMap, collections::HashSet};
 
 use crate::version::{Version, VersionLabel};
@@ -52,7 +52,7 @@ impl TryFrom<RawInstructionVariant> for InstructionVariant {
 #[derive(Debug)]
 pub struct Instruction {
     pub variants: Vec<InstructionVariant>,
-    pub info: String,
+    pub description: String,
 }
 
 pub type RawInstructions = HashMap<String, Vec<RawInstructionVariant>>;
@@ -63,8 +63,8 @@ pub type Instructions = HashMap<String, Instruction>;
  */
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RawDirective {
-    pub description: String,
     pub dialects: Vec<String>,
+    pub description: String,
 }
 
 impl TryFrom<RawDirective> for Directive {
@@ -177,7 +177,7 @@ fn process_instructions(
 
             let info = build_instruction_hover_info(&mnemonic, &variants, settings);
 
-            Some((mnemonic, Instruction { variants, info }))
+            Some((mnemonic, Instruction { variants, description: info }))
         })
         .collect();
 
@@ -194,7 +194,6 @@ fn process_directives(
             let d = match Directive::try_from(raw_directive) {
                 Ok(d) => d,
                 Err(_) => {
-                    log!("fuck that");
                     return None;
                 }
             };
@@ -221,21 +220,26 @@ fn build_instruction_hover_info(
     variants: &[InstructionVariant],
     settings: &Settings,
 ) -> String {
-    let mut info = String::new();
-    let mut pseudo = String::new();
 
+    let mut info = format!("{}\n", mnemonic);
+
+    let mut real = String::from("### Variants:\n");
+    let mut pseudo  = String::from("### Pseudo Variants:\n");
+
+    let mut has_real = false;
     let mut has_pseudo = false;
     for v in variants {
         let part = if v.pseudo {
             has_pseudo = true;
             &mut pseudo
         } else {
-            &mut info
+            has_real = true;
+            &mut real
         };
 
         part.push_str(
             format!(
-                "{} {}\n{}\nIntroduced: {:?}; ",
+                "```asm\n{} {}\n```\n{}\nIntroduced: {:?}; ",
                 mnemonic,
                 &v.operands.join(", ").as_str(),
                 &v.description,
@@ -259,9 +263,15 @@ fn build_instruction_hover_info(
         );
     }
 
-    if has_pseudo {
-        info.push_str("# Pseudo Variants:");
+    if has_real {
+        info.push_str(&real);
+    }
+
+    if has_pseudo && has_pseudo {
         info.push('\n');
+    }
+
+    if has_pseudo {
         info.push_str(&pseudo);
     }
 

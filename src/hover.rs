@@ -38,16 +38,8 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
     let kind = cursor_node.kind();
     let cursor_node_text = cursor_node.utf8_text(text.as_bytes()).unwrap_or_default();
 
-    log!(
-        "-{}- :{}:{}:",
-        kind,
-        cursor_node_text,
-        cursor_node_text.to_string()[1..].to_string().as_str()
-    );
-
     match kind {
         "opcode" => {
-            log!("its a opcode");
             if let Some(instruction) = backend
                 .definitions
                 .wait()
@@ -56,15 +48,13 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
             {
                 return Ok(Some(Hover {
                     contents: HoverContents::Scalar(MarkedString::String(
-                        instruction.info.to_string(),
+                        instruction.description.to_string(),
                     )),
                     range: None,
                 }));
             }
         }
         "marco_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
-            log!("{:?},", backend.definitions.wait().directives);
-            log!("its a mno");
             if let Some(directive) = backend
                 .definitions
                 .wait()
@@ -80,7 +70,6 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
             }
         }
         "register" => {
-            log!("its a reg");
             if let Some(register) = backend
                 .definitions
                 .wait()
@@ -121,9 +110,7 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
                 }));
             }
         }
-        _ => {
-            log!("else");
-        }
+        _ => (),
     }
 
     Ok(None)

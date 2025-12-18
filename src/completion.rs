@@ -1,214 +1,221 @@
+use std::collections::HashMap;
+
 use serde::de::value;
 use tower_lsp_server::jsonrpc;
 use tower_lsp_server::lsp_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
+use crate::language_definitions::LanguageDefinitions;
 use crate::language_definitions::{Directive, Instruction, Registers};
 use crate::lsp::{Document, Documents};
 use crate::server::Backend;
 
-pub fn completion(
+pub fn get_completions(
     backend: &Backend,
     params: CompletionParams,
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
-    let line = params.text_document_position.position.line;
-    let character = params.text_document_position.position.character;
-
     // Retrieve current content and tree
     let document = backend
         .documents
         .get(&params.text_document_position.text_document.uri.into())
         .ok_or(jsonrpc::Error::invalid_request())?;
-    let text = &document.text;
+
+    let pos = params.text_document_position.position;
 
     // Split the text into lines and retrieve the specific line
-    let line_content = text
+    let line_content = &document
+        .text
         .lines()
-        .nth(line as usize)
+        .nth(pos.line as usize)
         .ok_or(jsonrpc::Error::invalid_request())?;
 
+    // TODO: prevent completion in comments / make completions depend on place in syntax tree
+
     // Find starting character of word that should be completed
-    // Looks for '.' and '$' and returns ' ' if no match is found
+    // We start at the cursor position on the line and move right to the
+    // beginning of the line until we hit some kind of separator:
+    // ' ', '\t', ',' (separating symbols), ':', ';' after statement, '/' after block comment
+    // The last seen char is saved. This might be '$', '.' or any other character.
     let mut starting_char = ' ';
-    let mut starting_index = 0;
-    for i in 0..character {
-        starting_index = character - i - 1;
-        if let Some(char) = line_content.chars().nth(starting_index as usize) {
+    let mut starting_index = pos.character;
+
+    while starting_index > 0 {
+        if let Some(char) = line_content.chars().nth((starting_index - 1) as usize) {
             match char {
-                '$' | '.' => starting_char = char,
-                ' ' => {
-                    // This is necessary to diffentiate from the loop
-                    // ending, because the beginning of the line is reached
-                    starting_index += 1;
-                    break;
-                }
-                _ => starting_char = ' ',
+                'a'..='z' | '0'..='9' | '.' | '$' => starting_char = char,
+                _ => break,
             }
         }
+
+        starting_index -= 1;
     }
+
+    let definitions: &LanguageDefinitions = backend.definitions.wait();
+
+    let range = Range {
+        start: Position {
+            line: pos.line,
+            character: starting_index,
+        },
+        end: pos,
+    };
 
     // Generate completion items
     // Split up in: directive, register and instruction
-    let items: Vec<CompletionItem> = match starting_char {
-        '.' => backend
-            .definitions
-            .wait()
-            .directives
-            .iter()
-            .map(|(mnemonic, directive)| {
-                let expansion = String::from(".") + mnemonic.as_str();
+    match starting_char {
+        '.' => complete_directive(definitions, range),
+        '$' => complete_register(
+            definitions,
+            range,
+            line_content,
+            pos.character,
+            starting_index,
+        ),
+        _ => complete_instruction(
+            definitions,
+            range,
+            line_content,
+            pos.character,
+            starting_index,
+        ),
+    }
+}
 
-                CompletionItem {
-                    label: expansion.clone(),
-                    kind: Some(CompletionItemKind::KEYWORD),
-                    detail: Some(format!("MIPS directive: .{}", mnemonic)),
-                    label_details: Some(CompletionItemLabelDetails {
-                        detail: None,
-                        description: Some("directive".to_string()),
-                    }),
-                    documentation: Some(Documentation::MarkupContent(MarkupContent {
-                        kind: MarkupKind::Markdown,
-                        value: directive.description.to_string(),
-                    })),
-                    text_edit: Some(CompletionTextEdit::Edit(TextEdit {
-                        range: Range {
-                            start: Position {
-                                line,
-                                character: starting_index,
-                            },
-                            end: Position { line, character },
-                        },
-                        new_text: expansion,
-                    })),
-                    ..Default::default()
-                }
-            })
-            .collect(),
-
-        '$' => {
-            let mut registers_common_float = backend.definitions.wait().registers.common.clone();
-
-            let registers = if character - starting_index == 1 {
-                // Return common & float
-                for (key, value) in &backend.definitions.wait().registers.float {
-                    registers_common_float.insert(key.to_string(), value.to_string());
-                }
-                &registers_common_float
-            } else if let Some(char) = line_content.chars().nth(starting_index as usize + 1) {
-                // Check context
-                match char {
-                    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
-                        &backend.definitions.wait().registers.numeric
-                    }
-                    'f' => &backend.definitions.wait().registers.float,
-                    _ => &backend.definitions.wait().registers.common,
-                }
-            } else {
-                // Return common & float
-                for (key, value) in &backend.definitions.wait().registers.float {
-                    registers_common_float.insert(key.to_string(), value.to_string());
-                }
-                &registers_common_float
-            };
-
-            registers
-                .keys()
-                .map(|keyword| CompletionItem {
-                    label: keyword.to_string(),
-                    kind: Some(CompletionItemKind::VALUE),
-                    detail: Some(format!("MIPS register: {}", keyword)),
-                    label_details: Some(CompletionItemLabelDetails {
-                        detail: None,
-                        description: Some("register".to_string()),
-                    }),
-                    documentation: Some(Documentation::MarkupContent(MarkupContent {
-                        kind: MarkupKind::Markdown,
-                        value: registers.get(keyword).unwrap().to_string(),
-                    })),
-                    text_edit: Some(CompletionTextEdit::Edit(TextEdit {
-                        range: Range {
-                            start: Position {
-                                line,
-                                character: starting_index,
-                            },
-                            end: Position { line, character },
-                        },
-                        new_text: keyword.to_string(),
-                    })),
-                    ..Default::default()
-                })
-                .collect()
-        }
-
-        _ => {
-            let good_named_func = |mnemonic: &String, instruction: &Instruction| CompletionItem {
-                label: mnemonic.to_string(),
-                kind: Some(CompletionItemKind::KEYWORD),
-                detail: Some(format!("MIPS instruction: {}", mnemonic)),
-                label_details: Some(CompletionItemLabelDetails {
-                    detail: None,
-                    description: Some("instruction".to_string()),
-                }),
-                documentation: Some(Documentation::MarkupContent(MarkupContent {
-                    kind: MarkupKind::Markdown,
-                    // value: backend.short_instruction_docs(
-                    //     keyword,
-                    //     backend.instructions.get(keyword).unwrap(),
-                    // ),
-                    value: instruction.info.to_string(),
-                })),
-                text_edit: Some(CompletionTextEdit::Edit(TextEdit {
-                    range: Range {
-                        start: Position {
-                            line,
-                            character: starting_index,
-                        },
-                        end: Position { line, character },
-                    },
-                    new_text: mnemonic.to_string(),
-                })),
-                ..Default::default()
-            };
-
-            // Completion is buggy when there is a dot.
-            // This should filter instruction completions.
-            if let Some(dot_position) = line_content[..character as usize].rfind(".") {
-                let prefix = &line_content[starting_index as usize..character as usize];
-                backend
-                    .definitions
-                    .wait()
-                    .instructions
-                    .iter()
-                    .filter_map(|(mnemonic, instruction)| {
-                        if mnemonic.starts_with(prefix) {
-                            Some(good_named_func(
-                                &(prefix.to_owned()
-                                    + &mnemonic[character as usize - starting_index as usize..]),
-                                instruction,
-                            ))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect()
-            } else {
-                backend
-                    .definitions
-                    .wait()
-                    .instructions
-                    .iter()
-                    .map(|(mnemonic, instruction)| good_named_func(&mnemonic, instruction))
-                    .collect()
-            }
-        }
-    };
-
-    // Return the completion items
+fn completion_response(
+    items: Vec<CompletionItem>,
+    is_complete: bool,
+) -> jsonrpc::Result<Option<CompletionResponse>> {
     Ok(Some(CompletionResponse::List(
         tower_lsp_server::lsp_types::CompletionList {
-            is_incomplete: false,
             items,
+            is_incomplete: !is_complete,
         },
     )))
+}
+
+fn completion_item(
+    detail: String,
+    completion_type: String,
+    documentation: String,
+    kind: CompletionItemKind,
+    expansion: String,
+    range: Range,
+) -> CompletionItem {
+    CompletionItem {
+        label: expansion.clone(),
+        kind: Some(kind),
+        detail: Some(detail),
+        label_details: Some(CompletionItemLabelDetails {
+            detail: None,
+            description: Some(completion_type),
+        }),
+        documentation: Some(Documentation::MarkupContent(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: documentation,
+        })),
+        text_edit: Some(CompletionTextEdit::Edit(TextEdit {
+            range,
+            new_text: expansion,
+        })),
+        ..Default::default()
+    }
+}
+
+fn complete_directive(
+    definitions: &LanguageDefinitions,
+    range: Range,
+) -> jsonrpc::Result<Option<CompletionResponse>> {
+    let items = definitions
+        .directives
+        .iter()
+        .map(|(mnemonic, directive)| {
+            completion_item(
+                format!("MIPS directive: .{}", mnemonic),
+                "directive".to_string(),
+                directive.description.to_string(),
+                CompletionItemKind::KEYWORD,
+                String::from(".") + mnemonic.as_str(),
+                range,
+            )
+        })
+        .collect();
+
+    completion_response(items, true)
+}
+
+fn complete_register(
+    definitions: &LanguageDefinitions,
+    range: Range,
+    line_content: &str,
+    character: u32,
+    starting_index: u32,
+) -> jsonrpc::Result<Option<CompletionResponse>> {
+    let mut merged_registers;
+
+    // Offer different completion lists based on context
+    let registers = match line_content.chars().nth(starting_index as usize + 1) {
+        Some('$') | None => {
+            // Show float and common if char missing (unusual) or only $ was typed.
+            // Numeric versions would be annoying here and are skipped.
+            merged_registers = HashMap::new();
+            merged_registers.extend(definitions.registers.float.clone());
+            merged_registers.extend(definitions.registers.common.clone());
+            &merged_registers
+        }
+        Some('0'..='9') => &definitions.registers.numeric,
+        Some('f') => &definitions.registers.float,
+        Some(_) => &definitions.registers.common,
+    };
+
+    let items = registers
+        .iter()
+        .map(|(keyword, description)| {
+            completion_item(
+                format!("MIPS register: {}", keyword),
+                "register".to_string(),
+                description.to_string(),
+                CompletionItemKind::VALUE,
+                keyword.to_string(),
+                range,
+            )
+        })
+        .collect();
+
+    // Mark as incomplete, since we filtered by second character.
+    completion_response(items, false)
+}
+
+fn complete_instruction(
+    definitions: &LanguageDefinitions,
+    range: Range,
+    line_content: &str,
+    character: u32,
+    starting_index: u32,
+) -> jsonrpc::Result<Option<CompletionResponse>> {
+    // Editors/completion plugins often think that a dot is used for
+    // separation but in mips a dot is part of a instruction mnemonic.
+    // This filters instructions by the prefix up to the last typed dot.
+    let prefix = &line_content[starting_index as usize..character as usize];
+
+    let items = definitions
+        .instructions
+        .iter()
+        .filter_map(|(mnemonic, instruction)| {
+            if mnemonic.starts_with(prefix) {
+                Some(completion_item(
+                    format!("MIPS instruction: {}", mnemonic),
+                    "instruction".to_string(),
+                    instruction.description.to_string(),
+                    CompletionItemKind::KEYWORD,
+                    prefix.to_string() + &mnemonic[character as usize - starting_index as usize..],
+                    range,
+                ))
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    completion_response(items, true)
 }
