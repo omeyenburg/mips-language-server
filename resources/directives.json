@@ -1,22 +1,1006 @@
 {
-  ".data": "Subsequent items stored in Data segment at next available address",
-  ".text": "Subsequent items (instructions) stored in Text segment at next available address",
-  ".word": "Store the listed value(s) as 32 bit words on word boundary",
-  ".ascii": "Store the string in the Data segment but do not add null terminator",
-  ".asciiz": "Store the string in the Data segment and add null terminator",
-  ".byte": "Store the listed value(s) as 8 bit bytes",
-  ".align": "Align next data item on specified byte boundary.\n(0=byte, 1=half, 2=word: 3=double)",
-  ".half": "Store the listed value(s) as 16 bit halfwords on halfword boundary",
-  ".space": "Reserve the next specified number of bytes in Data segment",
-  ".double": "Store the listed value(s) as double precision floating point",
-  ".float": "Store the listed value(s) as single precision floating point",
-  ".extern": "Declare the listed label and byte length to be a global data field",
-  ".kdata": "Subsequent items stored in Kernel Data segment at next available address",
-  ".ktext": "Subsequent items (instructions) stored in Kernel Text segment at next available address",
-  ".globl": "Declare the listed label(s) as global to enable referencing from other files",
-  ".set": "Set assembler variables",
-  ".eqv": "Substitute second operand for first. First operand is symbol: Second operand is expression (like #define)",
-  ".macro": "Begin macro definition. See .end_macro",
-  ".end_macro": "End macro definition. See .macro",
-  ".include": "Insert the contents of the specified file"
+  "2byte": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 2-byte aligned data (short integer)"
+  },
+  "4byte": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 4-byte aligned data (word integer)"
+  },
+  "8byte": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 8-byte aligned data (double word integer)"
+  },
+  "abort": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Abort assembly with an error"
+  },
+  "alias": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Create an alias for a symbol"
+  },
+  "align": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Align next data item or instruction to specified byte boundary"
+  },
+  "altmacro": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Enable alternate macro syntax"
+  },
+  "ascii": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Store a string without null terminator"
+  },
+  "asciiz": {
+    "dialects": [
+      "mars",
+      "spim"
+    ],
+    "description": "Store a string with null terminator"
+  },
+  "asciz": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Store a string with null terminator"
+  },
+  "asm0": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Mark beginning of assembler-generated code block"
+  },
+  "balign": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align next data on byte boundary with padding"
+  },
+  "balignl": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align next data on longword boundary with padding"
+  },
+  "balignw": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align next data on word boundary with padding"
+  },
+  "base64": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define base64-encoded data"
+  },
+  "bgnb": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Mark beginning of non-breakable region (see .endb)"
+  },
+  "bundle_align_mode": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set bundle alignment mode"
+  },
+  "bundle_lock": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Lock bundle for alignment"
+  },
+  "bundle_unlock": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Unlock bundle for alignment"
+  },
+  "byte": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Allocate and initialize one or more bytes of data"
+  },
+  "comm": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Define a common symbol with specified size"
+  },
+  "common": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define a common symbol with specified size"
+  },
+  "data": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Begin data segment for initialized data declarations"
+  },
+  "dc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define constant data"
+  },
+  "dcb": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define block of constant data"
+  },
+  "debug": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define debug information"
+  },
+  "desc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Describe symbol"
+  },
+  "double": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Allocate and initialize 64-bit floating point value(s)"
+  },
+  "ds": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define storage space"
+  },
+  "eject": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Force page break in assembly listing"
+  },
+  "else": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: else clause (see .if*)"
+  },
+  "elsec": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: else case (same as .else, see .if*)"
+  },
+  "elseif": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: else if (see .if*)"
+  },
+  "end": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Mark end of program or function (see .func)"
+  },
+  "end_macro": {
+    "dialects": [
+      "mars"
+    ],
+    "description": "End MARS macro definition (see .macro)"
+  },
+  "endb": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Mark end of non-breakable region (see .bgnb)"
+  },
+  "endc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "End conditional assembly block (same as .endif, see .if*)"
+  },
+  "endfunc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Mark end of function (see .func)"
+  },
+  "endif": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "End conditional assembly block (see .if*)"
+  },
+  "endm": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "End gas macro definition (see .macro)"
+  },
+  "endr": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "End repeat directive (see .rept, .repeat)"
+  },
+  "ent": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Mark entry point of function"
+  },
+  "equ": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Assign constant value to symbol"
+  },
+  "equiv": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Assign equivalent symbol"
+  },
+  "eqv": {
+    "dialects": [
+      "gas",
+      "mars"
+    ],
+    "description": "Define symbolic constant equal to expression value"
+  },
+  "err": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Emit error message"
+  },
+  "errif": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Emit error if condition is true"
+  },
+  "error": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Emit error message and stop assembly"
+  },
+  "exitm": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Exit macro processing"
+  },
+  "extern": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Declare external symbol defined in another file"
+  },
+  "fail": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditionally emit error and stop assembly"
+  },
+  "file": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Set source file name for debugging"
+  },
+  "fill": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Fill memory with specified pattern"
+  },
+  "float": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Allocate and initialize 32-bit floating point value(s)"
+  },
+  "fmask": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Floating-point register save mask for function prologue"
+  },
+  "format": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set number format"
+  },
+  "frame": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Define stack frame information"
+  },
+  "func": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Mark beginning of a function (see .endfunc)"
+  },
+  "global": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Make a symbol globally visible"
+  },
+  "globl": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Make symbol visible to other files during linking"
+  },
+  "half": {
+    "dialects": [
+      "mars",
+      "spim"
+    ],
+    "description": "Allocate and initialize 16-bit halfword value(s)"
+  },
+  "hword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 2-byte integer value (halfword)"
+  },
+  "if": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if clause (see .endif)"
+  },
+  "ifb": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if blank (see .endif)"
+  },
+  "ifc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if character (see .endif)"
+  },
+  "ifdef": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if symbol defined (see .endif)"
+  },
+  "ifeq": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if equal (see .endif)"
+  },
+  "ifeqs": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if strings equal (see .endif)"
+  },
+  "ifge": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if greater or equal (see .endif)"
+  },
+  "ifgt": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if greater than (see .endif)"
+  },
+  "ifle": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if less or equal (see .endif)"
+  },
+  "iflt": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if less than (see .endif)"
+  },
+  "ifnb": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if not blank (see .endif)"
+  },
+  "ifnc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if not character (see .endif)"
+  },
+  "ifndef": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if symbol not defined (see endif)"
+  },
+  "ifne": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if not equal (see .endif)"
+  },
+  "ifnes": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if strings not equal (see .endif)"
+  },
+  "ifnotdef": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Conditional assembly: if not defined (see .endif)"
+  },
+  "incbin": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Include binary file at this location"
+  },
+  "include": {
+    "dialects": [
+      "gas",
+      "mars"
+    ],
+    "description": "Include contents of another source file at this location"
+  },
+  "int": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 4-byte integer value (variant of word)"
+  },
+  "irep": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat with integer variable"
+  },
+  "irepc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat with each integer in range"
+  },
+  "irp": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat block with iteration variable"
+  },
+  "irpc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat block with each character of string"
+  },
+  "kdata": {
+    "dialects": [
+      "mars",
+      "spim"
+    ],
+    "description": "Switch to kernel data segment"
+  },
+  "ktext": {
+    "dialects": [
+      "mars",
+      "spim"
+    ],
+    "description": "Switch to kernel text segment"
+  },
+  "lab": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Define a label (variant of label)"
+  },
+  "lcomm": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Define local common symbol"
+  },
+  "lflags": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set linker flags"
+  },
+  "linefile": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set line and file for debugging"
+  },
+  "linkonce": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Mark section with link-once semantics"
+  },
+  "list": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Enable assembly listing"
+  },
+  "livereg": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Declare live register in function"
+  },
+  "llen": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set line length in listing"
+  },
+  "loc": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Set location information for debug info"
+  },
+  "long": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 4-byte integer value"
+  },
+  "lsym": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define local symbol"
+  },
+  "macro": {
+    "dialects": [
+      "gas",
+      "mars"
+    ],
+    "description": "Define a macro (see .endm / .end_macro)"
+  },
+  "mask": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Register save mask for function"
+  },
+  "mexit": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Exit macro"
+  },
+  "mri": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Enable MRI compatibility mode"
+  },
+  "name": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set name for section or symbol"
+  },
+  "noalias": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Disable symbol aliasing for following symbols"
+  },
+  "noaltmacro": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Disable alternate macro syntax"
+  },
+  "noformat": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Disable number format"
+  },
+  "nolist": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Suppress listing output"
+  },
+  "nop": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "No operation directive"
+  },
+  "nopage": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Disable page breaks in listing"
+  },
+  "nops": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Generate no operation instructions"
+  },
+  "octa": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 16-byte integer value"
+  },
+  "offset": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define offset of member in structure"
+  },
+  "option": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Set assembler options"
+  },
+  "org": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set origin address for code/data"
+  },
+  "p2align": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align to power-of-2 boundary with padding"
+  },
+  "p2alignl": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align to power-of-2 longword boundary"
+  },
+  "p2alignw": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Align to power-of-2 word boundary"
+  },
+  "page": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Force page break in listing"
+  },
+  "plen": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set page length in listing"
+  },
+  "print": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Print a message during assembly"
+  },
+  "psize": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set page size for listing"
+  },
+  "purgem": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Delete macro definition"
+  },
+  "quad": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 8-byte integer value"
+  },
+  "rdata": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Switch to read-only data segment"
+  },
+  "reloc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Specify relocation information"
+  },
+  "rep": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat next instruction or block"
+  },
+  "repeat": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Repeat block N times (see .endr)"
+  },
+  "rept": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Repeat block N times (see .endr)"
+  },
+  "rva": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Relative virtual address"
+  },
+  "sbttl": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set subtitle for listing"
+  },
+  "sdata": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Switch to small data segment"
+  },
+  "set": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Define or redefine a symbol with value"
+  },
+  "short": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 2-byte integer value"
+  },
+  "single": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define single-precision floating-point value"
+  },
+  "skip": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Skip N bytes"
+  },
+  "space": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Reserve specified number of bytes without initialization"
+  },
+  "spc": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Space in listing"
+  },
+  "stabd": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Debug symbol with line number"
+  },
+  "stabn": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Debug symbol with no name"
+  },
+  "stabs": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Debug symbol with string"
+  },
+  "string": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Store a null-terminated string"
+  },
+  "string16": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 16-bit Unicode string"
+  },
+  "string32": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 32-bit Unicode string"
+  },
+  "string64": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 64-bit encoded string"
+  },
+  "string8": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define 8-bit character string"
+  },
+  "struct": {
+    "dialects": [
+      "gas",
+      "spim"
+    ],
+    "description": "Begin structure definition"
+  },
+  "text": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Begin text segment for executable code"
+  },
+  "this_gcc_requires_the_gnu_assembler": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Emit error if not using GNU assembler"
+  },
+  "title": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set title for assembly listing"
+  },
+  "ttl": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set title for assembly listing"
+  },
+  "verstamp": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Define version stamp"
+  },
+  "vreg": {
+    "dialects": [
+      "spim"
+    ],
+    "description": "Declare virtual register"
+  },
+  "warnif": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Emit warning if condition is true"
+  },
+  "warning": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Emit warning message"
+  },
+  "weakref": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Create weak reference to symbol"
+  },
+  "word": {
+    "dialects": [
+      "gas",
+      "mars",
+      "spim"
+    ],
+    "description": "Allocate and initialize 32-bit word value(s)"
+  },
+  "xcom": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define external common symbol"
+  },
+  "xdef": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Export symbol definition"
+  },
+  "xref": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Reference external symbol"
+  },
+  "xstabs": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Extended debug symbol"
+  },
+  "zero": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Fill with zero bytes"
+  }
 }

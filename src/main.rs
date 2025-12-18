@@ -5,11 +5,15 @@
 #[macro_use]
 mod logging;
 
-mod json;
-mod lsp;
-mod parser;
+mod language_definitions;
 mod server;
+mod lsp;
+mod settings;
 mod tree;
+mod completion;
+mod lang;
+mod version;
+mod hover;
 
 #[tokio::main]
 async fn main() {
@@ -17,18 +21,3 @@ async fn main() {
     log_init!();
     crate::server::serve().await
 }
-
-//fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
-//    let mut args = std::env::args();
-//    match args.nth(1).as_deref() {
-//        None => {
-//        }
-//        Some("--version") => {
-//            println!("mips-language-server v0.1.0");
-//        }
-//        Some(_) => {
-//            println!("Usage:\n  mips-language-server [options]\n\nOptions:\n  --version, -v         Version");
-//        }
-//    };
-//    Ok(())
-//}
