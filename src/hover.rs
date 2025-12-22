@@ -12,7 +12,7 @@ use crate::server::Backend;
 
 use crate::tree;
 
-pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
+pub async fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
     // Unpack position and text_document
     let TextDocumentPositionParams {
         position,
@@ -20,23 +20,27 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
     } = params.text_document_position_params;
 
     // Retrieve current content and tree
-    let document = backend
+    let arc_doc = backend
         .documents
         .get(&text_document.uri)
         .ok_or(jsonrpc::Error::invalid_request())?;
-    let text = &document.text;
-    let tree = document.tree.clone();
+    let doc = arc_doc.read().await;
+
+    let text = &doc.text;
+    let tree = doc.tree.clone();
 
     // Determine node below cursor and fetch the label name
     let point = tree::position_to_point(&position);
     let cursor_node = tree
         .root_node()
-        .descendant_for_point_range(point, point)
+        .named_descendant_for_point_range(point, point)
         .ok_or(jsonrpc::Error::invalid_request())?;
 
     // Get label kind and text
     let kind = cursor_node.kind();
     let cursor_node_text = cursor_node.utf8_text(text.as_bytes()).unwrap_or_default();
+
+    log!("kind {}", kind);
 
     match kind {
         "opcode" => {
@@ -54,7 +58,7 @@ pub fn hover(backend: &Backend, params: HoverParams) -> jsonrpc::Result<Option<H
                 }));
             }
         }
-        "marco_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
+        "macro_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
             if let Some(directive) = backend
                 .definitions
                 .wait()

@@ -17,11 +17,23 @@
     ],
     "description": "Define 8-byte aligned data (double word integer)"
   },
+  "abicalls": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Enable or disable ABI function calls"
+  },
   "abort": {
     "dialects": [
       "gas"
     ],
     "description": "Abort assembly with an error"
+  },
+  "aent": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Mark the start of a procedure entry"
   },
   "alias": {
     "dialects": [
@@ -53,6 +65,7 @@
   },
   "asciiz": {
     "dialects": [
+      "gas",
       "mars",
       "spim"
     ],
@@ -88,17 +101,18 @@
     ],
     "description": "Align next data on word boundary with padding"
   },
-  "base64": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define base64-encoded data"
-  },
   "bgnb": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Mark beginning of non-breakable region (see .endb)"
+  },
+  "bss": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Switch to the BSS (uninitialized data) section"
   },
   "bundle_align_mode": {
     "dialects": [
@@ -139,6 +153,42 @@
     ],
     "description": "Define a common symbol with specified size"
   },
+  "cpadd": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Add a relative address to a coprocessor register"
+  },
+  "cpload": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Load a coprocessor address"
+  },
+  "cplocal": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Declare local coprocessor data"
+  },
+  "cprestore": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Restore coprocessor registers"
+  },
+  "cpreturn": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Return from a coprocessor function"
+  },
+  "cpsetup": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set up coprocessor context"
+  },
   "data": {
     "dialects": [
       "gas",
@@ -146,18 +196,6 @@
       "spim"
     ],
     "description": "Begin data segment for initialized data declarations"
-  },
-  "dc": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define constant data"
-  },
-  "dcb": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define block of constant data"
   },
   "debug": {
     "dialects": [
@@ -179,11 +217,29 @@
     ],
     "description": "Allocate and initialize 64-bit floating point value(s)"
   },
-  "ds": {
+  "dtpreldword": {
     "dialects": [
       "gas"
     ],
-    "description": "Define storage space"
+    "description": "Thread-local data relocation for 64-bit"
+  },
+  "dtprelword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Thread-local data relocation for 32-bit"
+  },
+  "dword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define a 64-bit word"
+  },
+  "ehword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Exception handling word"
   },
   "eject": {
     "dialects": [
@@ -220,10 +276,11 @@
     "dialects": [
       "mars"
     ],
-    "description": "End MARS macro definition (see .macro)"
+    "description": "Mark end of macro definition (see .macro)"
   },
   "endb": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Mark end of non-breakable region (see .bgnb)"
@@ -261,6 +318,7 @@
   },
   "ent": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Mark entry point of function"
@@ -346,6 +404,7 @@
   },
   "fmask": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Floating-point register save mask for function prologue"
@@ -358,6 +417,7 @@
   },
   "frame": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Define stack frame information"
@@ -382,8 +442,27 @@
     ],
     "description": "Make symbol visible to other files during linking"
   },
+  "gpdword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Global pointer dword"
+  },
+  "gpvalue": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set global pointer value"
+  },
+  "gpword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Global pointer word"
+  },
   "half": {
     "dialects": [
+      "gas",
       "mars",
       "spim"
     ],
@@ -504,6 +583,12 @@
     ],
     "description": "Include contents of another source file at this location"
   },
+  "insn": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define an instruction"
+  },
   "int": {
     "dialects": [
       "gas"
@@ -587,6 +672,7 @@
   },
   "livereg": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Declare live register in function"
@@ -599,6 +685,7 @@
   },
   "loc": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Set location information for debug info"
@@ -624,6 +711,7 @@
   },
   "mask": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Register save mask for function"
@@ -633,6 +721,12 @@
       "gas"
     ],
     "description": "Exit macro"
+  },
+  "module": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define a module"
   },
   "mri": {
     "dialects": [
@@ -645,6 +739,12 @@
       "gas"
     ],
     "description": "Set name for section or symbol"
+  },
+  "nan": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define NaN (Not-a-Number)"
   },
   "noalias": {
     "dialects": [
@@ -694,14 +794,9 @@
     ],
     "description": "Define 16-byte integer value"
   },
-  "offset": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define offset of member in structure"
-  },
   "option": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Set assembler options"
@@ -711,6 +806,12 @@
       "gas"
     ],
     "description": "Set origin address for code/data"
+  },
+  "origin": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Set the current location counter"
   },
   "p2align": {
     "dialects": [
@@ -768,6 +869,7 @@
   },
   "rdata": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Switch to read-only data segment"
@@ -786,6 +888,7 @@
   },
   "repeat": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Repeat block N times (see .endr)"
@@ -796,11 +899,11 @@
     ],
     "description": "Repeat block N times (see .endr)"
   },
-  "rva": {
+  "sbss": {
     "dialects": [
       "gas"
     ],
-    "description": "Relative virtual address"
+    "description": "Switch to the small BSS section"
   },
   "sbttl": {
     "dialects": [
@@ -810,9 +913,16 @@
   },
   "sdata": {
     "dialects": [
+      "gas",
       "spim"
     ],
     "description": "Switch to small data segment"
+  },
+  "section": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Define or switch to named section"
   },
   "set": {
     "dialects": [
@@ -878,30 +988,6 @@
     ],
     "description": "Store a null-terminated string"
   },
-  "string16": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define 16-bit Unicode string"
-  },
-  "string32": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define 32-bit Unicode string"
-  },
-  "string64": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define 64-bit encoded string"
-  },
-  "string8": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define 8-bit character string"
-  },
   "struct": {
     "dialects": [
       "gas",
@@ -929,17 +1015,23 @@
     ],
     "description": "Set title for assembly listing"
   },
+  "tpreldword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Thread-local pointer relocation for 64-bit"
+  },
+  "tprelword": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Thread-local pointer relocation for 32-bit"
+  },
   "ttl": {
     "dialects": [
       "gas"
     ],
     "description": "Set title for assembly listing"
-  },
-  "verstamp": {
-    "dialects": [
-      "spim"
-    ],
-    "description": "Define version stamp"
   },
   "vreg": {
     "dialects": [
@@ -959,6 +1051,12 @@
     ],
     "description": "Emit warning message"
   },
+  "weakext": {
+    "dialects": [
+      "gas"
+    ],
+    "description": "Declare a weak external symbol"
+  },
   "weakref": {
     "dialects": [
       "gas"
@@ -972,12 +1070,6 @@
       "spim"
     ],
     "description": "Allocate and initialize 32-bit word value(s)"
-  },
-  "xcom": {
-    "dialects": [
-      "gas"
-    ],
-    "description": "Define external common symbol"
   },
   "xdef": {
     "dialects": [

@@ -5,14 +5,17 @@
 #[macro_use]
 mod logging;
 
-mod language_definitions;
 mod server;
 mod lsp;
-mod settings;
-mod tree;
-mod completion;
-mod lang;
 mod version;
+mod settings;
+
+mod tree;
+
+mod language_definitions;
+mod lang;
+
+mod completion;
 mod hover;
 
 #[tokio::main]

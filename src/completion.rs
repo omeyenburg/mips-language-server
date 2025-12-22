@@ -11,20 +11,22 @@ use crate::language_definitions::{Directive, Instruction, Registers};
 use crate::lsp::{Document, Documents};
 use crate::server::Backend;
 
-pub fn get_completions(
+pub async fn get_completions(
     backend: &Backend,
     params: CompletionParams,
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
+    let pos = params.text_document_position.position;
+
     // Retrieve current content and tree
-    let document = backend
+    let arc_doc = backend
         .documents
         .get(&params.text_document_position.text_document.uri.into())
         .ok_or(jsonrpc::Error::invalid_request())?;
 
-    let pos = params.text_document_position.position;
+    let doc = arc_doc.read().await;
 
     // Split the text into lines and retrieve the specific line
-    let line_content = &document
+    let line_content = &doc
         .text
         .lines()
         .nth(pos.line as usize)

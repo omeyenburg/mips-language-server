@@ -55,7 +55,13 @@ pub struct Instruction {
     pub description: String,
 }
 
-pub type RawInstructions = HashMap<String, Vec<RawInstructionVariant>>;
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RawInstruction {
+    pub variants: Vec<RawInstructionVariant>,
+    pub description: String,
+}
+
+pub type RawInstructions = HashMap<String, RawInstruction>;
 pub type Instructions = HashMap<String, Instruction>;
 
 /*
@@ -121,7 +127,6 @@ impl LanguageDefinitions {
         let directives = process_directives(raw_directives, settings)
             .expect("Failed to process directive definitions");
 
-
         let registers = load_registers();
 
         Self {
@@ -153,11 +158,11 @@ fn process_instructions(
 ) -> Result<Instructions, SettingsError> {
     let instructions = raw
         .into_iter()
-        .filter_map(|(mnemonic, raw_variants)| {
+        .filter_map(|(mnemonic, raw_instruction)| {
             let mut variants = Vec::new();
 
-            for raw in raw_variants {
-                let v = match InstructionVariant::try_from(raw) {
+            for raw_variants in raw_instruction.variants {
+                let v = match InstructionVariant::try_from(raw_variants) {
                     Ok(v) => v,
                     Err(_) => return None,
                 };
@@ -175,9 +180,20 @@ fn process_instructions(
                 return None;
             }
 
-            let info = build_instruction_hover_info(&mnemonic, &variants, settings);
+            let info = build_instruction_hover_info(
+                &mnemonic,
+                &raw_instruction.description,
+                &variants,
+                settings,
+            );
 
-            Some((mnemonic, Instruction { variants, description: info }))
+            Some((
+                mnemonic,
+                Instruction {
+                    variants,
+                    description: info,
+                },
+            ))
         })
         .collect();
 
@@ -215,16 +231,23 @@ fn process_directives(
     Ok(directives)
 }
 
+/// Returns a human-readable description for an instruction with all variants.
+///
+///  TODO:
+///  - refactor
+///  - use settings
+///  - sort variants by operands
+///  - consider merging variants with different imm sizes here
 fn build_instruction_hover_info(
     mnemonic: &str,
+    base_description: &str,
     variants: &[InstructionVariant],
     settings: &Settings,
 ) -> String {
+    let mut info = format!("{}\n\n", base_description);
 
-    let mut info = format!("{}\n", mnemonic);
-
-    let mut real = String::from("### Variants:\n");
-    let mut pseudo  = String::from("### Pseudo Variants:\n");
+    let mut real = String::from("**ISA Variants:**\n");
+    let mut pseudo = String::from("**Pseudo Variants:**\n");
 
     let mut has_real = false;
     let mut has_pseudo = false;
@@ -239,7 +262,7 @@ fn build_instruction_hover_info(
 
         part.push_str(
             format!(
-                "```asm\n{} {}\n```\n{}\nIntroduced: {:?}; ",
+                "```asm\n{} {}\n```\n{}  \nIntroduced: {:?} | ",
                 mnemonic,
                 &v.operands.join(", ").as_str(),
                 &v.description,
@@ -248,30 +271,29 @@ fn build_instruction_hover_info(
             .as_str(),
         );
         if let Some(d) = v.deprecated {
-            part.push_str(format!("Deprecated: {:?}; ", d).as_str());
+            part.push_str(format!("Deprecated: {:?} | ", d).as_str());
         }
-        part.push_str(
-            format!(
-                "Assemblers: {}\n\n",
-                &v.dialects
-                    .iter()
-                    .map(|d| d.to_string())
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            )
-            .as_str(),
-        );
+        log!("depr: {:?}", v.deprecated);
+
+        let dialects_str = {
+            let mut dialects: Vec<String> = v.dialects.iter().map(|d| d.to_string()).collect();
+            if dialects.is_empty() {
+                dialects.push("None".to_string());
+            }
+            dialects.join(", ")
+        };
+
+        part.push_str(format!("Assemblers: {}\n\n", dialects_str).as_str());
     }
 
     if has_real {
         info.push_str(&real);
-    }
-
-    if has_pseudo && has_pseudo {
-        info.push('\n');
+    } else {
+        info.push_str("**Instruction has no ISA variants.**\n");
     }
 
     if has_pseudo {
+        info.push('\n');
         info.push_str(&pseudo);
     }
 
