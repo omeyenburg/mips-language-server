@@ -2,9 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Number, Value};
 use std::fmt;
 
+use crate::lang::{Dialect, InstructionVariant, ISA};
 use crate::version;
-use crate::lang::{Dialect, ISA};
-use crate::language_definitions::InstructionVariant;
 
 #[derive(Debug)]
 pub enum SettingsError {
@@ -49,9 +48,7 @@ pub struct Settings {
 }
 
 impl Settings {
-    pub fn new(
-        options: Option<Value>,
-    ) -> Result<Self, SettingsError> {
+    pub fn new(options: Option<Value>) -> Result<Self, SettingsError> {
         let mut settings = Self {
             dialect: Dialect::Unspecified,
             // isa: ISA::MIPS64,
@@ -90,5 +87,4 @@ impl Settings {
     pub fn allow_any_version(&self, v: &InstructionVariant) -> bool {
         self.dialect == Dialect::MARS || self.dialect == Dialect::SPIM
     }
-
 }

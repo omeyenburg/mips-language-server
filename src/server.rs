@@ -3,6 +3,7 @@ use std::sync::OnceLock;
 use tokio::sync::{Mutex, RwLock};
 
 use serde::de::value;
+use streaming_iterator::StreamingIterator;
 use tower_lsp_server::jsonrpc;
 use tower_lsp_server::lsp_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
@@ -10,13 +11,18 @@ use tree_sitter::{InputEdit, Query, QueryCursor};
 
 use crate::completion;
 use crate::hover;
-
-use crate::language_definitions::LanguageDefinitions;
-use crate::lsp::{Document, Documents};
+use crate::lang::LanguageDefinitions;
 use crate::settings::Settings;
 use crate::tree;
 
-use streaming_iterator::StreamingIterator;
+pub struct Document {
+    pub version: i32,
+    pub text: String,
+    pub tree: tree_sitter::Tree,
+    pub parser: tree_sitter::Parser,
+}
+
+pub type Documents = dashmap::DashMap<tower_lsp_server::lsp_types::Uri, Arc<RwLock<Document>>>;
 
 /*
  TODO:
@@ -139,21 +145,17 @@ impl LanguageServer for Backend {
         self.documents
             .insert(uri.clone(), Arc::new(RwLock::new(document)));
 
-        // // Parse the document and generate diagnostics
-        // let diagnostics = self.parse(&uri);
-
-        // // Publish diagnostics
-        // self.client
-        //     .publish_diagnostics(uri, diagnostics, None)
-        //     .await;
+        // Analyze document and publish diagnostics
+        let diags = self.analyze_document(&uri).await;
+        self.client.publish_diagnostics(uri, diags, None).await;
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        let uri = &params.text_document.uri;
+        let uri = params.text_document.uri;
         let version = params.text_document.version;
         let changes = params.content_changes;
 
-        if let Some(doc_arc) = self.documents.get_mut(uri) {
+        if let Some(doc_arc) = self.documents.get_mut(&uri) {
             let mut doc = doc_arc.write().await;
 
             if version <= doc.version {
@@ -171,24 +173,20 @@ impl LanguageServer for Backend {
             }
         }
 
-        // // Parse the document and generate diagnostics
-        // let diagnostics = self.parse(uri);
-
-        // // Publish diagnostics
-        // self.client
-        //     .publish_diagnostics(uri.clone(), diagnostics, None)
-        //     .await;
+        // Analyze document and publish diagnostics
+        let diags = self.analyze_document(&uri).await;
+        self.client.publish_diagnostics(uri, diags, None).await;
     }
 
     async fn completion(
         &self,
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
-        completion::get_completions(self, params).await
+        self.get_completions(params).await
     }
 
     async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
-        hover::hover(self, params).await
+        self.hover(params).await
     }
 
     // Used for diagnostic pulling, but we prefer pushing model

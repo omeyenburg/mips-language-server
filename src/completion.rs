@@ -6,83 +6,84 @@ use tower_lsp_server::lsp_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
-use crate::language_definitions::LanguageDefinitions;
-use crate::language_definitions::{Directive, Instruction, Registers};
-use crate::lsp::{Document, Documents};
-use crate::server::Backend;
+use crate::lang::LanguageDefinitions;
+use crate::lang::{Directive, Instruction, Registers};
+use crate::server::{Backend, Document, Documents};
 
-pub async fn get_completions(
-    backend: &Backend,
-    params: CompletionParams,
-) -> jsonrpc::Result<Option<CompletionResponse>> {
-    let pos = params.text_document_position.position;
+impl Backend {
+    pub async fn get_completions(
+        &self,
+        params: CompletionParams,
+    ) -> jsonrpc::Result<Option<CompletionResponse>> {
+        let pos = params.text_document_position.position;
 
-    // Retrieve current content and tree
-    let arc_doc = backend
-        .documents
-        .get(&params.text_document_position.text_document.uri.into())
-        .ok_or(jsonrpc::Error::invalid_request())?;
+        // Retrieve current content and tree
+        let arc_doc = self
+            .documents
+            .get(&params.text_document_position.text_document.uri.into())
+            .ok_or(jsonrpc::Error::invalid_request())?;
 
-    let doc = arc_doc.read().await;
+        let doc = arc_doc.read().await;
 
-    // Split the text into lines and retrieve the specific line
-    let line_content = &doc
-        .text
-        .lines()
-        .nth(pos.line as usize)
-        .ok_or(jsonrpc::Error::invalid_request())?;
+        // Split the text into lines and retrieve the specific line
+        let line_content = &doc
+            .text
+            .lines()
+            .nth(pos.line as usize)
+            .ok_or(jsonrpc::Error::invalid_request())?;
 
-    // TODO: prevent completion in comments / make completions depend on place in syntax tree
+        // TODO: prevent completion in comments / make completions depend on place in syntax tree
 
-    // Find starting character of word that should be completed
-    // We start at the cursor position on the line and move right to the
-    // beginning of the line until we hit some kind of separator:
-    // ' ', '\t', ',' (separating symbols), ':', ';' after statement, '/' after block comment
-    // The last seen char is saved. This might be '$', '.' or any other character.
-    let mut starting_char = ' ';
-    let mut starting_index = pos.character;
+        // Find starting character of word that should be completed
+        // We start at the cursor position on the line and move right to the
+        // beginning of the line until we hit some kind of separator:
+        // ' ', '\t', ',' (separating symbols), ':', ';' after statement, '/' after block comment
+        // The last seen char is saved. This might be '$', '.' or any other character.
+        let mut starting_char = ' ';
+        let mut starting_index = pos.character;
 
-    while starting_index > 0 {
-        if let Some(char) = line_content.chars().nth((starting_index - 1) as usize) {
-            match char {
-                'a'..='z' | 'A'..='Z' | '0'..='9' | '.' | '_' | '$' | '%' | '\\' | '@' => {
-                    starting_char = char
+        while starting_index > 0 {
+            if let Some(char) = line_content.chars().nth((starting_index - 1) as usize) {
+                match char {
+                    'a'..='z' | 'A'..='Z' | '0'..='9' | '.' | '_' | '$' | '%' | '\\' | '@' => {
+                        starting_char = char
+                    }
+                    _ => break,
                 }
-                _ => break,
             }
+
+            starting_index -= 1;
         }
 
-        starting_index -= 1;
-    }
+        let definitions: &LanguageDefinitions = self.definitions.wait();
 
-    let definitions: &LanguageDefinitions = backend.definitions.wait();
+        let range = Range {
+            start: Position {
+                line: pos.line,
+                character: starting_index,
+            },
+            end: pos,
+        };
 
-    let range = Range {
-        start: Position {
-            line: pos.line,
-            character: starting_index,
-        },
-        end: pos,
-    };
-
-    // Generate completion items
-    // Split up in: directive, register and instruction
-    match starting_char {
-        '.' => complete_directive(definitions, range),
-        '$' => complete_register(
-            definitions,
-            range,
-            line_content,
-            pos.character,
-            starting_index,
-        ),
-        _ => complete_instruction(
-            definitions,
-            range,
-            line_content,
-            pos.character,
-            starting_index,
-        ),
+        // Generate completion items
+        // Split up in: directive, register and instruction
+        match starting_char {
+            '.' => complete_directive(definitions, range),
+            '$' => complete_register(
+                definitions,
+                range,
+                line_content,
+                pos.character,
+                starting_index,
+            ),
+            _ => complete_instruction(
+                definitions,
+                range,
+                line_content,
+                pos.character,
+                starting_index,
+            ),
+        }
     }
 }
 

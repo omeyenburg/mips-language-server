@@ -6,15 +6,13 @@
 mod logging;
 
 mod server;
-mod lsp;
 mod version;
 mod settings;
 
 mod tree;
-
-mod language_definitions;
 mod lang;
 
+mod diagnostic;
 mod completion;
 mod hover;
 

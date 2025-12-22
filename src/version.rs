@@ -1,20 +1,5 @@
 use crate::settings::SettingsError;
 
-/*
-
-mips1
-└── mips2
-    │               ┌── mips32r6 ───────────── mips64r6
-    │           ┌── mips32r5 ───────────── mips64r5 ─┘
-    │       ┌── mips32r3 ───────────── mips64r3 ─┘
-    │   ┌── mips32r2 ───────────── mips64r2 ─┘
-    ├── mips32r1 ───────────── mips64r1 ─┘
-    │           ┌── mips5 ─────┘
-    │       ┌── mips4
-    └── mips3
-
-*/
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum VersionLabel {
     Mips1,
@@ -243,6 +228,19 @@ pub static MIPS64R6: Version = Version {
     ],
 };
 
+/*
+Version inheritance tree:
+    mips1
+    └── mips2
+        │               ┌── mips32r6 ───────────── mips64r6
+        │           ┌── mips32r5 ───────────── mips64r5 ─┘
+        │       ┌── mips32r3 ───────────── mips64r3 ─┘
+        │   ┌── mips32r2 ───────────── mips64r2 ─┘
+        ├── mips32r1 ───────────── mips64r1 ─┘
+        │           ┌── mips5 ─────┘
+        │       ┌── mips4
+        └── mips3
+*/
 impl Version {
     pub fn has_ancestor(&self, ancestor: VersionLabel) -> bool {
         self.ancestors.contains(&ancestor)
