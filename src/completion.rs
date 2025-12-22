@@ -45,7 +45,9 @@ pub async fn get_completions(
     while starting_index > 0 {
         if let Some(char) = line_content.chars().nth((starting_index - 1) as usize) {
             match char {
-                'a'..='z' | '0'..='9' | '.' | '$' => starting_char = char,
+                'a'..='z' | 'A'..='Z' | '0'..='9' | '.' | '_' | '$' | '%' | '\\' | '@' => {
+                    starting_char = char
+                }
                 _ => break,
             }
         }
@@ -195,27 +197,35 @@ fn complete_instruction(
     character: u32,
     starting_index: u32,
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
-    // Editors/completion plugins often think that a dot is used for
-    // separation but in mips a dot is part of a instruction mnemonic.
-    // This filters instructions by the prefix up to the last typed dot.
-    let prefix = &line_content[starting_index as usize..character as usize];
+    let start = starting_index as usize;
+    let cursor = character as usize;
+
+    if cursor < start || cursor > line_content.len() {
+        return completion_response(Vec::new(), true);
+    }
+
+    let typed = &line_content[start..cursor];
+
+    // Semantic filter up to the last dot, if any
+    // Limits completion results, e.g. for "cmp."
+    let dot_prefix = typed.rfind('.').map(|i| &typed[..=i]);
 
     let items = definitions
         .instructions
         .iter()
-        .filter_map(|(mnemonic, instruction)| {
-            if mnemonic.starts_with(prefix) {
-                Some(completion_item(
-                    format!("MIPS instruction: {}", mnemonic),
-                    "instruction".to_string(),
-                    instruction.description.to_string(),
-                    CompletionItemKind::KEYWORD,
-                    prefix.to_string() + &mnemonic[character as usize - starting_index as usize..],
-                    range,
-                ))
-            } else {
-                None
-            }
+        .filter(|(mnemonic, _)| match dot_prefix {
+            Some(p) => mnemonic.starts_with(p),
+            None => true,
+        })
+        .map(|(mnemonic, instruction)| {
+            completion_item(
+                format!("MIPS instruction: {}", mnemonic),
+                "instruction".to_string(),
+                instruction.description.to_string(),
+                CompletionItemKind::KEYWORD,
+                mnemonic.to_string(),
+                range,
+            )
         })
         .collect();
 
