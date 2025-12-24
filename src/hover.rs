@@ -4,8 +4,9 @@ use tower_lsp_server::lsp_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
-use crate::lang::LanguageDefinitions;
-use crate::lang::{Directive, Instruction, Registers};
+use crate::lang::{
+    Directive, Directives, Instruction, Instructions, LanguageDefinitions, Registers,
+};
 use crate::server::{Backend, Document, Documents};
 
 use crate::tree;
@@ -39,83 +40,61 @@ impl Backend {
         let kind = cursor_node.kind();
         let cursor_node_text = cursor_node.utf8_text(text.as_bytes()).unwrap_or_default();
 
-        log!("kind {}", kind);
+        let definitions = self.definitions.wait().read().await;
 
-        match kind {
-            "opcode" => {
-                if let Some(instruction) =
-                    self.definitions.wait().instructions.get(cursor_node_text)
-                {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkedString::String(
-                            instruction.description.to_string(),
-                        )),
-                        range: None,
-                    }));
-                }
-            }
+        let hover = match kind {
+            "opcode" => hover_instruction(&definitions.instructions, cursor_node_text),
             "macro_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
-                if let Some(directive) = self
-                    .definitions
-                    .wait()
-                    .directives
-                    .get(cursor_node_text.to_string()[1..].to_string().as_str())
-                {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkedString::String(String::from(
-                            directive.description.to_string(),
-                        ))),
-                        range: None,
-                    }));
-                }
+                hover_directive(&definitions.directives, cursor_node_text)
             }
-            "register" => {
-                if let Some(register) = self
-                    .definitions
-                    .wait()
-                    .registers
-                    .numeric
-                    .get(cursor_node_text)
-                {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkedString::String(String::from(
-                            register,
-                        ))),
-                        range: None,
-                    }));
-                }
-                if let Some(register) = self
-                    .definitions
-                    .wait()
-                    .registers
-                    .common
-                    .get(cursor_node_text)
-                {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkedString::String(String::from(
-                            register,
-                        ))),
-                        range: None,
-                    }));
-                }
-                if let Some(register) = self
-                    .definitions
-                    .wait()
-                    .registers
-                    .float
-                    .get(cursor_node_text)
-                {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkedString::String(String::from(
-                            register,
-                        ))),
-                        range: None,
-                    }));
-                }
-            }
-            _ => (),
-        }
+            "register" => hover_register(&definitions.registers, cursor_node_text),
+            _ => None,
+        };
 
-        Ok(None)
+        Ok(hover)
+    }
+}
+
+fn hover_instruction(instructions: &Instructions, text: &str) -> Option<Hover> {
+    Some(Hover {
+        contents: HoverContents::Scalar(MarkedString::String(
+            instructions.get(text)?.description.to_string(),
+        )),
+        range: None,
+    })
+}
+
+fn hover_directive(directives: &Directives, text: &str) -> Option<Hover> {
+    let stripped_mnemonic = &text.to_string()[1..];
+    if let Some(directive) = directives.get(stripped_mnemonic) {
+        Some(Hover {
+            contents: HoverContents::Scalar(MarkedString::String(String::from(
+                directive.description.to_string(),
+            ))),
+            range: None,
+        })
+    } else {
+        None
+    }
+}
+
+fn hover_register(registers: &Registers, text: &str) -> Option<Hover> {
+    if let Some(register) = registers.numeric.get(text) {
+        Some(Hover {
+            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            range: None,
+        })
+    } else if let Some(register) = registers.common.get(text) {
+        Some(Hover {
+            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            range: None,
+        })
+    } else if let Some(register) = registers.float.get(text) {
+        Some(Hover {
+            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            range: None,
+        })
+    } else {
+        None
     }
 }
