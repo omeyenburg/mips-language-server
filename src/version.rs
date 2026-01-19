@@ -245,4 +245,25 @@ impl Version {
     pub fn has_ancestor(&self, ancestor: VersionLabel) -> bool {
         self.ancestors.contains(&ancestor)
     }
+
+    pub fn parse(s: &str) -> Result<&'static Version, SettingsError> {
+        match s {
+            "mips1" => Ok(&MIPS1),
+            "mips2" => Ok(&MIPS2),
+            "mips3" => Ok(&MIPS3),
+            "mips4" => Ok(&MIPS4),
+            "mips5" => Ok(&MIPS5),
+            "mips32r1" => Ok(&MIPS32R1),
+            "mips32r2" => Ok(&MIPS32R2),
+            "mips32r3" => Ok(&MIPS32R3),
+            "mips32r5" => Ok(&MIPS32R5),
+            "mips32r6" => Ok(&MIPS32R6),
+            "mips64r1" => Ok(&MIPS64R1),
+            "mips64r2" => Ok(&MIPS64R2),
+            "mips64r3" => Ok(&MIPS64R3),
+            "mips64r5" => Ok(&MIPS64R5),
+            "mips64r6" => Ok(&MIPS64R6),
+            _ => Err(SettingsError::UnknownVersion(s.into())),
+        }
+    }
 }

@@ -55,7 +55,7 @@ impl Backend {
             starting_index -= 1;
         }
 
-        let definitions: &LanguageDefinitions = self.definitions.wait();
+        let definitions = &self.definitions.read().await;
 
         let range = Range {
             start: Position {

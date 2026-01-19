@@ -106,21 +106,6 @@
     "description": "add",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -141,14 +126,28 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to rs plus immediate (0-3)",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs plus immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -223,21 +222,6 @@
     "description": "add immediate",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -253,6 +237,21 @@
           "rs",
           "imm16_s"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs plus immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -261,16 +260,17 @@
     "variants": [
       {
         "dialects": [
-          "mars"
+          "gas",
+          "spim"
         ],
         "description": "",
         "operands": [
-          "rd",
           "rs",
-          "imm32_s"
+          "rt",
+          "offset"
         ],
-        "pseudo": true,
-        "introduced": null,
+        "pseudo": false,
+        "introduced": "mips32r6",
         "deprecated": null,
         "mips32": true
       },
@@ -290,6 +290,21 @@
           "rs",
           "imm16_s"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs plus immediate), no overflow",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -336,21 +351,6 @@
     "description": "addition unsigned",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -371,14 +371,28 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to rs plus immediate, no overflow",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs plus immediate), no overflow",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -392,7 +406,7 @@
         "dialects": [
           "gas"
         ],
-        "description": "Concatenate rs and rt, extract rd from byte position specified by imm2",
+        "description": "Concatenate rs and rt, and extract a congiguous subset into rd at byte position specified by imm2",
         "introduced": "mips32r6",
         "deprecated": null,
         "mips32": true,
@@ -450,35 +464,6 @@
     "description": "bitwise and",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -499,14 +484,42 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to rs bitwise-and with immediate",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rs to (rs bitwise-and immediate)",
+        "operands": [
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs bitwise-and immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -519,25 +532,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to (rs bitwise-and immediate)",
         "operands": [
-          "rd",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
           "rs",
-          "imm32_s"
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -560,6 +558,21 @@
           "rs",
           "imm16_u"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs bitwise-and immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_u"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -697,11 +710,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Extract and align bytes from concatenated rs and rt using byte position",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -1335,9 +1347,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Branch to statement at label if rd is equal to immediate",
         "operands": [
-          "rd",
+          "rs",
           "imm32_s",
           "label"
         ],
@@ -1350,10 +1362,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch to offset if rs equals immediate",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -1422,10 +1433,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch to offset if rs equals 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -1459,9 +1469,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Branch to statement at label if rd is equal to zero",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -1550,22 +1560,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is greater or equal to rs",
         "operands": [
           "rd",
@@ -1579,12 +1573,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs >= 2-bit immediate (signed)",
+        "description": "Branch to statement at label if rd is greater or equal to immediate",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -1636,10 +1645,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs >= 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -1672,22 +1680,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is greater or equal to rs (unsigned compare)",
         "operands": [
           "rd",
@@ -1701,12 +1693,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs >= 2-bit immediate (unsigned)",
+        "description": "Branch to statement at label if rd is greater or equal to immediate (unsigned compare)",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -1758,10 +1765,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs >= 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -1914,22 +1920,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is greater than rs",
         "operands": [
           "rd",
@@ -1943,12 +1933,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs > 2-bit immediate (signed)",
+        "description": "Branch to statement at label if rd is greater than immediate",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -1998,10 +2003,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs > 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2034,22 +2038,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is greater than rs (unsigned compare)",
         "operands": [
           "rd",
@@ -2063,12 +2051,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs > 2-bit immediate (unsigned)",
+        "description": "Branch to statement at label if rd is greater than immediate (unsigned compare)",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -2118,10 +2121,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs > 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2252,22 +2254,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is less than or equal to rs",
         "operands": [
           "rd",
@@ -2281,12 +2267,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs <= 2-bit immediate (signed)",
+        "description": "Branch to statement at label if rd is less than or equal to immediate",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -2336,10 +2337,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs <= 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2372,22 +2372,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is less than or equal to rs (unsigned compare)",
         "operands": [
           "rd",
@@ -2401,12 +2385,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs <= 2-bit immediate (unsigned)",
+        "description": "Branch to statement at label if rd is less than or equal to immediate (unsigned compare)",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -2456,10 +2455,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs <= 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2571,22 +2569,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is less than rs",
         "operands": [
           "rd",
@@ -2600,12 +2582,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs < 2-bit immediate (signed)",
+        "description": "Branch to statement at label if rd is less than immediate",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -2657,10 +2654,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs < 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2693,22 +2689,6 @@
           "mars",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm32_s",
-          "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
         "description": "Branch to statement at label if rd is less than rs",
         "operands": [
           "rd",
@@ -2722,12 +2702,27 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Branch to offset if rs < 2-bit immediate (unsigned)",
+        "description": "Branch to statement at label if rd is less than immediate",
         "operands": [
           "rs",
-          "imm2_u",
+          "imm32_s",
+          "label"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
           "offset"
         ],
         "pseudo": true,
@@ -2779,10 +2774,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch if rs < 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -2934,9 +2928,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Branch to statement at label if rd is not equal to immediate",
         "operands": [
-          "rd",
+          "rs",
           "imm32_s",
           "label"
         ],
@@ -2949,10 +2943,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch to offset if rs != immediate",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -3021,10 +3014,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "Branch to offset if rs != 2-bit immediate, likely taken",
+        "description": "",
         "operands": [
           "rs",
-          "imm2_u",
           "offset"
         ],
         "pseudo": true,
@@ -3058,9 +3050,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Branch to statement at label if rd is not equal to zero",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -3158,21 +3150,6 @@
           "rt",
           "offset"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rs",
-          "offset"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r6",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -3193,21 +3170,6 @@
           "rt",
           "offset"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rs",
-          "offset"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r6",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -5184,8 +5146,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5204,8 +5166,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5224,8 +5186,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5244,8 +5206,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5264,8 +5226,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5284,8 +5246,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5304,8 +5266,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5324,8 +5286,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5344,8 +5306,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5364,8 +5326,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5384,8 +5346,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5404,8 +5366,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5424,8 +5386,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5444,8 +5406,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5464,8 +5426,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5484,8 +5446,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5504,8 +5466,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5524,8 +5486,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5544,8 +5506,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5564,8 +5526,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5584,8 +5546,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5604,8 +5566,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5624,8 +5586,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5644,8 +5606,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5664,8 +5626,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5684,8 +5646,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5704,8 +5666,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5724,8 +5686,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5744,8 +5706,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5764,8 +5726,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5784,8 +5746,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5804,8 +5766,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5824,8 +5786,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5844,8 +5806,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5864,8 +5826,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5884,8 +5846,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5904,8 +5866,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5924,8 +5886,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5944,8 +5906,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5964,8 +5926,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -5984,8 +5946,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6004,8 +5966,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6024,8 +5986,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6044,8 +6006,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6064,8 +6026,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6084,8 +6046,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6104,8 +6066,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -6124,8 +6086,8 @@
         "description": "",
         "operands": [
           "cc",
-          "fs",
-          "ft"
+          "fd",
+          "fs"
         ],
         "pseudo": false,
         "introduced": "mdmx",
@@ -7568,7 +7530,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7587,7 +7549,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7606,7 +7568,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7625,7 +7587,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7644,7 +7606,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7663,7 +7625,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7682,7 +7644,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -7701,7 +7663,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
+          "rd",
           "rs"
         ],
         "pseudo": false,
@@ -8136,11 +8098,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to rs plus immediate (64-bit)",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -8211,11 +8172,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to rs plus 2-bit immediate (64-bit), no overflow",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -8416,21 +8376,6 @@
     "description": "doubleword divide",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -8464,21 +8409,6 @@
   "ddivu": {
     "description": "doubleword divide unsigned",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
       {
         "pseudo": false,
         "dialects": [
@@ -8688,36 +8618,6 @@
     "description": "divide",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -8748,6 +8648,21 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rd to (rs divided by immediate, integer division)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       },
       {
         "dialects": [
@@ -8813,36 +8728,6 @@
     "description": "divide unsigned",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -8879,12 +8764,27 @@
           "gas",
           "spim"
         ],
-        "description": "",
+        "description": "Divide HI:LO by rs, quotient in LO, remainder in HI",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rd to (rs divided by immediate, unsigned integer division)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -8897,9 +8797,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Compute and load 64-bit effective address into rs",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -8916,9 +8816,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Load 64-bit computed address into rs",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -8935,9 +8835,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Set t to immediate",
         "operands": [
-          "rt",
+          "rs",
           "imm16_s"
         ],
         "pseudo": false,
@@ -8949,9 +8849,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Load 16-bit zero-extended immediate into rs (64-bit)",
         "operands": [
-          "rt",
+          "rs",
           "imm16_u"
         ],
         "pseudo": false,
@@ -8965,8 +8865,7 @@
         ],
         "description": "",
         "operands": [
-          "rt",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9282,21 +9181,6 @@
     "description": "doubleword multiply",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -9310,6 +9194,20 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips3",
+        "deprecated": null,
+        "mips32": false
       }
     ]
   },
@@ -9320,11 +9218,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Multiply rs by rt (64-bit), store result in rd with overflow trap",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9335,11 +9233,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Multiply rs by rt (64-bit), store result in rd with overflow trap",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9355,11 +9252,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Multiply rs by rt (64-bit unsigned) with overflow",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9370,11 +9267,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Multiply rs by rt (64-bit unsigned) with overflow",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9448,10 +9344,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Set rd to two's complement negation of rs (64-bit)",
         "operands": [
           "rd",
-          "rt"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips3",
@@ -9467,10 +9363,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Set rd to negation of rs without overflow check (64-bit)",
         "operands": [
           "rd",
-          "rt"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips3",
@@ -9482,21 +9378,6 @@
   "drem": {
     "description": "doubleword remainder",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
       {
         "dialects": [
           "gas"
@@ -9516,10 +9397,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Divide HI:LO by rs, remainder in rd (64-bit signed, pseudo)",
         "operands": [
-          "rs",
-          "rt"
+          "rd",
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips3",
@@ -9531,21 +9412,6 @@
   "dremu": {
     "description": "doubleword remainder unsigned",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
       {
         "dialects": [
           "gas"
@@ -9565,10 +9431,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Divide HI:LO by rs, remainder in rd (64-bit unsigned, pseudo)",
         "operands": [
-          "rs",
-          "rt"
+          "rd",
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips3",
@@ -9600,11 +9466,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Rotate rs left by rt bits, store in rd (64-bit)",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9615,11 +9481,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Rotate rs left by rt bits, store in rd (64-bit)",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
@@ -9631,21 +9496,6 @@
   "dror": {
     "description": "doubleword rotate right",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
       {
         "dialects": [
           "gas"
@@ -9668,7 +9518,21 @@
         "description": "",
         "operands": [
           "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips3",
+        "deprecated": null,
+        "mips32": false
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Rotate rt right by 5-bit immediate, result in rs",
+        "operands": [
           "rt",
+          "rs",
           "imm5_u"
         ],
         "pseudo": false,
@@ -9685,10 +9549,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Rotate rt right by (32+immediate), result in rs",
         "operands": [
-          "rd",
           "rt",
+          "rs",
           "imm5_u"
         ],
         "pseudo": false,
@@ -9725,11 +9589,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Rotate rs left by rt bits, store in rd (64-bit)",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips64r2",
@@ -9740,11 +9604,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Rotate rs left by rt bits, store in rd (64-bit)",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips64r2",
@@ -9756,21 +9619,6 @@
   "drotr": {
     "description": "doubleword rotate right",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips64r2",
-        "deprecated": null,
-        "mips32": false
-      },
       {
         "dialects": [
           "gas"
@@ -9787,10 +9635,22 @@
         "mips32": false
       },
       {
-        "pseudo": true,
         "dialects": [
           "gas"
         ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips64r2",
+        "deprecated": null,
+        "mips32": false
+      },
+      {
+        "pseudo": false,
+        "dialects": [],
         "description": "Rotate rt right by sa bits, store in rd",
         "introduced": "mips64r2",
         "deprecated": null,
@@ -10065,21 +9925,6 @@
     "description": "doubleword subtract",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips3",
-        "deprecated": null,
-        "mips32": false
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -10093,12 +9938,7 @@
           "rs",
           "rt"
         ]
-      }
-    ]
-  },
-  "dsubu": {
-    "description": "doubleword subtract unsigned",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -10106,14 +9946,18 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips3",
         "deprecated": null,
         "mips32": false
-      },
+      }
+    ]
+  },
+  "dsubu": {
+    "description": "doubleword subtract unsigned",
+    "variants": [
       {
         "pseudo": false,
         "dialects": [
@@ -10128,6 +9972,20 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips3",
+        "deprecated": null,
+        "mips32": false
       }
     ]
   },
@@ -10382,9 +10240,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Flush cache line at specified address",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": false,
@@ -10423,9 +10281,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Invalidate cache line at specified address",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": false,
@@ -10579,9 +10437,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Jump to address in rs, save return (no delay slot)",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -10692,9 +10550,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Jump to address in rs (no delay slot)",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -10749,20 +10607,6 @@
         "introduced": "mips2",
         "deprecated": null,
         "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "ft",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -10812,20 +10656,6 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "ft",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -10837,9 +10667,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to immediate",
         "operands": [
-          "rd",
+          "rs",
           "imm32_s"
         ],
         "pseudo": true,
@@ -10852,9 +10682,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to label's address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -10864,22 +10694,9 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
         ],
         "description": "Load effective address into rt",
         "operands": [
@@ -10919,10 +10736,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to sign-extended 8-bit value from effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -10933,24 +10750,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to sign-extended 8-bit value from effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11001,10 +10804,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to zero-extended 8-bit value from effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11015,24 +10818,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to zero-extended 8-bit value from effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11122,10 +10911,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs and the next register to the 64 bits starting at effective memory word address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11137,9 +10926,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs and the next register to the 64 bits starting at effective memory word address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -11149,18 +10938,18 @@
       },
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "",
         "operands": [
-          "rd",
-          "offset(base)"
+          "rs",
+          "offset",
+          "rt"
         ],
-        "pseudo": true,
-        "introduced": null,
+        "pseudo": false,
+        "introduced": "mips64r6",
         "deprecated": null,
-        "mips32": true
+        "mips32": false
       },
       {
         "pseudo": false,
@@ -11185,10 +10974,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set fd and ft register pair to 64-bit value at effective memory doubleword address",
         "operands": [
-          "fd",
-          "imm32_s"
+          "ft",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11199,9 +10988,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set fd and ft register pair to 64-bit value at effective memory doubleword address",
         "operands": [
-          "fd",
+          "ft",
           "label"
         ],
         "pseudo": true,
@@ -11224,20 +11013,6 @@
           "ft",
           "offset(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "Load 64 bits from memory into FP register ft",
-        "operands": [
-          "ft",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -11253,7 +11028,7 @@
         "operands": [
           "rt",
           "imm11_s",
-          "rd"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -11380,10 +11155,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to sign-extended 16-bit value from effective memory halfword address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11394,24 +11169,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to sign-extended 16-bit value from effective memory halfword address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11462,10 +11223,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to zero-extended 16-bit value from effective memory halfword address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11476,24 +11237,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to zero-extended 16-bit value from effective memory halfword address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11542,16 +11289,14 @@
     "variants": [
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs"
         ],
         "pseudo": true,
-        "introduced": null,
+        "introduced": "mips1",
         "deprecated": null,
         "mips32": true
       },
@@ -11585,15 +11330,16 @@
       },
       {
         "dialects": [
-          "gas"
+          "mars",
+          "spim"
         ],
-        "description": "Set rt to immediate value (0-3)",
+        "description": "Set rd to immediate",
         "operands": [
           "rt",
-          "imm2_u"
+          "imm32_s"
         ],
         "pseudo": true,
-        "introduced": "mips1",
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -11606,10 +11352,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Move double-precision value from fs to rt",
         "operands": [
           "rt",
-          "fd"
+          "fs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -11625,10 +11371,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Move single-precision value from rt to fs",
         "operands": [
-          "ft",
-          "rs"
+          "fs",
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -11639,10 +11385,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Move single-precision value from fs to rt",
         "operands": [
           "rt",
-          "fd"
+          "fs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -11658,9 +11404,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Paired with store conditional (sc) to perform atomic read-modify-write. Treated as equivalent to load word (lw) because MARS does not simulate multiple processors.",
         "operands": [
-          "rd",
+          "rs",
           "imm32_s"
         ],
         "pseudo": true,
@@ -11672,24 +11418,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Paired with store conditional (sc) to perform atomic read-modify-write. Treated as equivalent to load word (lw) because MARS does not simulate multiple processors.",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11737,6 +11469,21 @@
     "description": "load linked doubleword paired",
     "variants": [
       {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Load linked doubleword pair from memory into rs and rt",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips64r6",
+        "deprecated": null,
+        "mips32": false
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -11750,21 +11497,6 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips64r6",
-        "deprecated": null,
-        "mips32": false
       }
     ]
   },
@@ -11791,6 +11523,21 @@
     "description": "load linked word paired",
     "variants": [
       {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Load linked word pair from memory into rs and rt",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips32r6",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -11804,27 +11551,27 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips32r6",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
   "llwpe": {
     "description": "load linked word paired (EVA)",
     "variants": [
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Load linked word pair in EVA mode into rs and rt",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
       {
         "pseudo": false,
         "dialects": [
@@ -11839,21 +11586,6 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -11963,10 +11695,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to contents of effective memory word address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -11977,9 +11709,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to contents of memory word at label's address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -11989,15 +11721,17 @@
       },
       {
         "dialects": [
-          "mars"
+          "gas",
+          "spim"
         ],
         "description": "",
         "operands": [
-          "rd",
-          "offset(base)"
+          "rs",
+          "offset",
+          "rt"
         ],
-        "pseudo": true,
-        "introduced": null,
+        "pseudo": false,
+        "introduced": "mips32r6",
         "deprecated": null,
         "mips32": true
       },
@@ -12045,10 +11779,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set fs to 32-bit value from effective memory word address",
         "operands": [
-          "fd",
-          "imm32_s"
+          "ft",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -12059,9 +11793,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set fs to 32-bit value from effective memory word address",
         "operands": [
-          "fd",
+          "ft",
           "label"
         ],
         "pseudo": true,
@@ -12084,20 +11818,6 @@
           "ft",
           "offset(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "Load 32 bits from memory into FP register ft",
-        "operands": [
-          "ft",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -12113,7 +11833,7 @@
         "operands": [
           "rt",
           "imm11_s",
-          "rd"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -12182,10 +11902,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Load from 1 to 4 bytes left-justified into rd, starting with effective memory byte address and continuing through the low-order byte of its word",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -12196,24 +11916,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Load from 1 to 4 bytes left-justified into rd, starting with effective memory byte address and continuing through the low-order byte of its word",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -12283,10 +11989,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Load from 1 to 4 bytes right-justified into rd, starting with effective memory byte address and continuing through the high-order byte of its word",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -12297,24 +12003,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Load from 1 to 4 bytes right-justified into rd, starting with effective memory byte address and continuing through the high-order byte of its word",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -12361,6 +12053,21 @@
   "lwu": {
     "description": "load word unsigned",
     "variants": [
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs",
+          "offset",
+          "rt"
+        ],
+        "pseudo": false,
+        "introduced": "mips64r6",
+        "deprecated": null,
+        "mips32": false
+      },
       {
         "pseudo": false,
         "dialects": [
@@ -12729,16 +12436,16 @@
     "variants": [
       {
         "dialects": [
-          "mars",
+          "gas",
           "spim"
         ],
-        "description": "",
+        "description": "Move word from CP0 register to GPR rt",
         "operands": [
-          "rd",
-          "rs"
+          "rt",
+          "cop_reg"
         ],
         "pseudo": false,
-        "introduced": null,
+        "introduced": "mips1",
         "deprecated": null,
         "mips32": true
       },
@@ -12756,21 +12463,6 @@
           "rt",
           "rd",
           "sel"
-        ]
-      },
-      {
-        "pseudo": false,
-        "dialects": [
-          "gas",
-          "spim"
-        ],
-        "description": "Load word from CP0 register rd into rt",
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true,
-        "operands": [
-          "rt",
-          "rd"
         ]
       }
     ]
@@ -12819,9 +12511,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rd to contents of fd, set next higher register from rd to contents of next higher register from fd",
         "operands": [
-          "rd",
+          "rt",
           "fs"
         ],
         "pseudo": true,
@@ -12993,6 +12685,21 @@
     "description": "move from high coprocessor 2",
     "variants": [
       {
+        "dialects": [
+          "gas",
+          "spim"
+        ],
+        "description": "Load upper 32 bits from CP2 register specified by immediate into rs",
+        "operands": [
+          "rs",
+          "imm16_u"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -13006,21 +12713,6 @@
           "rt",
           "cop_reg"
         ]
-      },
-      {
-        "dialects": [
-          "gas",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "imm16_u"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
       },
       {
         "pseudo": false,
@@ -13343,11 +13035,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Conditional move on FP false",
         "operands": [
           "rd",
-          "rs",
-          "imm16_s"
+          "rs"
         ],
         "pseudo": false,
         "introduced": null,
@@ -13359,10 +13050,11 @@
           "mars",
           "spim"
         ],
-        "description": "Conditional move on FP false",
+        "description": "Move rs to rt if FP condition false (pseudo with immediate)",
         "operands": [
-          "rd",
-          "rs"
+          "rt",
+          "rs",
+          "imm16_s"
         ],
         "pseudo": false,
         "introduced": null,
@@ -13607,11 +13299,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Conditional move on FP true",
         "operands": [
           "rd",
-          "rs",
-          "imm16_s"
+          "rs"
         ],
         "pseudo": false,
         "introduced": null,
@@ -13623,10 +13314,11 @@
           "mars",
           "spim"
         ],
-        "description": "Conditional move on FP true",
+        "description": "Move rs to rt if FP condition true (pseudo with immediate)",
         "operands": [
-          "rd",
-          "rs"
+          "rt",
+          "rs",
+          "imm16_s"
         ],
         "pseudo": false,
         "introduced": null,
@@ -13934,9 +13626,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Load message from inter-thread queue into rs",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -13963,9 +13655,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Send value in rs to inter-thread communication queue",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -13981,9 +13673,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Wait for message and load into rs",
         "operands": [
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -14156,16 +13848,16 @@
     "variants": [
       {
         "dialects": [
-          "mars",
+          "gas",
           "spim"
         ],
-        "description": "",
+        "description": "Move word from GPR rt to CP0 register",
         "operands": [
-          "rd",
-          "rs"
+          "rt",
+          "cop_reg"
         ],
         "pseudo": false,
-        "introduced": null,
+        "introduced": "mips1",
         "deprecated": null,
         "mips32": true
       },
@@ -14183,21 +13875,6 @@
           "rt",
           "rd",
           "sel"
-        ]
-      },
-      {
-        "pseudo": false,
-        "dialects": [
-          "gas",
-          "spim"
-        ],
-        "description": "Store word from rt to CP0 register rd",
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true,
-        "operands": [
-          "rt",
-          "rd"
         ]
       }
     ]
@@ -14246,9 +13923,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set fd to contents of rd, set next higher register from fd to contents of next higher register from rd",
         "operands": [
-          "rd",
+          "rt",
           "fs"
         ],
         "pseudo": true,
@@ -14420,6 +14097,21 @@
     "description": "move to high coprocessor 2",
     "variants": [
       {
+        "dialects": [
+          "gas",
+          "spim"
+        ],
+        "description": "Store rs to upper 32 bits of CP2 register specified by immediate",
+        "operands": [
+          "rs",
+          "imm16_u"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -14449,21 +14141,6 @@
           "rt",
           "cop_reg"
         ]
-      },
-      {
-        "dialects": [
-          "gas",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "imm16_u"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -14589,36 +14266,6 @@
     "description": "multiply",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -14634,6 +14281,35 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set hi to high-order 32 bits, lo and rd to low-order 32 bits of the product of rs and immediate (use mfhi to access hi, mflo to access lo)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -14747,37 +14423,6 @@
     "variants": [
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -14790,6 +14435,36 @@
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to low-order 32 bits of the product of rs and immediate",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -14800,37 +14475,6 @@
     "variants": [
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -14843,6 +14487,36 @@
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to low-order 32 bits of the product of rs and immediate",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -14994,21 +14668,6 @@
     "description": "multiply unsigned",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -15022,6 +14681,21 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set hi to high-order 32 bits, lo and rd to low-order 32 bits of (rs multiplied by immediate, unsigned multiplication)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -15046,27 +14720,12 @@
     "variants": [
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "Set rd to two's complement negation of rs (32-bit)",
         "operands": [
           "rd",
           "rs"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rt"
         ],
         "pseudo": false,
         "introduced": "mips1",
@@ -15142,27 +14801,12 @@
     "variants": [
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "Set rd to negation of rs without overflow check (32-bit)",
         "operands": [
           "rd",
           "rs"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rt"
         ],
         "pseudo": false,
         "introduced": "mips1",
@@ -15344,11 +14988,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to bitwise-nor of rs and 2-bit immediate",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -15380,35 +15023,6 @@
     "description": "bitwise or",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -15429,14 +15043,42 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to bitwise-or of rs and 2-bit immediate",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rs to (rd bitwise-or immediate)",
+        "operands": [
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rd to (rs bitwise-or immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -15449,25 +15091,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to (rd bitwise-or immediate)",
         "operands": [
-          "rd",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
           "rs",
-          "imm32_s"
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -15490,6 +15117,21 @@
           "rs",
           "imm16_u"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rd to (rs bitwise-or immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_u"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -15656,6 +15298,21 @@
     "description": "read hardware register",
     "variants": [
       {
+        "dialects": [
+          "gas",
+          "spim"
+        ],
+        "description": "Read hardware register into rs",
+        "operands": [
+          "rs",
+          "sel"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -15670,21 +15327,6 @@
           "rd",
           "sel"
         ]
-      },
-      {
-        "dialects": [
-          "gas",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "sel"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -15870,37 +15512,6 @@
     "variants": [
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -15920,32 +15531,12 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt"
-        ],
-        "pseudo": false,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      }
-    ]
-  },
-  "remu": {
-    "description": "remainder unsigned",
-    "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
+        "description": "Divide HI:LO by rs, remainder in rd (signed, pseudo)",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
-        "pseudo": true,
+        "pseudo": false,
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
@@ -15955,9 +15546,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rd to (remainder of rs divided by immediate)",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -15965,7 +15556,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "remu": {
+    "description": "remainder unsigned",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -15987,13 +15583,29 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Divide HI:LO by rs, remainder in rd (unsigned, pseudo)",
         "operands": [
-          "rs",
-          "rt"
+          "rd",
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to (remainder of rs divided by immediate, unsigned division)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -16059,37 +15671,6 @@
     "variants": [
       {
         "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -16104,27 +15685,6 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "ror": {
-    "description": "rotate right",
-    "variants": [
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
       },
       {
         "dialects": [
@@ -16133,14 +15693,34 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
       },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to (rs rotated left by number of bit positions specified in 5-bit immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      }
+    ]
+  },
+  "ror": {
+    "description": "rotate right",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -16165,7 +15745,37 @@
         "description": "",
         "operands": [
           "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to (rs rotated right by number of bit positions specified in 5-bit immediate)",
+        "operands": [
           "rt",
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Rotate rt right by 5-bit immediate, result in rs",
+        "operands": [
+          "rt",
+          "rs",
           "imm5_u"
         ],
         "pseudo": false,
@@ -16202,11 +15812,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Rotate rs left by amount in rt",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips32r2",
@@ -16217,11 +15827,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Rotate rs left by amount in rt",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips32r2",
@@ -16237,11 +15846,11 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Rotate rs right by amount in rt, store in rd",
         "operands": [
           "rd",
           "rs",
-          "imm2_u"
+          "rt"
         ],
         "pseudo": true,
         "introduced": "mips32r2",
@@ -16252,11 +15861,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Rotate rs right by amount in rt, store in rd",
+        "description": "",
         "operands": [
           "rd",
-          "rs",
-          "rt"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips32r2",
@@ -16575,26 +16183,11 @@
       },
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "Store 64-bit FP value from fd to memory",
         "operands": [
           "fd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "ft",
           "offset(base)"
         ],
         "pseudo": false,
@@ -16639,26 +16232,11 @@
       },
       {
         "dialects": [
-          "mars",
-          "spim"
+          "gas"
         ],
         "description": "Store 32-bit FP value from fd to memory",
         "operands": [
           "fd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "ft",
           "offset(base)"
         ],
         "pseudo": false,
@@ -16713,10 +16291,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store the low-order 8 bits of rd into the effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -16727,24 +16305,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store the low-order 8 bits of rd into the effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -16795,9 +16359,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Paired with load linked (ll) to perform atomic read-modify-write. Treated as equivalent to store word (sw) because MARS does not simulate multiple processors.",
         "operands": [
-          "rd",
+          "rs",
           "imm32_s"
         ],
         "pseudo": true,
@@ -16809,24 +16373,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Paired with load linked (ll) to perform atomic read-modify-write. Treated as equivalent to store word (sw) because MARS does not simulate multiple processors.",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -16893,6 +16443,21 @@
     "description": "store conditional doubleword paired",
     "variants": [
       {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Conditionally store rs and rt to memory",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips64r6",
+        "deprecated": null,
+        "mips32": false
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -16906,21 +16471,6 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips64r6",
-        "deprecated": null,
-        "mips32": false
       }
     ]
   },
@@ -16947,6 +16497,21 @@
     "description": "store conditional word paired",
     "variants": [
       {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Conditionally store rs and rt to memory",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips32r6",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
         "pseudo": false,
         "dialects": [
           "gas"
@@ -16960,27 +16525,27 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips32r6",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
   "scwpe": {
     "description": "store conditional word paired (EVA)",
     "variants": [
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Conditionally store rs and rt in EVA mode",
+        "operands": [
+          "rs",
+          "rt",
+          "offset(base)"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
       {
         "pseudo": false,
         "dialects": [
@@ -16995,21 +16560,6 @@
           "rd",
           "(base)"
         ]
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
       }
     ]
   },
@@ -17021,10 +16571,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store contents of rd and the next register to the 64 bits starting at effective memory word address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17036,25 +16586,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store contents of rd and the next register to the 64 bits starting at effective memory word address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17115,10 +16650,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store 64-bit from FP register ft to memory address imm32",
         "operands": [
-          "fd",
-          "imm32_s"
+          "ft",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17129,24 +16664,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store 64-bit from FP register ft to label address",
         "operands": [
-          "fd",
+          "ft",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "fd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17183,7 +16704,7 @@
         "operands": [
           "rt",
           "imm11_s",
-          "rd"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -17489,37 +17010,6 @@
     "variants": [
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -17534,12 +17024,7 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "sge": {
-    "description": "set on greater or equal",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -17547,8 +17032,7 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -17560,9 +17044,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "If rs equal to immediate then set rt to 1 else 0",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -17570,7 +17054,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "sge": {
+    "description": "set on greater or equal",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -17587,12 +17076,7 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "sgeu": {
-    "description": "set on greater or equal unsigned",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -17600,8 +17084,7 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -17613,9 +17096,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "If rs greater or equal to immediate then set rt to 1 else 0",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -17623,7 +17106,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "sgeu": {
+    "description": "set on greater or equal unsigned",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -17640,12 +17128,7 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "sgt": {
-    "description": "set on greater than",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -17653,8 +17136,7 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -17666,9 +17148,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "If rs greater or equal to immediate (unsigned compare) then set rt to 1 else 0",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -17676,7 +17158,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "sgt": {
+    "description": "set on greater than",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -17693,12 +17180,7 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "sgtu": {
-    "description": "set on greater than unsigned",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -17706,8 +17188,7 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -17719,9 +17200,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "If rs greater than immediate then set rt to 1 else 0",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -17729,7 +17210,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "sgtu": {
+    "description": "set on greater than unsigned",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -17746,6 +17232,36 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "If rs greater than immediate (unsigned compare) then set rt to 1 else 0",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -17756,10 +17272,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store the low-order 16 bits of rd into the effective memory halfword address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17770,24 +17286,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store the low-order 16 bits of rd into the effective memory halfword address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -17854,37 +17356,6 @@
     "variants": [
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "mars",
           "spim"
@@ -17899,21 +17370,15 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      }
-    ]
-  },
-  "sleu": {
-    "description": "set on less or equal unsigned",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Set rt to 1 if rs <= 0, else 0",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
@@ -17925,9 +17390,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "If rs less or equal to immediate then set rt to 1 else 0",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -17935,7 +17400,12 @@
         "introduced": null,
         "deprecated": null,
         "mips32": true
-      },
+      }
+    ]
+  },
+  "sleu": {
+    "description": "set on less or equal unsigned",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -17950,6 +17420,36 @@
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "If rs less or equal to immediate (unsigned compare) then set rt to 1 else 0",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -18003,21 +17503,6 @@
     "description": "set on less than",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -18033,6 +17518,20 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -18084,21 +17583,6 @@
     "description": "set on less than unsigned",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -18114,12 +17598,7 @@
           "rs",
           "rt"
         ]
-      }
-    ]
-  },
-  "sne": {
-    "description": "set on not equal",
-    "variants": [
+      },
       {
         "dialects": [
           "gas"
@@ -18127,30 +17606,18 @@
         "description": "",
         "operands": [
           "rd",
-          "rs",
-          "imm2_u"
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
-      },
-      {
-        "dialects": [
-          "mars",
-          "spim"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
+      }
+    ]
+  },
+  "sne": {
+    "description": "set on not equal",
+    "variants": [
       {
         "dialects": [
           "gas",
@@ -18165,6 +17632,36 @@
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "If rs not equal to immediate then set rt to 1 else 0",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -18358,36 +17855,6 @@
     "description": "subtract",
     "variants": [
       {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -18403,6 +17870,35 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs minus immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -18478,9 +17974,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rt to (rs minus immediate)",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -18498,9 +17994,9 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rt to (rs minus immediate), no overflow",
         "operands": [
-          "rd",
+          "rt",
           "rs",
           "imm32_s"
         ],
@@ -18514,36 +18010,6 @@
   "subu": {
     "description": "subtract unsigned",
     "variants": [
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips1",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
       {
         "pseudo": false,
         "dialects": [
@@ -18560,6 +18026,35 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs minus immediate), no overflow",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -18590,10 +18085,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store rd contents into effective memory word address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18604,24 +18099,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store rd contents into memory word at label's address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18672,10 +18153,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store 32-bit from FP register ft to memory address imm32",
         "operands": [
-          "fd",
-          "imm32_s"
+          "ft",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18686,24 +18167,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store 32-bit from FP register ft to label address",
         "operands": [
-          "fd",
+          "ft",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "fd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18740,7 +18207,7 @@
         "operands": [
           "rt",
           "imm11_s",
-          "rd"
+          "rs"
         ],
         "pseudo": false,
         "introduced": "mips32r6",
@@ -18809,10 +18276,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store high-order 1 to 4 bytes of rd into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18823,24 +18290,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store high-order 1 to 4 bytes of rd into memory, starting with effective memory byte address and continuing through the low-order byte of its word",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18891,10 +18344,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store low-order 1 to 4 bytes of rd into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -18905,24 +18358,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Store low-order 1 to 4 bytes of rd into memory, starting with high-order byte of word containing effective memory byte address and continuing through that byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "offset(base)"
         ],
         "pseudo": true,
         "introduced": null,
@@ -19200,20 +18639,6 @@
       },
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs equals 2-bit immediate",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "spim"
         ],
@@ -19243,6 +18668,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19287,20 +18725,6 @@
       },
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs >= 2-bit immediate (signed)",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "spim"
         ],
@@ -19330,6 +18754,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19395,20 +18832,6 @@
       },
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs >= 2-bit immediate (unsigned)",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "spim"
         ],
@@ -19438,6 +18861,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19561,20 +18997,6 @@
       },
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs < 2-bit immediate (signed)",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "spim"
         ],
@@ -19604,6 +19026,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19669,20 +19104,6 @@
       },
       {
         "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs < 2-bit immediate (unsigned)",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
           "gas",
           "spim"
         ],
@@ -19712,6 +19133,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19729,20 +19163,6 @@
           "imm16_s"
         ],
         "pseudo": false,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "Trap if rs != 2-bit immediate",
-        "operands": [
-          "rs",
-          "imm2_u"
-        ],
-        "pseudo": true,
         "introduced": "mips2",
         "deprecated": null,
         "mips32": true
@@ -19778,6 +19198,19 @@
           "rs",
           "rt"
         ]
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "",
+        "operands": [
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": "mips2",
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -19850,29 +19283,14 @@
           "gas",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "fd",
-          "fs",
-          "rs"
-        ],
-        "pseudo": false,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
         "description": "Convert fs to 32-bit integer in fd using rounding mode from rt",
         "operands": [
           "fd",
           "fs",
           "rt"
         ],
-        "pseudo": true,
-        "introduced": "mips1",
+        "pseudo": false,
+        "introduced": "mips2",
         "deprecated": null,
         "mips32": true
       },
@@ -19902,29 +19320,14 @@
           "gas",
           "spim"
         ],
-        "description": "",
-        "operands": [
-          "fd",
-          "fs",
-          "rs"
-        ],
-        "pseudo": false,
-        "introduced": "mips2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
         "description": "Convert fs to 32-bit integer in fd using rounding mode from rt",
         "operands": [
           "fd",
           "fs",
           "rt"
         ],
-        "pseudo": true,
-        "introduced": "mips1",
+        "pseudo": false,
+        "introduced": "mips2",
         "deprecated": null,
         "mips32": true
       },
@@ -19966,24 +19369,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -19995,12 +19384,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20029,24 +19432,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20058,12 +19447,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20092,24 +19495,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20121,12 +19510,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20155,24 +19558,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20184,12 +19573,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20218,24 +19621,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20247,12 +19636,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20281,24 +19684,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20310,12 +19699,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20344,24 +19747,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20373,12 +19762,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20407,24 +19810,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20436,12 +19825,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20470,24 +19873,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20499,12 +19888,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20533,24 +19936,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20562,12 +19951,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20596,24 +19999,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20625,12 +20014,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20659,24 +20062,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20688,12 +20077,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20722,24 +20125,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20751,12 +20140,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20785,24 +20188,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20814,12 +20203,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20848,24 +20251,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20877,12 +20266,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20911,24 +20314,10 @@
         "dialects": [
           "gas"
         ],
-        "description": "Vendor-specific operation with source and 3-bit hint",
+        "description": "Vendor-specific operation with 2-bit hint",
         "operands": [
+          "rd",
           "rs",
-          "hint3"
-        ],
-        "pseudo": false,
-        "introduced": "mips32r2",
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rs",
-          "rt",
           "hint2"
         ],
         "pseudo": false,
@@ -20940,12 +20329,26 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Vendor-specific operation with three registers and 5-bit hint",
         "operands": [
+          "rd",
           "rs",
           "rt",
-          "rd",
           "hint5"
+        ],
+        "pseudo": false,
+        "introduced": "mips32r2",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "gas"
+        ],
+        "description": "Vendor-specific operation with source and 3-bit hint",
+        "operands": [
+          "rs",
+          "hint3"
         ],
         "pseudo": false,
         "introduced": "mips32r2",
@@ -20961,9 +20364,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Load 64 bits from unaligned address into rs",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -20981,10 +20384,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, sign-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -20996,9 +20399,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, sign-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -21008,26 +20411,13 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, sign-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21045,10 +20435,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, zero-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -21060,9 +20450,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, zero-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -21072,26 +20462,13 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 16 bits, zero-extended, starting at effective memory byte address",
         "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21109,10 +20486,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -21124,9 +20501,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -21136,26 +20513,13 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Set rs to the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21172,9 +20536,9 @@
         "dialects": [
           "gas"
         ],
-        "description": "",
+        "description": "Store 64 bits from rs to unaligned address",
         "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21192,10 +20556,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store low-order halfword rd contents into the 16 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -21207,9 +20571,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store low-order halfword rd contents into the 16 bits starting at effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -21219,26 +20583,13 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store low-order halfword rd contents into the 16 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21256,10 +20607,10 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store rd contents into the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "imm32_s"
+          "rs",
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -21271,9 +20622,9 @@
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store rd contents into the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
+          "rs",
           "label"
         ],
         "pseudo": true,
@@ -21283,26 +20634,13 @@
       },
       {
         "dialects": [
+          "gas",
           "mars",
           "spim"
         ],
-        "description": "",
+        "description": "Store rd contents into the 32 bits starting at effective memory byte address",
         "operands": [
-          "rd",
-          "offset(base)"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "gas"
-        ],
-        "description": "",
-        "operands": [
-          "rt",
+          "rs",
           "offset(base)"
         ],
         "pseudo": true,
@@ -21385,35 +20723,6 @@
     "description": "bitwise exclusive or",
     "variants": [
       {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
-          "rs",
-          "imm16_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
         "pseudo": false,
         "dialects": [
           "gas",
@@ -21434,14 +20743,42 @@
         "dialects": [
           "gas"
         ],
-        "description": "Set rt to bitwise-xor of rs and 2-bit immediate",
+        "description": "",
         "operands": [
-          "rt",
-          "rs",
-          "imm2_u"
+          "rd",
+          "rs"
         ],
         "pseudo": true,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rs to (rd bitwise-exclusive-or immediate)",
+        "operands": [
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs bitwise-exclusive-or immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm16_s"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -21454,25 +20791,10 @@
         "dialects": [
           "mars"
         ],
-        "description": "",
+        "description": "Set rs to (rd bitwise-exclusive-or immediate)",
         "operands": [
-          "rd",
-          "imm32_s"
-        ],
-        "pseudo": true,
-        "introduced": null,
-        "deprecated": null,
-        "mips32": true
-      },
-      {
-        "dialects": [
-          "mars"
-        ],
-        "description": "",
-        "operands": [
-          "rd",
           "rs",
-          "imm32_s"
+          "imm32_u"
         ],
         "pseudo": true,
         "introduced": null,
@@ -21495,6 +20817,21 @@
           "rs",
           "imm16_u"
         ]
+      },
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rt to (rs bitwise-exclusive-or immediate)",
+        "operands": [
+          "rt",
+          "rs",
+          "imm32_u"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   }

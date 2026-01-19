@@ -40,7 +40,7 @@ impl Backend {
         let kind = cursor_node.kind();
         let cursor_node_text = cursor_node.utf8_text(text.as_bytes()).unwrap_or_default();
 
-        let definitions = self.definitions.wait().read().await;
+        let definitions = self.definitions.read().await;
 
         let hover = match kind {
             "opcode" => hover_instruction(&definitions.instructions, cursor_node_text),

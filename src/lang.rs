@@ -175,15 +175,9 @@ pub struct LanguageDefinitions {
 }
 
 impl LanguageDefinitions {
-    pub fn new(settings: &Settings) -> Self {
-        let raw_instructions = load_instructions();
-        let instructions = process_instructions(raw_instructions, settings)
-            .expect("Failed to process instruction definitions");
-
-        let raw_directives = load_directives();
-        let directives = process_directives(raw_directives, settings)
-            .expect("Failed to process directive definitions");
-
+    pub fn new() -> Self {
+        let instructions = HashMap::new();
+        let directives = HashMap::new();
         let registers = load_registers();
 
         Self {
@@ -191,6 +185,17 @@ impl LanguageDefinitions {
             directives,
             registers,
         }
+    }
+
+    pub fn parse(&mut self, settings: &Settings) {
+        let raw_instructions = load_instructions();
+        self.instructions = process_instructions(raw_instructions, settings)
+            .expect("Failed to process instruction definitions");
+
+        let raw_directives = load_directives();
+        self.directives = process_directives(raw_directives, settings)
+            .expect("Failed to process directive definitions");
+
     }
 }
 
@@ -330,7 +335,6 @@ fn build_instruction_hover_info(
         if let Some(d) = v.deprecated {
             part.push_str(format!("Deprecated: {:?} | ", d).as_str());
         }
-        log!("depr: {:?}", v.deprecated);
 
         let dialects_str = {
             let mut dialects: Vec<String> = v.dialects.iter().map(|d| d.to_string()).collect();

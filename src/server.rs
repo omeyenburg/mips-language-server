@@ -33,9 +33,9 @@ pub type Documents = dashmap::DashMap<tower_lsp_server::lsp_types::Uri, Arc<RwLo
 
 pub struct Backend {
     pub client: Client,
-    pub settings: OnceLock<Settings>,
+    pub settings: RwLock<Settings>,
     pub documents: Documents,
-    pub definitions: OnceLock<LanguageDefinitions>,
+    pub definitions: RwLock<LanguageDefinitions>,
 }
 
 fn get_server_info() -> ServerInfo {
@@ -83,17 +83,18 @@ impl LanguageServer for Backend {
         log!("Received initialization params:");
         log!("{:?}", params);
 
-        let settings = Settings::new(params.initialization_options)
-            .map_err(|e| jsonrpc::Error::invalid_params(e.to_string()))?;
+        if let Some(settings) = params.initialization_options {
+            self.settings
+                .write()
+                .await
+                .parse(settings)
+                .map_err(|e| jsonrpc::Error::invalid_params(e.to_string()))?;
 
-        let definitions = LanguageDefinitions::new(&settings);
-
-        self.settings
-            .set(settings)
-            .expect("Settings were already initialized");
-        self.definitions
-            .set(definitions)
-            .expect("Definitions were already initialized");
+            self.definitions
+                .write()
+                .await
+                .parse(&*&self.settings.read().await);
+        }
 
         Ok(InitializeResult {
             server_info: Some(get_server_info()),
@@ -113,6 +114,17 @@ impl LanguageServer for Backend {
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         log!("workspace/didChangeConfiguration");
         log!("options {:?}", params);
+
+        let result = self.settings.write().await.parse(params.settings);
+        if let Err(e) = result {
+            log!("Got settings error: {}", e);
+            return;
+        }
+
+        self.definitions
+            .write()
+            .await
+            .parse(&*&self.settings.read().await);
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
@@ -208,9 +220,13 @@ impl LanguageServer for Backend {
 
 impl Backend {
     pub fn new(client: Client) -> Self {
-        let settings = OnceLock::new();
         let documents = dashmap::DashMap::new();
-        let definitions = OnceLock::new();
+
+        let default_settings = Settings::default();
+        let default_definitions = LanguageDefinitions::new();
+
+        let settings = RwLock::new(default_settings);
+        let definitions = RwLock::new(default_definitions);
 
         Self {
             client,

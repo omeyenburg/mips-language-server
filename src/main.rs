@@ -6,14 +6,14 @@
 mod logging;
 
 mod server;
-mod version;
 mod settings;
+mod version;
 
-mod tree;
 mod lang;
+mod tree;
 
-mod diagnostic;
 mod completion;
+mod diagnostic;
 mod hover;
 
 #[tokio::main]
