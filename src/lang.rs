@@ -38,7 +38,9 @@ impl fmt::Display for Dialect {
 
 impl Dialect {
     pub fn parse(s: &str) -> Result<Self, SettingsError> {
-        match s {
+        let unformatted: String = s.to_lowercase();
+
+        match unformatted.as_str() {
             "gas" => Ok(Dialect::GAS),
             "mars" => Ok(Dialect::MARS),
             "spim" => Ok(Dialect::SPIM),

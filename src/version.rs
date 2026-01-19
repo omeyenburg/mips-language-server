@@ -247,12 +247,19 @@ impl Version {
     }
 
     pub fn parse(s: &str) -> Result<&'static Version, SettingsError> {
-        match s {
+        let unformatted: String = s.to_lowercase().replace(" ", "");
+
+        match unformatted.as_str() {
             "mips1" => Ok(&MIPS1),
+            "mipsi" => Ok(&MIPS1),
             "mips2" => Ok(&MIPS2),
+            "mipsii" => Ok(&MIPS2),
             "mips3" => Ok(&MIPS3),
+            "mipsiii" => Ok(&MIPS3),
             "mips4" => Ok(&MIPS4),
+            "mipsiv" => Ok(&MIPS4),
             "mips5" => Ok(&MIPS5),
+            "mipsv" => Ok(&MIPS5),
             "mips32r1" => Ok(&MIPS32R1),
             "mips32r2" => Ok(&MIPS32R2),
             "mips32r3" => Ok(&MIPS32R3),
