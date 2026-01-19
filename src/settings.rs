@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Number, Value};
 use std::fmt;
 
-use crate::lang::{Dialect, InstructionVariant, ISA};
+use crate::lang::{Dialect, InstructionVariant};
 use crate::version;
 
 #[derive(Debug)]
