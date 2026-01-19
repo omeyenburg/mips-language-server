@@ -80,8 +80,8 @@ fn get_server_capabilities() -> ServerCapabilities {
 
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> jsonrpc::Result<InitializeResult> {
-        log!("Received initialization params:");
-        log!("{:?}", params);
+        // log!("Received initialization params:");
+        // log!("{:?}", params);
 
         if let Some(settings) = params.initialization_options {
             self.settings
@@ -113,7 +113,7 @@ impl LanguageServer for Backend {
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         log!("workspace/didChangeConfiguration");
-        log!("options {:?}", params);
+        // log!("options {:?}", params);
 
         let result = self.settings.write().await.parse(params.settings);
         if let Err(e) = result {
@@ -129,10 +129,10 @@ impl LanguageServer for Backend {
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         log!("textDocument/didOpen");
-        log!(
-            "{:?}",
-            params.text_document.uri.path() // might panic - dont call in prod
-        );
+        // log!(
+        //     "{:?}",
+        //     params.text_document.uri.path() // might panic - dont call in prod
+        // );
 
         let TextDocumentItem {
             uri, text, version, ..
@@ -246,7 +246,7 @@ impl Backend {
             // Stop the server from crashing here
             // Weird bug, maybe happens with multiple changes
             if old_end_byte >= doc.text.len() {
-                log!("Error: something wrong with the bytes but idk");
+                log!("Error: something wrong with the bytes but idk - please write an issue on https://github.com/omeyenburg/mips-language-server");
                 return;
             }
 

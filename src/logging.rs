@@ -8,7 +8,7 @@
 #[cfg(not(feature = "log-file"))]
 macro_rules! log {
     ($($arg:tt)*) => {
-        eprintln!($($arg)*)
+        println!($($arg)*)
     };
 }
 
