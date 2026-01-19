@@ -18,33 +18,44 @@ Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/t
 - Documentation
 - Macros
 
+## Installation
+
+Currently, you have to build the source yourself.
+
+Clone the repo and simply run:
+```
+cargo build --release
+```
+
+You can find the resulting binary in `target/release/`.
+
 ## Configuration
 
 ### Settings
 
 #### dialect
 
-The dialect of your assembler/simulator. 
+The dialect of your assembler/simulator (not case-sensitive).
 
 Available: mars, spim, gas, unspecified
 
 #### version
 
-Mips ISA Version of you assembler/simulator. Not relevant if using mars or spim.
+Mips ISA Version of you assembler/simulator. Not relevant if using mars or spim (not case-sensitive).
 
 Available:
-- Standard versions: mips1,    mips2,    mips3,    mips4,    mips5
-- 32 Bit revisions:  mips32r1, mips32r2, mips32r3, mips32r5, mips32r6
-- 64 Bit revisions:  mips64r1, mips64r2, mips64r3, mips64r5, mips64r6
+- Legacy MIPS versions: 'mips1' (Mips I), 'mips2', (Mips II), 'mips3', (Mips III), 'mips4' (Mips IV), 'mips5' (Mips V)
+- MIPS32 versions:      'mips32r1',       'mips32r2',         'mips32r3',          'mips32r5',        'mips32r6'
+- MIPS64 versions:      'mips64r1',       'mips64r2',         'mips64r3',          'mips64r5',        'mips64r6'
 
 ### Example Configuration
 
 ```json
 {
     "settings": {
-        "Mips": {
-            "dialect": "mars",
-            "version": "mips1"
+        "mipsls": {
+            "dialect": "Mars",
+            "version": "Mips I"
         }
     }
 }
@@ -61,9 +72,9 @@ local config = {
     cmd = { '/path/to/compiled/binary' },
     filetypes = { 'asm' },
     settings = {
-        Mips = {
-            dialect = 'mars',
-            version = 'mips1',
+        mipsls = {
+            dialect = 'gas',
+            version = 'mips32r5',
         }
     }
 }
