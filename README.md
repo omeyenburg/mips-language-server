@@ -9,7 +9,7 @@ Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/t
 - Completion
 - Hover information
 
-## Planned features
+## Planned Features
 - Better parsing & linting of instructions
 - Goto definition
 - Context specific completions
@@ -17,6 +17,60 @@ Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/t
 - References
 - Documentation
 - Macros
+
+## Configuration
+
+### Settings
+
+#### dialect
+
+The dialect of your assembler/simulator. 
+
+Available: mars, spim, gas, unspecified
+
+#### version
+
+Mips ISA Version of you assembler/simulator. Not relevant if using mars or spim.
+
+Available:
+- Standard versions: mips1,    mips2,    mips3,    mips4,    mips5
+- 32 Bit revisions:  mips32r1, mips32r2, mips32r3, mips32r5, mips32r6
+- 64 Bit revisions:  mips64r1, mips64r2, mips64r3, mips64r5, mips64r6
+
+### Example Configuration
+
+```json
+{
+    "settings": {
+        "Mips": {
+            "dialect": "mars",
+            "version": "mips1"
+        }
+    }
+}
+```
+
+## Editor Integration
+
+### NeoVim
+
+With the nvim-lspconfig plugin:
+
+```lua
+local config = {
+    cmd = { '/path/to/compiled/binary' },
+    filetypes = { 'asm' },
+    settings = {
+        Mips = {
+            dialect = 'mars',
+            version = 'mips1',
+        }
+    }
+}
+
+vim.lsp.config("mipsls", config)
+vim.lsp.enable("mipsls")
+```
 
 ## Testing
 This was mostly tested with the latest NeoVim release together with the plugins lsp-config, nvim-cmp and blink.nvim.
