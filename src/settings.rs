@@ -71,18 +71,12 @@ impl Settings {
     // }
 
     pub fn parse(&mut self, unparsed_settings: Value) -> Result<(), SettingsError> {
-        // let raw_settings = unparsed_settings
-        //     .map()
-        //     .transpose()
-        //     .map_err(SettingsError::from)?
-        //     .unwrap_or_default();
-
         let raw_settings = serde_json::from_value::<RawSettings>(unparsed_settings)
             .map_err(SettingsError::from)?;
 
         if let Some(d) = raw_settings.dialect.as_deref() {
             self.dialect = Dialect::parse(d)?;
-        };
+        }
 
         if let Some(v) = raw_settings.version.as_deref() {
             self.version = version::Version::parse(v)?;

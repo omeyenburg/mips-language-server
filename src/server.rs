@@ -80,8 +80,7 @@ fn get_server_capabilities() -> ServerCapabilities {
 
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> jsonrpc::Result<InitializeResult> {
-        // log!("Received initialization params:");
-        // log!("{:?}", params);
+        log!("Starting MIPS language server");
 
         if let Some(settings) = params.initialization_options {
             self.settings
@@ -113,9 +112,14 @@ impl LanguageServer for Backend {
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         log!("workspace/didChangeConfiguration");
-        // log!("options {:?}", params);
 
-        let result = self.settings.write().await.parse(params.settings);
+        let mips_config = params
+            .settings
+            .get("mipsls")
+            .cloned()
+            .unwrap_or_default();
+
+        let result = self.settings.write().await.parse(mips_config);
         if let Err(e) = result {
             log!("Got settings error: {}", e);
             return;
