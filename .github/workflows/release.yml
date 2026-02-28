@@ -1,0 +1,209 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  BIN_NAME: mips-language-server
+
+jobs:
+  build-linux:
+    name: Build (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            use_cross: false
+          - target: aarch64-unknown-linux-gnu
+            use_cross: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cross
+        if: ${{ matrix.use_cross }}
+        run: cargo install cross --locked
+
+      - name: Build (cargo)
+        if: ${{ !matrix.use_cross }}
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Build (cross)
+        if: ${{ matrix.use_cross }}
+        run: cross build --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME}"
+          target="${{ matrix.target }}"
+          dist="dist"
+          mkdir -p "$dist"
+
+          bin_path="target/${target}/release/${BIN_NAME}"
+          test -f "$bin_path"
+
+          pkg="${BIN_NAME}-${version}-${target}"
+          tar -C "$(dirname "$bin_path")" -czf "${dist}/${pkg}.tar.gz" "$(basename "$bin_path")"
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum * > SHA256SUMS-${{ matrix.target }}.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.target }}
+          path: |
+            dist/*.tar.gz
+            dist/*.txt
+
+  build-macos:
+    name: Build (macOS aarch64 + x86_64)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Add targets
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Build (aarch64)
+        run: cargo build --release --target aarch64-apple-darwin
+
+      - name: Build (x86_64)
+        run: cargo build --release --target x86_64-apple-darwin
+
+      - name: Package + checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME}"
+          dist="dist"
+          mkdir -p "$dist"
+
+          for target in aarch64-apple-darwin x86_64-apple-darwin; do
+            bin_path="target/${target}/release/${BIN_NAME}"
+            test -f "$bin_path"
+
+            pkg="${BIN_NAME}-${version}-${target}"
+            tar -C "$(dirname "$bin_path")" -czf "${dist}/${pkg}.tar.gz" "$(basename "$bin_path")"
+          done
+
+          cd dist
+          shasum -a 256 *.tar.gz > SHA256SUMS-macos.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: |
+            dist/*.tar.gz
+            dist/*.txt
+
+  build-windows:
+    name: Build (Windows x86_64)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $version = "${env:GITHUB_REF_NAME}"
+          $target = "x86_64-pc-windows-msvc"
+          $dist = "dist"
+          New-Item -ItemType Directory -Force -Path $dist | Out-Null
+
+          $binPath = "target/$target/release/${env:BIN_NAME}.exe"
+          if (-not (Test-Path $binPath)) { throw "Missing binary at $binPath" }
+
+          $pkg = "${env:BIN_NAME}-$version-$target"
+          Compress-Archive -Path $binPath -DestinationPath "$dist/$pkg.zip" -Force
+
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Get-ChildItem dist -Filter *.zip | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File -FilePath "dist/SHA256SUMS-windows.txt" -Append -Encoding ascii
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x86_64
+          path: |
+            dist/*.zip
+            dist/*.txt
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-macos, build-windows]
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          find artifacts -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.txt' \) -print -exec cp -v {} dist/ \;
+
+      - name: Create Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.txt
+          generate_release_notes: true
