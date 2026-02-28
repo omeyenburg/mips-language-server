@@ -113,11 +113,7 @@ impl LanguageServer for Backend {
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         log!("workspace/didChangeConfiguration");
 
-        let mips_config = params
-            .settings
-            .get("mipsls")
-            .cloned()
-            .unwrap_or_default();
+        let mips_config = params.settings.get("mipsls").cloned().unwrap_or_default();
 
         let result = self.settings.write().await.parse(mips_config);
         if let Err(e) = result {

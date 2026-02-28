@@ -40,6 +40,7 @@ macro_rules! log_init {
             .with_level(false)
             .with_target(false)
             .finish();
-        tracing::subscriber::set_global_default(subscriber).expect("Could not set default subscriber");
+        tracing::subscriber::set_global_default(subscriber)
+            .expect("Could not set default subscriber");
     };
 }

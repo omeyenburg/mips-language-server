@@ -197,7 +197,6 @@ impl LanguageDefinitions {
         let raw_directives = load_directives();
         self.directives = process_directives(raw_directives, settings)
             .expect("Failed to process directive definitions");
-
     }
 }
 
