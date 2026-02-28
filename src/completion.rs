@@ -20,7 +20,7 @@ impl Backend {
         // Retrieve current content and tree
         let arc_doc = self
             .documents
-            .get(&params.text_document_position.text_document.uri.into())
+            .get(&params.text_document_position.text_document.uri)
             .ok_or(jsonrpc::Error::invalid_request())?;
 
         let doc = arc_doc.read().await;

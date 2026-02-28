@@ -66,16 +66,11 @@ fn hover_instruction(instructions: &Instructions, text: &str) -> Option<Hover> {
 
 fn hover_directive(directives: &Directives, text: &str) -> Option<Hover> {
     let stripped_mnemonic = &text.to_string()[1..];
-    if let Some(directive) = directives.get(stripped_mnemonic) {
-        Some(Hover {
-            contents: HoverContents::Scalar(MarkedString::String(String::from(
-                directive.description.to_string(),
-            ))),
-            range: None,
-        })
-    } else {
-        None
-    }
+
+    directives.get(stripped_mnemonic).map(|directive| Hover {
+        contents: HoverContents::Scalar(MarkedString::String(directive.description.to_string())),
+        range: None,
+    })
 }
 
 fn hover_register(registers: &Registers, text: &str) -> Option<Hover> {
@@ -89,12 +84,10 @@ fn hover_register(registers: &Registers, text: &str) -> Option<Hover> {
             contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
             range: None,
         })
-    } else if let Some(register) = registers.float.get(text) {
-        Some(Hover {
+    } else {
+        registers.float.get(text).map(|register| Hover {
             contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
             range: None,
         })
-    } else {
-        None
     }
 }

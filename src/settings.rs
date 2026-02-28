@@ -91,6 +91,6 @@ impl Settings {
 
     // Requires that dialect is supported
     pub fn allow_any_version(&self, v: &InstructionVariant) -> bool {
-        self.dialect == Dialect::MARS || self.dialect == Dialect::SPIM
+        self.dialect == Dialect::Mars || self.dialect == Dialect::Spim
     }
 }

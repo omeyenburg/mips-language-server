@@ -8,18 +8,18 @@ use crate::version::{Version, VersionLabel};
 
 #[derive(Debug, Eq, Serialize, Deserialize, PartialEq)]
 pub enum Dialect {
-    GAS,
-    MARS,
-    SPIM,
+    Gas,
+    Mars,
+    Spim,
     Unspecified,
 }
 
 impl fmt::Display for Dialect {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Dialect::GAS => write!(f, "GAS"),
-            Dialect::MARS => write!(f, "MARS"),
-            Dialect::SPIM => write!(f, "SPIM"),
+            Dialect::Gas => write!(f, "GAS"),
+            Dialect::Mars => write!(f, "MARS"),
+            Dialect::Spim => write!(f, "SPIM"),
             Dialect::Unspecified => write!(f, "Unspecified"),
         }
     }
@@ -41,9 +41,9 @@ impl Dialect {
         let unformatted: String = s.to_lowercase();
 
         match unformatted.as_str() {
-            "gas" => Ok(Dialect::GAS),
-            "mars" => Ok(Dialect::MARS),
-            "spim" => Ok(Dialect::SPIM),
+            "gas" => Ok(Dialect::Gas),
+            "mars" => Ok(Dialect::Mars),
+            "spim" => Ok(Dialect::Spim),
             "unspecified" => Ok(Dialect::Unspecified),
             _ => Err(SettingsError::UnknownDialect(s.into())),
         }

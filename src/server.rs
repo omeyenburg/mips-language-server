@@ -89,16 +89,17 @@ impl LanguageServer for Backend {
                 .parse(settings)
                 .map_err(|e| jsonrpc::Error::invalid_params(e.to_string()))?;
 
+            let unpacked_settings = &self.settings.read().await;
+
             self.definitions
                 .write()
                 .await
-                .parse(&*&self.settings.read().await);
+                .parse(unpacked_settings);
         }
 
         Ok(InitializeResult {
             server_info: Some(get_server_info()),
             capabilities: get_server_capabilities(),
-            ..Default::default()
         })
     }
 
@@ -121,10 +122,12 @@ impl LanguageServer for Backend {
             return;
         }
 
+        let unpacked_settings = &self.settings.read().await;
+
         self.definitions
             .write()
             .await
-            .parse(&*&self.settings.read().await);
+            .parse(unpacked_settings);
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
@@ -181,7 +184,7 @@ impl LanguageServer for Backend {
             // Alternative: use queue ordered by version; if version+3 comes in while waiting for
             // version+1, consider reparsing the document fully
             for change in changes {
-                Backend::handle_change(&mut *doc, change);
+                Backend::handle_change(&mut doc, change);
             }
         }
 
