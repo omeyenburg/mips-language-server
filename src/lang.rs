@@ -234,7 +234,7 @@ fn process_instructions(
                     continue;
                 }
 
-                if settings.allow_any_version(&v) || v.is_valid_for(settings.version) {
+                if settings.allows_any_version(&v) || v.is_valid_for(settings.version) {
                     variants.push(v);
                 }
             }

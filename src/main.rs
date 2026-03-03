@@ -9,8 +9,10 @@ mod server;
 mod settings;
 mod version;
 
+mod ast;
+mod document;
 mod lang;
-mod tree;
+mod semantic;
 
 mod completion;
 mod diagnostic;

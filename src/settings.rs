@@ -89,8 +89,22 @@ impl Settings {
         self.dialect == Dialect::Unspecified || dialects.contains(&self.dialect)
     }
 
-    // Requires that dialect is supported
-    pub fn allow_any_version(&self, v: &InstructionVariant) -> bool {
+    /// Requires that dialect is supported
+    pub fn allows_any_version(&self, v: &InstructionVariant) -> bool {
         self.dialect == Dialect::Mars || self.dialect == Dialect::Spim
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn allows_dialects() {
+        let mut settings = Settings::default();
+        settings.dialect = Dialect::Gas;
+
+        assert!(settings.allows_dialects(&[Dialect::Gas, Dialect::Mars]));
+        assert!(!settings.allows_dialects(&[Dialect::Mars, Dialect::Spim]));
     }
 }

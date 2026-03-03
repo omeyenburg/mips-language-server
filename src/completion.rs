@@ -2,15 +2,18 @@ use std::collections::HashMap;
 
 use serde::de::value;
 use tower_lsp_server::jsonrpc;
-use tower_lsp_server::lsp_types::*;
+use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
+use crate::document::Document;
 use crate::lang::LanguageDefinitions;
 use crate::lang::{Directive, Instruction, Registers};
-use crate::server::{Backend, Document, Documents};
+use crate::server::{Backend, Documents};
 
 impl Backend {
+    /// Analyses the document at the current cursor position and provides matching completions.
+    /// Kinds of completions: instruction, directive (when starting with dot) or register (when starting with $).
     pub async fn get_completions(
         &self,
         params: CompletionParams,
@@ -92,7 +95,7 @@ fn completion_response(
     is_complete: bool,
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
     Ok(Some(CompletionResponse::List(
-        tower_lsp_server::lsp_types::CompletionList {
+        tower_lsp_server::ls_types::CompletionList {
             items,
             is_incomplete: !is_complete,
         },

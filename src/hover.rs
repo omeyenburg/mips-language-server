@@ -1,15 +1,14 @@
 use serde::de::value;
 use tower_lsp_server::jsonrpc;
-use tower_lsp_server::lsp_types::*;
+use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
+use crate::document;
 use crate::lang::{
     Directive, Directives, Instruction, Instructions, LanguageDefinitions, Registers,
 };
-use crate::server::{Backend, Document, Documents};
-
-use crate::tree;
+use crate::server::{Backend, Documents};
 
 impl Backend {
     pub async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
@@ -30,7 +29,7 @@ impl Backend {
         let tree = doc.tree.clone();
 
         // Determine node below cursor and fetch the label name
-        let point = tree::position_to_point(&position);
+        let point = document::utils::ls_position_to_ts_point(&position);
         let cursor_node = tree
             .root_node()
             .named_descendant_for_point_range(point, point)

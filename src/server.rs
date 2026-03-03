@@ -5,24 +5,20 @@ use tokio::sync::{Mutex, RwLock};
 use serde::de::value;
 use streaming_iterator::StreamingIterator;
 use tower_lsp_server::jsonrpc;
-use tower_lsp_server::lsp_types::*;
+use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
+use crate::ast;
 use crate::completion;
+use crate::document;
+use crate::document::Document;
 use crate::hover;
 use crate::lang::LanguageDefinitions;
+use crate::semantic;
 use crate::settings::Settings;
-use crate::tree;
 
-pub struct Document {
-    pub version: i32,
-    pub text: String,
-    pub tree: tree_sitter::Tree,
-    pub parser: tree_sitter::Parser,
-}
-
-pub type Documents = dashmap::DashMap<tower_lsp_server::lsp_types::Uri, Arc<RwLock<Document>>>;
+pub type Documents = dashmap::DashMap<tower_lsp_server::ls_types::Uri, Arc<RwLock<Document>>>;
 
 /*
  TODO:
@@ -61,8 +57,7 @@ fn get_server_capabilities() -> ServerCapabilities {
         text_document_sync: Some(TextDocumentSyncCapability::Options(
             TextDocumentSyncOptions {
                 open_close: Some(true),
-                // change: Some(TextDocumentSyncKind::FULL),
-                change: Some(TextDocumentSyncKind::INCREMENTAL), // only tree is incremental
+                change: Some(TextDocumentSyncKind::INCREMENTAL),
                 save: Some(TextDocumentSyncSaveOptions::SaveOptions(SaveOptions {
                     include_text: Some(true),
                 })),
@@ -91,10 +86,7 @@ impl LanguageServer for Backend {
 
             let unpacked_settings = &self.settings.read().await;
 
-            self.definitions
-                .write()
-                .await
-                .parse(unpacked_settings);
+            self.definitions.write().await.parse(unpacked_settings);
         }
 
         Ok(InitializeResult {
@@ -124,10 +116,7 @@ impl LanguageServer for Backend {
 
         let unpacked_settings = &self.settings.read().await;
 
-        self.definitions
-            .write()
-            .await
-            .parse(unpacked_settings);
+        self.definitions.write().await.parse(unpacked_settings);
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
@@ -141,28 +130,16 @@ impl LanguageServer for Backend {
             uri, text, version, ..
         } = params.text_document;
 
-        let mut parser = tree::create_parser();
-
-        // Generate tree using tree-sitter
-        let tree = parser
-            .parse(text.as_bytes(), None)
-            .ok_or(jsonrpc::Error::invalid_request())
-            .expect("Expected new tree");
-
-        let document = Document {
-            version,
-            text,
-            tree,
-            parser,
-        };
-
-        // Store document text and tree
-        self.documents
-            .insert(uri.clone(), Arc::new(RwLock::new(document)));
+        let mut document = Document::new(uri.clone(), version, text);
 
         // Analyze document and publish diagnostics
-        let diags = self.analyze_document(&uri).await;
-        self.client.publish_diagnostics(uri, diags, None).await;
+        let diagnostics = document.analyze().await;
+        self.client
+            .publish_diagnostics(uri.clone(), diagnostics, None)
+            .await;
+
+        // Store document text and tree
+        self.documents.insert(uri, Arc::new(RwLock::new(document)));
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
@@ -184,13 +161,20 @@ impl LanguageServer for Backend {
             // Alternative: use queue ordered by version; if version+3 comes in while waiting for
             // version+1, consider reparsing the document fully
             for change in changes {
-                Backend::handle_change(&mut doc, change);
+                if let Some(range) = change.range {
+                    let range = document::utils::ls_range_to_ts_range(&doc.text, &range);
+                    doc.apply_change(&change.text, range);
+                } else {
+                    doc.parse_entire_document(&change.text);
+                }
             }
-        }
 
-        // Analyze document and publish diagnostics
-        let diags = self.analyze_document(&uri).await;
-        self.client.publish_diagnostics(uri, diags, None).await;
+            // Analyze document and publish diagnostics
+            let diagnostics = doc.analyze().await;
+            self.client
+                .publish_diagnostics(uri, diagnostics, None)
+                .await;
+        }
     }
 
     async fn completion(
@@ -236,55 +220,6 @@ impl Backend {
             settings,
             documents,
             definitions,
-        }
-    }
-
-    fn handle_change(doc: &mut Document, change: TextDocumentContentChangeEvent) {
-        if let Some(range) = change.range {
-            // Convert LSP range to byte offsets
-            let start_byte = tree::byte_offset(&doc.text, range.start);
-            let old_end_byte = tree::byte_offset(&doc.text, range.end);
-            let new_end_byte = start_byte + change.text.len();
-
-            // Stop the server from crashing here
-            // Weird bug, maybe happens with multiple changes
-            if old_end_byte >= doc.text.len() {
-                log!("Error: something wrong with the bytes but idk - please write an issue on https://github.com/omeyenburg/mips-language-server");
-                return;
-            }
-
-            // Calculate new text, old text and apply change to text
-            let old_text = &doc.text[start_byte..old_end_byte];
-            doc.text
-                .replace_range(start_byte..old_end_byte, &change.text);
-
-            // Create an InputEdit
-            let input_edit = InputEdit {
-                start_byte,
-                old_end_byte,
-                new_end_byte,
-                start_position: tree::position_to_point(&range.start),
-                old_end_position: tree::position_to_point(&range.end),
-                new_end_position: tree::position_to_point(&Position {
-                    line: range.start.line + change.text.lines().count() as u32, // - 1, // stupid to substract 1. why?!
-                    character: if let Some(last_line) = change.text.lines().last() {
-                        last_line.len() as u32
-                    } else {
-                        range.start.character
-                    },
-                }),
-            };
-
-            // Apply InputEdit to the tree
-            doc.tree.edit(&input_edit);
-
-            // Update the tree incrementally
-            let new_tree = doc.parser.parse(&doc.text, Some(&doc.tree)).unwrap();
-            doc.tree = new_tree;
-        } else {
-            // Full text replacement
-            doc.text = change.text.clone();
-            doc.tree = doc.parser.parse(&doc.text, None).unwrap();
         }
     }
 }
