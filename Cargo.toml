@@ -1,7 +1,16 @@
 [package]
 name = "mips-language-server"
+description = "Language Server for MIPS assembly, providing completions, diagnostics and semantic analysis."
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+repository = "https://github.com/omeyenburg/mips-language-server"
+keywords = ["language-server", "lsp", "mips"]
+categories = ["development-tools", "development-tools::debugging"]
+
+[[bin]]
+name = "mips-language-server"
+path = "src/main.rs"
 
 [dependencies]
 streaming-iterator = "0.1.9"
