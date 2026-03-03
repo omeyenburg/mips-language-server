@@ -8,9 +8,10 @@ Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/t
 ## Features
 - Completion
 - Hover information
+- Syntactic analysis and diagnostics
 
 ## Planned Features
-- Better parsing & linting of instructions
+- Deep semantic analysis
 - Goto definition
 - Context specific completions
 - Formatting
@@ -20,9 +21,22 @@ Written in Rust with [tower-lsp-server](https://github.com/tower-lsp-community/t
 
 ## Installation
 
-Currently, you have to build the source yourself.
+### Install from Crates.io
 
-Clone the repo and simply run:
+If you have cargo installed, you can install the language server via
+```
+cargo install mips-language-server
+```
+
+### Install from Github Release
+
+Download the [latest release](https://github.com/omeyenburg/mips-language-server/releases/) and add it to your path.
+
+### Build from source
+
+Alternatively, you can build the source yourself:
+
+Clone the repo and simply run
 ```
 cargo build --release
 ```
@@ -84,10 +98,12 @@ vim.lsp.enable("mipsls")
 ```
 
 ## Testing
+
 This was mostly tested with the latest NeoVim release together with the plugins lsp-config, nvim-cmp and blink.nvim.
 Further testing in different environments is highly appreciated.
 
 ## Further reading
+
 - MIPS64 Vol II: https://www.cipunited.com/xlx/files/document/202008/1205490289250.pdf
 - MIPS Assembly/Instruction Formats: https://en.wikibooks.org/wiki/MIPS_Assembly/Instruction_Formats
 - Assembly Language Programmer’s Guide: http://www.cs.unibo.it/~solmi/teaching/arch_2002-2003/AssemblyLanguageProgDoc.pdf
