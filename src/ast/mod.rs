@@ -50,6 +50,7 @@ pub struct DirectiveNode {
 pub enum OperandListItem {
     Operand(ValueNode),
     Comma(Range),
+    MissingOperand(Range),
 }
 
 #[derive(Debug)]

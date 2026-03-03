@@ -24,6 +24,7 @@ impl Document {
                 semantic::Error::InvalidSyntax(r) => get_syntax_error_diagnostic(self, r),
                 semantic::Error::MalformedOperand(r) => get_malformed_operand_diagnostic(self, r),
                 semantic::Error::MissingMacroName(r) => get_missing_macro_name_diagnostic(self, r),
+                semantic::Error::MissingOperand(r) => get_missing_operand_diagnostic(self, r),
                 semantic::Error::DuplicateLabel { range: r, name } => {
                     get_duplicate_label_diagnostic(self, r, name)
                 }
@@ -77,6 +78,19 @@ fn get_missing_macro_name_diagnostic(
     ))
 }
 
+fn get_missing_operand_diagnostic(
+    doc: &Document,
+    range: &tree_sitter::Range,
+) -> Option<Diagnostic> {
+    Some(create_diagnostic(
+        range,
+        "E004",
+        "error: missing operand",
+        DiagnosticSeverity::ERROR,
+        None,
+    ))
+}
+
 fn get_duplicate_label_diagnostic(
     doc: &Document,
     range: &tree_sitter::Range,
@@ -101,7 +115,7 @@ fn get_duplicate_label_diagnostic(
     };
     Some(create_diagnostic(
         range,
-        "E004",
+        "E005",
         "error: label already defined",
         DiagnosticSeverity::ERROR,
         create_single_related_information(
@@ -132,7 +146,7 @@ fn get_duplicate_macro_name_diagnostic(
 
     Some(create_diagnostic(
         range,
-        "E005",
+        "E006",
         "error: macro name already defined",
         DiagnosticSeverity::ERROR,
         create_single_related_information(

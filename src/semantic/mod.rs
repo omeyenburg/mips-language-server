@@ -18,6 +18,7 @@ pub enum Error {
     MalformedOperand(Range),
     InvalidSyntax(Range),
     MissingMacroName(Range),
+    MissingOperand(Range),
     DuplicateLabel { range: Range, name: SmolStr },
     DuplicateMacroName { range: Range, name: SmolStr },
 }
@@ -136,6 +137,10 @@ impl SemanticModel {
                         .filter_map(|(i, operand)| match operand {
                             OperandListItem::Operand(_) => Some(i),
                             OperandListItem::Comma(_) => None,
+                            OperandListItem::MissingOperand(r) => {
+                                self.syntax_errors.push(Error::MissingOperand(r.clone()));
+                                None
+                            }
                         })
                         .collect();
                     self.instructions.push(Instruction {
@@ -152,6 +157,10 @@ impl SemanticModel {
                         .filter_map(|(i, operand)| match operand {
                             OperandListItem::Operand(_) => Some(i),
                             OperandListItem::Comma(_) => None,
+                            OperandListItem::MissingOperand(r) => {
+                                self.syntax_errors.push(Error::MissingOperand(r.clone()));
+                                None
+                            }
                         })
                         .collect();
                     self.instructions.push(Instruction {

@@ -159,6 +159,7 @@ fn parse_operands(text: &str, node: Option<Node>) -> Vec<OperandListItem> {
                 text,
                 &node.first_named_child_for_byte(0)?,
             ))),
+            "ERROR" => Some(OperandListItem::MissingOperand(node.range())),
             _ => None,
         })
         .collect()
