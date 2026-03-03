@@ -138,7 +138,7 @@ impl SemanticModel {
                             OperandListItem::Operand(_) => Some(i),
                             OperandListItem::Comma(_) => None,
                             OperandListItem::MissingOperand(r) => {
-                                self.syntax_errors.push(Error::MissingOperand(r.clone()));
+                                self.syntax_errors.push(Error::MissingOperand(*r));
                                 None
                             }
                         })
@@ -158,7 +158,7 @@ impl SemanticModel {
                             OperandListItem::Operand(_) => Some(i),
                             OperandListItem::Comma(_) => None,
                             OperandListItem::MissingOperand(r) => {
-                                self.syntax_errors.push(Error::MissingOperand(r.clone()));
+                                self.syntax_errors.push(Error::MissingOperand(*r));
                                 None
                             }
                         })
