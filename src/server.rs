@@ -84,11 +84,10 @@ impl LanguageServer for Backend {
                 .await
                 .parse(settings)
                 .map_err(|e| jsonrpc::Error::invalid_params(e.to_string()))?;
-
-            let unpacked_settings = &self.settings.read().await;
-
-            self.definitions.write().await.parse(unpacked_settings);
         }
+
+        let unpacked_settings = &self.settings.read().await;
+        self.definitions.write().await.parse(unpacked_settings);
 
         Ok(InitializeResult {
             server_info: Some(get_server_info()),
@@ -194,7 +193,7 @@ impl LanguageServer for Backend {
     }
 
     async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
-        self.hover(params).await
+        self.handle_hover(params).await
     }
 
     // Used for diagnostic pulling, but we prefer pushing model
