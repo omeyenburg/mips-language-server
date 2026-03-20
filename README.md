@@ -1,5 +1,8 @@
 # mips-language-server
 
+[![CI](https://img.shields.io/github/actions/workflow/status/omeyenburg/mips-language-server/ci.yml?logo=github&label=CI)](https://github.com/omeyenburg/mips-language-server/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/mips-language-server?logo=rust)](https://crates.io/crates/mips-language-server)
+
 A fast language server for the MIPS32/MIPS64 Instruction Set Architecture.  
 Supported assemblers: GAS, MARS, SPIM
 
