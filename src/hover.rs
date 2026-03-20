@@ -29,7 +29,7 @@ impl Backend {
         let tree = doc.tree.clone();
 
         // Determine node below cursor and fetch the label name
-        let point = document::utils::ls_position_to_ts_point(&position);
+        let point = doc.position_to_point(&position);
         let cursor_node = tree
             .root_node()
             .named_descendant_for_point_range(point, point)

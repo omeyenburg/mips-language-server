@@ -111,7 +111,7 @@ fn get_duplicate_label_diagnostic(
 
     let location = Location {
         uri: doc.uri.clone(),
-        range: document::utils::ts_range_to_ls_range(&label_node.range),
+        range: document::utils::ascii_ts_range_to_ls(&label_node.range),
     };
     Some(create_diagnostic(
         range,
@@ -165,7 +165,7 @@ fn create_diagnostic(
     related_information: Option<Vec<DiagnosticRelatedInformation>>,
 ) -> Diagnostic {
     Diagnostic {
-        range: document::utils::ts_range_to_ls_range(range),
+        range: document::utils::ascii_ts_range_to_ls(range),
         severity: Some(severity),
         code: Some(NumberOrString::String(code.to_string())),
         code_description: None,
@@ -185,7 +185,7 @@ fn create_single_related_information(
     Some(vec![DiagnosticRelatedInformation {
         location: Location {
             uri: uri.clone(),
-            range: document::utils::ts_range_to_ls_range(range),
+            range: document::utils::ascii_ts_range_to_ls(range),
         },
         message: message.to_string(),
     }])

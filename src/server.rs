@@ -92,6 +92,7 @@ impl LanguageServer for Backend {
         Ok(InitializeResult {
             server_info: Some(get_server_info()),
             capabilities: get_server_capabilities(),
+            offset_encoding: Some("utf-16".into()),
         })
     }
 
@@ -162,7 +163,7 @@ impl LanguageServer for Backend {
             // version+1, consider reparsing the document fully
             for change in changes {
                 if let Some(range) = change.range {
-                    let range = document::utils::ls_range_to_ts_range(&doc.text, &range);
+                    let range = doc.ls_range_to_ts(&range);
                     doc.apply_change(&change.text, range);
                 } else {
                     doc.parse_entire_document(&change.text);

@@ -6,6 +6,7 @@ use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
 use tree_sitter::{InputEdit, Query, QueryCursor};
 
+use crate::document::utf16::*;
 use crate::document::Document;
 use crate::lang::LanguageDefinitions;
 use crate::lang::{Directive, Instruction, Registers};
@@ -43,10 +44,10 @@ impl Backend {
         // ' ', '\t', ',' (separating symbols), ':', ';' after statement, '/' after block comment
         // The last seen char is saved. This might be '$', '.' or any other character.
         let mut starting_char = ' ';
-        let mut starting_index = pos.character;
+        let mut char_index = utf16_to_char_index(line_content, pos.character);
 
-        while starting_index > 0 {
-            if let Some(char) = line_content.chars().nth((starting_index - 1) as usize) {
+        while char_index > 0 {
+            if let Some(char) = line_content.chars().nth(char_index - 1) {
                 match char {
                     'a'..='z' | 'A'..='Z' | '0'..='9' | '.' | '_' | '$' | '%' | '\\' | '@' => {
                         starting_char = char
@@ -55,8 +56,10 @@ impl Backend {
                 }
             }
 
-            starting_index -= 1;
+            char_index -= 1;
         }
+
+        let starting_index = char_index_to_utf16(line_content, char_index);
 
         let definitions = &self.definitions.read().await;
 
@@ -161,8 +164,10 @@ fn complete_register(
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
     let mut merged_registers;
 
+    let starting_char_index = utf16_to_char_index(line_content, starting_index);
+
     // Offer different completion lists based on context
-    let registers = match line_content.chars().nth(starting_index as usize + 1) {
+    let registers = match line_content.chars().nth(starting_char_index + 1) {
         Some('$') | None => {
             // Show float and common if char missing (unusual) or only $ was typed.
             // Numeric versions would be annoying here and are skipped.
@@ -201,14 +206,14 @@ fn complete_instruction(
     character: u32,
     starting_index: u32,
 ) -> jsonrpc::Result<Option<CompletionResponse>> {
-    let start = starting_index as usize;
-    let cursor = character as usize;
+    let start_char_index = utf16_to_char_index(line_content, starting_index);
+    let cursor_char_index = utf16_to_char_index(line_content, character);
 
-    if cursor < start || cursor > line_content.len() {
-        return completion_response(Vec::new(), true);
-    }
-
-    let typed = &line_content[start..cursor];
+    let typed: String = line_content
+        .chars()
+        .skip(start_char_index)
+        .take(cursor_char_index - start_char_index)
+        .collect();
 
     // Semantic filter up to the last dot, if any
     // Limits completion results, e.g. for "cmp."

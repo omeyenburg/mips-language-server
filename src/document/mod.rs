@@ -1,3 +1,4 @@
+pub mod utf16;
 pub mod utils;
 
 use tower_lsp_server::{
@@ -61,13 +62,13 @@ impl Document {
         let input_edit = InputEdit {
             start_byte: range.start_byte,
             old_end_byte: range.end_byte,
-            new_end_byte: range.start_byte + self.text.len(),
+            new_end_byte: range.start_byte + change_text.len(),
             start_position: range.start_point,
             old_end_position: range.end_point,
             new_end_position: Point {
-                row: range.start_point.row + change_text.lines().count(), // - 1, // stupid to substract 1. why?!
+                row: range.start_point.row + change_text.lines().count(),
                 column: if let Some(last_line) = change_text.lines().last() {
-                    last_line.len()
+                    last_line.encode_utf16().count()
                 } else {
                     range.start_point.column
                 },
@@ -96,5 +97,92 @@ impl Document {
         // Analyze document and publish diagnostics
         // let diags = self.analyze_document(&uri).await;
         self.analyze_document().await
+    }
+
+    pub fn position_to_point(&self, position: &tower_lsp_server::ls_types::Position) -> Point {
+        let byte = self.position_to_byte(position);
+        self.byte_to_point(byte)
+    }
+
+    pub fn position_to_byte(&self, position: &tower_lsp_server::ls_types::Position) -> usize {
+        let line_num = position.line as usize;
+        let line = self.text.lines().nth(line_num).unwrap_or("");
+
+        let bytes_before: usize = self.text.lines().take(line_num).map(|l| l.len() + 1).sum();
+        let char_idx = utf16::utf16_to_char_index(line, position.character);
+        let line_bytes: usize = line.chars().take(char_idx).map(|c| c.len_utf8()).sum();
+
+        bytes_before + line_bytes
+    }
+
+    pub fn point_to_position(&self, point: &Point) -> tower_lsp_server::ls_types::Position {
+        let line_bytes: usize = self.text.lines().take(point.row).map(|l| l.len() + 1).sum();
+        self.byte_to_position(line_bytes + point.column)
+    }
+
+    pub fn byte_to_point(&self, byte_offset: usize) -> Point {
+        let mut row = 0;
+        let mut col = 0;
+        let mut current = 0;
+
+        for ch in self.text.chars() {
+            if current >= byte_offset {
+                break;
+            }
+            if ch == '\n' {
+                row += 1;
+                col = 0;
+            } else {
+                col += ch.len_utf8();
+            }
+            current += ch.len_utf8();
+        }
+
+        Point { row, column: col }
+    }
+
+    pub fn byte_to_position(&self, byte_offset: usize) -> tower_lsp_server::ls_types::Position {
+        let mut line = 0;
+        let mut byte_count = 0;
+        let mut line_start = 0;
+
+        for (i, ch) in self.text.char_indices() {
+            if byte_count >= byte_offset {
+                break;
+            }
+            if ch == '\n' {
+                line += 1;
+                line_start = i + 1;
+            }
+            byte_count += ch.len_utf8();
+        }
+
+        let line_text = self.text.lines().nth(line as usize).unwrap_or("");
+        let offset_in_line = byte_offset - line_start;
+
+        let mut bytes_in_line = 0;
+        let mut utf16_count = 0;
+
+        for ch in line_text.chars() {
+            if bytes_in_line >= offset_in_line {
+                break;
+            }
+            bytes_in_line += ch.len_utf8();
+            utf16_count += ch.len_utf16() as u32;
+        }
+
+        tower_lsp_server::ls_types::Position {
+            line,
+            character: utf16_count,
+        }
+    }
+
+    pub fn ls_range_to_ts(&self, range: &tower_lsp_server::ls_types::Range) -> Range {
+        Range {
+            start_byte: self.position_to_byte(&range.start),
+            end_byte: self.position_to_byte(&range.end),
+            start_point: self.position_to_point(&range.start),
+            end_point: self.position_to_point(&range.end),
+        }
     }
 }
