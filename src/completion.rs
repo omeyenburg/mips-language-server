@@ -13,7 +13,7 @@ use crate::lang::{Directive, Instruction, Registers};
 use crate::server::{Backend, Documents};
 
 impl Backend {
-    /// Analyses the document at the current cursor position and provides matching completions.
+    /// Analyzes the document at the current cursor position and provides matching completions.
     /// Kinds of completions: instruction, directive (when starting with dot) or register (when starting with $).
     pub async fn get_completions(
         &self,

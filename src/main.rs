@@ -16,6 +16,7 @@ mod semantic;
 
 mod completion;
 mod diagnostic;
+mod goto_definition;
 mod hover;
 
 #[tokio::main]

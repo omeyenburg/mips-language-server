@@ -13,6 +13,7 @@ use crate::ast;
 use crate::completion;
 use crate::document;
 use crate::document::Document;
+use crate::goto_definition;
 use crate::hover;
 use crate::lang::LanguageDefinitions;
 use crate::semantic;
@@ -44,7 +45,7 @@ fn get_server_info() -> ServerInfo {
 fn get_server_capabilities() -> ServerCapabilities {
     ServerCapabilities {
         // inlay_hint_provider: Some(OneOf::Left(true)),
-        // definition_provider: Some(OneOf::Left(true)),
+        definition_provider: Some(OneOf::Left(true)),
         // references_provider: Some(OneOf::Left(true)),
         hover_provider: Some(HoverProviderCapability::Simple(true)),
         completion_provider: Some(CompletionOptions {
@@ -183,6 +184,13 @@ impl LanguageServer for Backend {
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
         self.get_completions(params).await
+    }
+
+    async fn goto_definition(
+        &self,
+        params: GotoDefinitionParams,
+    ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {
+        self.do_goto_definition(params).await
     }
 
     async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {

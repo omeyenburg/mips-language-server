@@ -7,11 +7,7 @@ use tower_lsp_server::{
 };
 use tree_sitter::*;
 
-use crate::{
-    ast::{self, parser, Ast},
-    document,
-    semantic::{self, SemanticModel},
-};
+use crate::{ast::Ast, document, semantic::SemanticModel};
 
 pub struct Document {
     pub uri: Uri,
@@ -27,7 +23,7 @@ impl Document {
     pub fn new(uri: Uri, version: i32, text: String) -> Document {
         let semantic_model = SemanticModel::new();
         let ast = Ast::new();
-        let mut parser = document::utils::create_parser();
+        let mut parser = utils::create_parser();
 
         // Generate tree using tree-sitter
         let tree = parser
@@ -89,13 +85,12 @@ impl Document {
     }
 
     pub async fn analyze(&mut self) -> Vec<Diagnostic> {
-        self.ast = ast::Ast::from_ts_tree(&self.text, &self.tree);
+        self.ast = Ast::from_ts_tree(&self.text, &self.tree);
 
-        self.semantic_model = semantic::SemanticModel::new();
+        self.semantic_model = SemanticModel::new();
         self.semantic_model.parse(&self.text, &self.ast);
 
         // Analyze document and publish diagnostics
-        // let diags = self.analyze_document(&uri).await;
         self.analyze_document().await
     }
 
