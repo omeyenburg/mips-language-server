@@ -11,7 +11,9 @@ use crate::lang::{
 use crate::server::{Backend, Documents};
 
 impl Backend {
-    pub async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
+    pub async fn handle_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
+        log!("textDocument/hover");
+
         // Unpack position and text_document
         let TextDocumentPositionParams {
             position,
@@ -56,9 +58,10 @@ impl Backend {
 
 fn hover_instruction(instructions: &Instructions, text: &str) -> Option<Hover> {
     Some(Hover {
-        contents: HoverContents::Scalar(MarkedString::String(
-            instructions.get(text)?.description.to_string(),
-        )),
+        contents: HoverContents::Markup(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: instructions.get(text)?.description.to_string(),
+        }),
         range: None,
     })
 }
@@ -67,7 +70,10 @@ fn hover_directive(directives: &Directives, text: &str) -> Option<Hover> {
     let stripped_mnemonic = &text.to_string()[1..];
 
     directives.get(stripped_mnemonic).map(|directive| Hover {
-        contents: HoverContents::Scalar(MarkedString::String(directive.description.to_string())),
+        contents: HoverContents::Markup(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: directive.description.to_string(),
+        }),
         range: None,
     })
 }
@@ -75,17 +81,26 @@ fn hover_directive(directives: &Directives, text: &str) -> Option<Hover> {
 fn hover_register(registers: &Registers, text: &str) -> Option<Hover> {
     if let Some(register) = registers.numeric.get(text) {
         Some(Hover {
-            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: String::from(register),
+            }),
             range: None,
         })
     } else if let Some(register) = registers.common.get(text) {
         Some(Hover {
-            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: String::from(register),
+            }),
             range: None,
         })
     } else {
         registers.float.get(text).map(|register| Hover {
-            contents: HoverContents::Scalar(MarkedString::String(String::from(register))),
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: String::from(register),
+            }),
             range: None,
         })
     }
