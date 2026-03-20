@@ -1,0 +1,116 @@
+{
+  "name": "mips-language-server",
+  "displayName": "MIPS Language Server",
+  "description": "Language server for MIPS assembly with completion, hover, and linting",
+  "version": "0.1.0",
+  "publisher": "omeyenburg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omeyenburg/mips-language-server"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:mips"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mips",
+        "aliases": [
+          "MIPS Assembly",
+          "MIPS"
+        ],
+        "extensions": [
+          ".asm",
+          ".s",
+          ".mips"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mips",
+        "scopeName": "source.mips",
+        "path": "./syntaxes/mips.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "MIPS Language Server",
+      "properties": {
+        "mips.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        },
+        "mips.server.path": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path to the language server binary. Leave empty to use bundled binary."
+        },
+        "mips.version.dialect": {
+          "type": "string",
+          "enum": [
+            "gas",
+            "mars",
+            "spim",
+            "undefined"
+          ],
+          "default": "undefined",
+          "description": "Your MIPS assembler/simulator: GAS, MARS or SPIM"
+        },
+        "mips.version.todo": {
+          "type": "string",
+          "enum": [
+            "mips1",
+            "mips2",
+            "mips3",
+            "mips4",
+            "mips5",
+            "mips32r1",
+            "mips32r2",
+            "mips32r3",
+            "mips32r5",
+            "mips32r6",
+            "mips64r1",
+            "mips64r2",
+            "mips64r3",
+            "mips64r5",
+            "mips64r6"
+          ],
+          "default": "mips64r5",
+          "description": "MIPS Version and revision. Only relevant for GAS assembler. MARS and SPIM use mips1"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.27.2",
+    "typescript": "^5.2.0"
+  }
+}

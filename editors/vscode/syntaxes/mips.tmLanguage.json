@@ -1,0 +1,118 @@
+{
+  "name": "mipsasm",
+  "scopeName": "source.mips",
+  "displayName": "MIPS Assembly",
+  "fileTypes": [
+    "asm",
+    "s",
+    "mips",
+    "spim"
+  ],
+  "patterns": [
+    {
+      "name": "comment.line.number-sign.mips",
+      "match": "(#|//).*$"
+    },
+    {
+      "name": "comment.line.double-slash.mips",
+      "match": "//.*$"
+    },
+    {
+      "name": "comment.block.mips",
+      "begin": "/\\*",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.begin.mips"
+        }
+      },
+      "end": "\\*/",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.end.mips"
+        }
+      }
+    },
+    {
+      "name": "constant.numeric.float.mips",
+      "match": "-?(?:\\d+\\.\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?[fd]?\\b"
+    },
+    {
+      "name": "constant.numeric.octal.mips",
+      "match": "\\b-?0[oO]?[0-7]+\\b"
+    },
+    {
+      "name": "constant.numeric.binary.mips",
+      "match": "\\b-?0[bB][01]+\\b"
+    },
+    {
+      "name": "constant.numeric.hex.mips",
+      "match": "\\b-?0[xX]\\h+\\b"
+    },
+    {
+      "name": "constant.numeric.decimal.mips",
+      "match": "\\b\\d+\\b"
+    },
+    {
+      "name": "string.quoted.double.mips",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.mips"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.mips"
+        }
+      },
+      "patterns": [
+        {
+          "match": "\\\\([abfnrtv\\\\\"'?]|[0-7]{1,3}|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})",
+          "name": "constant.character.escape.mips"
+        }
+      ]
+    },
+    {
+      "name": "constant.character.mips",
+      "match": "'(\\\\[abfnrtv\\\\\"'?]|[0-9]{1,3}|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|[^'\\\\])'"
+    },
+    {
+      "name": "support.function.instruction.mips",
+      "match": "\\b(sync_acquire|sync_mb|sync_release|sync_rmb|sync_wmb|[a-zA-Z][a-zA-Z0-9.]*)\\b"
+    },
+    {
+      "name": "keyword.control.directive.mips",
+      "match": "\\.[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    },
+    {
+      "name": "entity.name.label.mips",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.label.mips"
+        }
+      },
+      "match": "\\b([0-9A-Z_a-z]+):"
+    },
+    {
+      "name": "variable.language.register.mips",
+      "match": "\\$(zero|at|v[01]|a[0-7]|t[0-9]|s[0-7]|k[01]|gp|sp|fp|ra|f??([0-9]|1[0-9]|2[0-9]|3[01]))\\b"
+    },
+    {
+      "name": "variable.parameter.macro.mips",
+      "match": "(?:[%$\\\\][0-9a-zA-Z_$%@]+|[0-9a-zA-Z_$%@]+\\\\)[0-9a-zA-Z_%$\\\\@]*(?:\\(\\)[0-9a-zA-Z_%$\\\\@]*)?"
+    },
+    {
+      "name": "keyword.other.elf-type-tag.mips",
+      "match": "@[a-z]+\\b"
+    },
+    {
+      "name": "keyword.other.option-flag.mips",
+      "match": "\\+[a-z]\\b"
+    },
+    {
+      "name": "keyword.other.local-jump-flag.mips",
+      "match": "\\d[fb]\\b"
+    }
+  ]
+}
