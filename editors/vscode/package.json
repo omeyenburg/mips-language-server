@@ -1,10 +1,10 @@
 {
-  "name": "mips-language-server",
-  "displayName": "MIPS Language Server",
-  "description": "Language server for MIPS assembly with completion, hover, and linting",
+  "name": "mips-tools",
+  "displayName": "MIPS Tools",
+  "description": "Analysis, Completions, hover docs, goto definition and more for MIPS Assembly",
   "version": "0.1.0",
   "publisher": "omeyenburg",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/omeyenburg/mips-language-server"
@@ -44,7 +44,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "MIPS Language Server",
+      "title": "MIPS Tools",
       "properties": {
         "mips.trace.server": {
           "type": "string",
@@ -73,7 +73,7 @@
           "default": "undefined",
           "description": "Your MIPS assembler/simulator: GAS, MARS or SPIM"
         },
-        "mips.version.todo": {
+        "mips.version.revision": {
           "type": "string",
           "enum": [
             "mips1",
@@ -93,7 +93,7 @@
             "mips64r6"
           ],
           "default": "mips64r5",
-          "description": "MIPS Version and revision. Only relevant for GAS assembler. MARS and SPIM use mips1"
+          "description": "MIPS Version and revision. Only relevant for GAS assembler. MARS and SPIM use mips1."
         }
       }
     }
