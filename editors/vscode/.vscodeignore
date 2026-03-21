@@ -1,9 +1,12 @@
 .vscode/**
 .vscode-test/**
 src/**
+scripts/**
 node_modules/**
 .gitignore
-*.map
-*.ts
+**/*.map
+**/*.ts
 tsconfig.json
 esbuild.js
+flake.nix
+flake.lock
