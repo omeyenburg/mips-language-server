@@ -10,12 +10,21 @@ use tree_sitter::*;
 use crate::{ast::Ast, document, semantic::SemanticModel};
 
 pub struct Document {
+    /// resource identifier of document
     pub uri: Uri,
+    /// version of document set by client
     pub version: i32,
+    /// full document text
     pub text: String,
+    /// line to byte offset in text conversion (calculated from text)
+    pub line_starts: Vec<usize>,
+    /// concrete tree-sitter syntax tree
     pub tree: Tree,
+    /// tree-sitter parsr
     pub parser: Parser,
+    /// abstract syntax tree
     pub ast: Ast,
+    /// semantic document information
     pub semantic_model: SemanticModel,
 }
 
@@ -31,9 +40,13 @@ impl Document {
             .ok_or(jsonrpc::Error::invalid_request())
             .expect("Expected new tree");
 
+        // Calculate line_starts
+        let line_starts = document::utils::calculate_line_starts(&text);
+
         Document {
             version,
             text,
+            line_starts,
             tree,
             parser,
             uri,
@@ -43,16 +56,24 @@ impl Document {
     }
 
     pub fn apply_change(&mut self, change_text: &str, range: Range) {
-        // Stop the server from crashing here
-        // Weird bug, maybe happens with multiple or discarded changes
-        if range.end_byte >= self.text.len() {
-            log!("Error: something wrong with the bytes but idk - please write an issue on https://github.com/omeyenburg/mips-language-server");
+        // Bounds check: if out of range, skip this change (sync issue between client and server)
+        if range.start_byte > self.text.len() || range.end_byte > self.text.len() {
+            log!("Warning: byte range out of bounds (start: {}, end: {}, text len: {}). Skipping change.", range.start_byte, range.end_byte, self.text.len());
+            // Don't apply the change - wait for a full sync
+            return;
+        }
+
+        if range.end_byte < range.start_byte {
+            log!("Warning: invalid range (start > end). Skipping change.");
             return;
         }
 
         // Calculate new text, old text and apply change to text
         self.text
             .replace_range(range.start_byte..range.end_byte, change_text);
+
+        // Recalculate line_starts after text change
+        self.line_starts = document::utils::calculate_line_starts(&self.text);
 
         // Create an InputEdit
         let input_edit = InputEdit {
@@ -79,8 +100,9 @@ impl Document {
         self.tree = new_tree;
     }
 
-    pub fn parse_entire_document(&mut self, change_text: &str) {
-        self.text = change_text.to_string();
+    pub fn parse_entire_document(&mut self, new_text: &str) {
+        self.text = new_text.to_string();
+        self.line_starts = document::utils::calculate_line_starts(&self.text);
         self.tree = self.parser.parse(&self.text, None).unwrap();
     }
 
@@ -101,13 +123,25 @@ impl Document {
 
     pub fn position_to_byte(&self, position: &tower_lsp_server::ls_types::Position) -> usize {
         let line_num = position.line as usize;
-        let line = self.text.lines().nth(line_num).unwrap_or("");
 
-        let bytes_before: usize = self.text.lines().take(line_num).map(|l| l.len() + 1).sum();
-        let char_idx = utf16::utf16_to_char_index(line, position.character);
-        let line_bytes: usize = line.chars().take(char_idx).map(|c| c.len_utf8()).sum();
+        let line_start = self.line_starts[line_num];
+        let line_end = self
+            .line_starts
+            .get(line_num + 1)
+            .copied()
+            .unwrap_or(self.text.len());
 
-        bytes_before + line_bytes
+        let line_content = &self.text[line_start..line_end];
+
+        let char_idx = utf16::utf16_to_char_index(line_content, position.character);
+
+        let byte_offset = line_content
+            .chars()
+            .take(char_idx)
+            .map(|c| c.len_utf8())
+            .sum::<usize>();
+
+        line_start + byte_offset
     }
 
     pub fn point_to_position(&self, point: &Point) -> tower_lsp_server::ls_types::Position {
