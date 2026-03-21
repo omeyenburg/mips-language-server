@@ -22,3 +22,31 @@ pub fn calculate_line_starts(text: &str) -> Vec<usize> {
     }
     line_starts
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_line_starts_empty() {
+        assert_eq!(calculate_line_starts(""), vec![0]);
+    }
+
+    #[test]
+    fn test_calculate_line_starts_single_line() {
+        assert_eq!(calculate_line_starts("hello world"), vec![0]);
+    }
+
+    #[test]
+    fn test_calculate_line_starts_multiple_lines() {
+        let text = "line1\nline2\nline3";
+        assert_eq!(calculate_line_starts(text), vec![0, 6, 12]);
+    }
+
+    #[test]
+    fn test_calculate_line_starts_with_emoji() {
+        let text = "# 😀 test\nadd $t0";
+        // 😀 is 4 bytes, so line 2 starts at byte 12
+        assert_eq!(calculate_line_starts(text), vec![0, 12]);
+    }
+}

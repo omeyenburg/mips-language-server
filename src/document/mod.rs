@@ -228,3 +228,189 @@ impl Document {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::str::FromStr;
+    use tower_lsp_server::ls_types::Position;
+
+    fn create_test_document(text: &str) -> Document {
+        Document::new(
+            Uri::from_str("file:///test.asm").unwrap(),
+            1,
+            text.to_string(),
+        )
+    }
+
+    #[test]
+    fn test_position_to_byte_ascii() {
+        let doc = create_test_document("hello\nworld\ntest");
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 0,
+                character: 0
+            }),
+            0
+        );
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 0,
+                character: 5
+            }),
+            5
+        );
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 1,
+                character: 0
+            }),
+            6
+        );
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 1,
+                character: 3
+            }),
+            9
+        );
+    }
+
+    #[test]
+    fn test_position_to_byte_emoji() {
+        let doc = create_test_document("# 😀 test\nadd $t0");
+        // Line 0: "# 😀 test" - emoji at char 2, takes 4 bytes
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 0,
+                character: 0
+            }),
+            0
+        );
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 0,
+                character: 2
+            }),
+            2
+        ); // before emoji
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 0,
+                character: 4
+            }),
+            6
+        ); // after emoji (2 UTF-16 for emoji)
+        assert_eq!(
+            doc.position_to_byte(&Position {
+                line: 1,
+                character: 0
+            }),
+            12
+        ); // line 2 start
+    }
+
+    #[test]
+    fn test_byte_to_position_ascii() {
+        let doc = create_test_document("hello\nworld\ntest");
+        assert_eq!(
+            doc.byte_to_position(0),
+            Position {
+                line: 0,
+                character: 0
+            }
+        );
+        assert_eq!(
+            doc.byte_to_position(5),
+            Position {
+                line: 0,
+                character: 5
+            }
+        );
+        assert_eq!(
+            doc.byte_to_position(6),
+            Position {
+                line: 1,
+                character: 0
+            }
+        );
+        assert_eq!(
+            doc.byte_to_position(9),
+            Position {
+                line: 1,
+                character: 3
+            }
+        );
+    }
+
+    #[test]
+    fn test_byte_to_position_emoji() {
+        let doc = create_test_document("# 😀 test\nadd $t0");
+        assert_eq!(
+            doc.byte_to_position(0),
+            Position {
+                line: 0,
+                character: 0
+            }
+        );
+        assert_eq!(
+            doc.byte_to_position(2),
+            Position {
+                line: 0,
+                character: 2
+            }
+        ); // before emoji
+        assert_eq!(
+            doc.byte_to_position(6),
+            Position {
+                line: 0,
+                character: 4
+            }
+        ); // after emoji (2 UTF-16)
+        assert_eq!(
+            doc.byte_to_position(12),
+            Position {
+                line: 1,
+                character: 0
+            }
+        ); // line 2
+    }
+
+    #[test]
+    fn test_point_to_position_emoji() {
+        let doc = create_test_document("# 😀 test\nadd $t0");
+        // tree-sitter Point uses byte offsets for column
+        let point = Point { row: 0, column: 6 }; // byte 6 is after emoji
+        let pos = doc.point_to_position(&point);
+        assert_eq!(
+            pos,
+            Position {
+                line: 0,
+                character: 4
+            }
+        ); // UTF-16 offset 4
+    }
+
+    #[test]
+    fn test_position_byte_roundtrip() {
+        let doc = create_test_document("abc 😀 xyz\n🎉 test");
+        for line in 0..2 {
+            for char_offset in 0..10 {
+                let pos = Position {
+                    line,
+                    character: char_offset,
+                };
+                let byte = doc.position_to_byte(&pos);
+                let back = doc.byte_to_position(byte);
+                // Should get same or clamped position
+                assert!(back.line >= pos.line);
+            }
+        }
+    }
+
+    #[test]
+    fn test_line_starts_calculation() {
+        let doc = create_test_document("# 😀 test\nadd $t0\nmov");
+        assert_eq!(doc.line_starts, vec![0, 12, 20]);
+    }
+}
