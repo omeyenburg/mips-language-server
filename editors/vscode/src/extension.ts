@@ -21,9 +21,11 @@ export async function activate(context: ExtensionContext) {
     "Mips Language Server trace",
   );
 
-  const command =
-    process.env.SERVER_PATH ||
-    "/home/oskar/git/mips-language-server/target/debug/mips-language-server";
+  const configured = workspace.getConfiguration("mips").get<string>("server.path");
+  const exeName = process.platform === "win32" ? "mips-language-server.exe" : "mips-language-server";
+  const bundled = context.asAbsolutePath(`server/${exeName}`);
+
+  const command = configured && configured.length > 0 ? configured : bundled;
 
   const run: Executable = {
     command,
