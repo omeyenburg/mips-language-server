@@ -44,6 +44,7 @@ impl Document {
 
 fn get_syntax_error_diagnostic(doc: &Document, range: &tree_sitter::Range) -> Option<Diagnostic> {
     Some(create_diagnostic(
+        doc,
         range,
         "E001",
         "error: invalid syntax",
@@ -57,6 +58,7 @@ fn get_malformed_operand_diagnostic(
     range: &tree_sitter::Range,
 ) -> Option<Diagnostic> {
     Some(create_diagnostic(
+        doc,
         range,
         "E002",
         "error: malformed operand",
@@ -70,6 +72,7 @@ fn get_missing_macro_name_diagnostic(
     range: &tree_sitter::Range,
 ) -> Option<Diagnostic> {
     Some(create_diagnostic(
+        doc,
         range,
         "E003",
         "error: missing macro name",
@@ -83,6 +86,7 @@ fn get_missing_operand_diagnostic(
     range: &tree_sitter::Range,
 ) -> Option<Diagnostic> {
     Some(create_diagnostic(
+        doc,
         range,
         "E004",
         "error: missing operand",
@@ -111,18 +115,15 @@ fn get_duplicate_label_diagnostic(
 
     let location = Location {
         uri: doc.uri.clone(),
-        range: document::utils::ascii_ts_range_to_ls(&label_node.range),
+        range: doc.ts_range_to_ls(&label_node.range),
     };
     Some(create_diagnostic(
+        doc,
         range,
         "E005",
         "error: label already defined",
         DiagnosticSeverity::ERROR,
-        create_single_related_information(
-            &doc.uri,
-            &label_node.range,
-            "label previously defined here",
-        ),
+        create_single_related_information(doc, &label_node.range, "label previously defined here"),
     ))
 }
 
@@ -145,12 +146,13 @@ fn get_duplicate_macro_name_diagnostic(
     };
 
     Some(create_diagnostic(
+        doc,
         range,
         "E006",
         "error: macro name already defined",
         DiagnosticSeverity::ERROR,
         create_single_related_information(
-            &doc.uri,
+            doc,
             &macro_def_node.range,
             "macro name previously defined here",
         ),
@@ -158,6 +160,7 @@ fn get_duplicate_macro_name_diagnostic(
 }
 
 fn create_diagnostic(
+    doc: &Document,
     range: &tree_sitter::Range,
     code: &str,
     message: &str,
@@ -165,7 +168,7 @@ fn create_diagnostic(
     related_information: Option<Vec<DiagnosticRelatedInformation>>,
 ) -> Diagnostic {
     Diagnostic {
-        range: document::utils::ascii_ts_range_to_ls(range),
+        range: doc.ts_range_to_ls(range),
         severity: Some(severity),
         code: Some(NumberOrString::String(code.to_string())),
         code_description: None,
@@ -178,14 +181,14 @@ fn create_diagnostic(
 }
 
 fn create_single_related_information(
-    uri: &Uri,
+    doc: &Document,
     range: &tree_sitter::Range,
     message: &str,
 ) -> Option<Vec<DiagnosticRelatedInformation>> {
     Some(vec![DiagnosticRelatedInformation {
         location: Location {
-            uri: uri.clone(),
-            range: document::utils::ascii_ts_range_to_ls(range),
+            uri: doc.uri.clone(),
+            range: doc.ts_range_to_ls(range),
         },
         message: message.to_string(),
     }])

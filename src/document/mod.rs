@@ -83,9 +83,13 @@ impl Document {
             start_position: range.start_point,
             old_end_position: range.end_point,
             new_end_position: Point {
-                row: range.start_point.row + change_text.lines().count(),
-                column: if let Some(last_line) = change_text.lines().last() {
-                    last_line.encode_utf16().count()
+                row: range.start_point.row + change_text.matches('\n').count(),
+                column: if let Some(last_line) = change_text.rsplit('\n').next() {
+                    if change_text.contains('\n') {
+                        last_line.len()
+                    } else {
+                        range.start_point.column + last_line.len()
+                    }
                 } else {
                     range.start_point.column
                 },
@@ -145,10 +149,11 @@ impl Document {
     }
 
     pub fn point_to_position(&self, point: &Point) -> tower_lsp_server::ls_types::Position {
-        let line_bytes: usize = self.text.lines().take(point.row).map(|l| l.len() + 1).sum();
-        self.byte_to_position(line_bytes + point.column)
+        let line_start = self.line_starts.get(point.row).copied().unwrap_or(0);
+        self.byte_to_position(line_start + point.column)
     }
 
+    // TODO: optimize with line_starts
     pub fn byte_to_point(&self, byte_offset: usize) -> Point {
         let mut row = 0;
         let mut col = 0;
@@ -170,6 +175,7 @@ impl Document {
         Point { row, column: col }
     }
 
+    // TODO: optimize with line_starts
     pub fn byte_to_position(&self, byte_offset: usize) -> tower_lsp_server::ls_types::Position {
         let mut line = 0;
         let mut byte_count = 0;
@@ -212,6 +218,13 @@ impl Document {
             end_byte: self.position_to_byte(&range.end),
             start_point: self.position_to_point(&range.start),
             end_point: self.position_to_point(&range.end),
+        }
+    }
+
+    pub fn ts_range_to_ls(&self, range: &tree_sitter::Range) -> tower_lsp_server::ls_types::Range {
+        tower_lsp_server::ls_types::Range {
+            start: self.point_to_position(&range.start_point),
+            end: self.point_to_position(&range.end_point),
         }
     }
 }
