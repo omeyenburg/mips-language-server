@@ -3,7 +3,7 @@ use tower_lsp_server::jsonrpc;
 use tower_lsp_server::ls_types::request::{GotoDeclarationParams, GotoDeclarationResponse};
 use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
-use tree_sitter::{InputEdit, Query, QueryCursor};
+use tree_sitter::{InputEdit, Point, Query, QueryCursor};
 
 use streaming_iterator::StreamingIterator;
 
@@ -38,7 +38,13 @@ impl Backend {
         let point = doc.position_to_point(&position);
         let cursor_label_name = tree
             .root_node()
-            .descendant_for_point_range(point, point)
+            .descendant_for_point_range(
+                point,
+                Point {
+                    row: point.row,
+                    column: point.column + 1,
+                },
+            )
             .ok_or(jsonrpc::Error::invalid_request())?
             .utf8_text(text.as_bytes())
             .unwrap_or_default();

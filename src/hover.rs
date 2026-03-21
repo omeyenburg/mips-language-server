@@ -2,7 +2,7 @@ use serde::de::value;
 use tower_lsp_server::jsonrpc;
 use tower_lsp_server::ls_types::*;
 use tower_lsp_server::{Client, LanguageServer, LspService, Server};
-use tree_sitter::{InputEdit, Query, QueryCursor};
+use tree_sitter::{InputEdit, Point, Query, QueryCursor};
 
 use crate::document;
 use crate::lang::{
@@ -34,7 +34,13 @@ impl Backend {
         let point = doc.position_to_point(&position);
         let cursor_node = tree
             .root_node()
-            .named_descendant_for_point_range(point, point)
+            .named_descendant_for_point_range(
+                point,
+                Point {
+                    row: point.row,
+                    column: point.column + 1,
+                },
+            )
             .ok_or(jsonrpc::Error::invalid_request())?;
 
         // Get label kind and text
