@@ -53,11 +53,9 @@ impl Backend {
         let query = Query::new(
             &tree_sitter_mips::LANGUAGE.into(),
             r#"
+            (label) @label
             (macro_label) @label
-            (global_label) @label
-            (local_label) @label
-            (global_numeric_label) @label
-            (local_numeric_label) @label
+            (numeric_label) @label
             "#,
         )
         .expect("Error compiling query");

@@ -29,10 +29,8 @@ fn parse_file<'a>(text: &str, node: &Node<'a>) -> Ast {
             "directive" => Some(parse_directive(text, &child)),
             "call_instruction" => Some(parse_instruction(text, &child, true)),
             "macro_label" => Some(parse_label(text, &child, LabelKind::Macro)),
-            "global_label" => Some(parse_label(text, &child, LabelKind::Global)),
-            "local_label" => Some(parse_label(text, &child, LabelKind::Local)),
-            "global_numeric_label" => Some(parse_label(text, &child, LabelKind::GlobalNumeric)),
-            "local_numeric_label" => Some(parse_label(text, &child, LabelKind::LocalNumeric)),
+            "label" => Some(parse_label(text, &child, LabelKind::Normal)),
+            "numeric_label" => Some(parse_label(text, &child, LabelKind::Numeric)),
             "comment" => None,
             _ => Some(SyntaxNode::Error(SyntaxErrorNode {
                 range: child.range(),
@@ -118,7 +116,7 @@ fn parse_label<'a>(text: &str, node: &Node<'a>, kind: LabelKind) -> SyntaxNode {
 }
 
 fn parse_instruction<'a>(text: &str, node: &Node<'a>, is_call: bool) -> SyntaxNode {
-    let mnemonic_node = node.child_by_field_name("opcode"); // thats from old grammar. when migrating: replace with mnemonic
+    let mnemonic_node = node.child_by_field_name("mnemonic");
     let operands_node = node.child_by_field_name("operands");
     let range = node.range();
 
@@ -171,11 +169,10 @@ fn parse_expression<'a>(text: &str, node: &Node<'a>) -> ValueNode {
     match node.kind() {
         "macro_variable" => ValueNode::MacroVariable { range },
         "register" => ValueNode::Register { range },
-        "local_label_reference" => ValueNode::LocalLabelReference { range },
+        "numeric_label_reference" => ValueNode::NumericLabelReference { range },
         "symbol" => ValueNode::Symbol { range },
         "elf_type_tag" => ValueNode::ElfTypeTag { range },
         "option_flag" => ValueNode::OptionFlag { range },
-        "local_numeric_label_reference" => ValueNode::LocalNumericLabelReference { range },
         "char" => parse_char(text, node),
         "string_concatenation" => parse_string_concat(text, node),
         "string" => parse_string(text, node),

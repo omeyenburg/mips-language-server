@@ -50,7 +50,7 @@ impl Backend {
         let definitions = self.definitions.read().await;
 
         let hover = match kind {
-            "opcode" => hover_instruction(&definitions.instructions, cursor_node_text),
+            "mnemonic" => hover_instruction(&definitions.instructions, cursor_node_text),
             "macro_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
                 hover_directive(&definitions.directives, cursor_node_text)
             }

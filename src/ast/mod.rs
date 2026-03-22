@@ -70,10 +70,8 @@ pub struct MacroParameterNode {
 #[derive(Debug)]
 pub enum LabelKind {
     Macro,
-    Global,
-    Local,
-    GlobalNumeric,
-    LocalNumeric,
+    Normal,
+    Numeric,
 }
 
 #[derive(Debug)]
@@ -150,10 +148,7 @@ pub enum ValueNode {
     ElfTypeTag {
         range: Range,
     },
-    LocalLabelReference {
-        range: Range,
-    },
-    LocalNumericLabelReference {
+    NumericLabelReference {
         range: Range,
     },
     BinaryExpression {
