@@ -19,22 +19,6 @@ use crate::lang::LanguageDefinitions;
 use crate::semantic;
 use crate::settings::Settings;
 
-pub type Documents = dashmap::DashMap<tower_lsp_server::ls_types::Uri, Arc<RwLock<Document>>>;
-
-/*
- TODO:
-* Handle Pseudo instructions
-* Store labels and use them for goto_definition
-* Distinguish between text & data sections
-*/
-
-pub struct Backend {
-    pub client: Client,
-    pub settings: RwLock<Settings>,
-    pub documents: Documents,
-    pub definitions: RwLock<LanguageDefinitions>,
-}
-
 fn get_server_info() -> ServerInfo {
     ServerInfo {
         name: "mips-language-server".to_string(),
@@ -71,6 +55,32 @@ fn get_server_capabilities() -> ServerCapabilities {
         // Maybe implement semantic token provider for vscode
         // semantic_tokens_provider: Some( SemanticTokensServerCapabilities::SemanticTokensRegistrationOptions( SemanticTokensRegistrationOptions { text_document_registration_options: { TextDocumentRegistrationOptions { document_selector: Some(vec![DocumentFilter { language: Some("asm".to_string()), scheme: Some("file".to_string()), pattern: None, }]), } }, semantic_tokens_options: SemanticTokensOptions { work_done_progress_options: WorkDoneProgressOptions::default(), legend: SemanticTokensLegend { token_types: LEGEND_TYPE.into(), token_modifiers: vec![], }, range: Some(true), full: Some(SemanticTokensFullOptions::Bool(true)), }, static_registration_options: StaticRegistrationOptions::default(), },),),
         ..ServerCapabilities::default()
+    }
+}
+
+pub struct Backend {
+    pub client: Client,
+    pub settings: RwLock<Settings>,
+    pub documents: dashmap::DashMap<tower_lsp_server::ls_types::Uri, Arc<RwLock<Document>>>,
+    pub definitions: RwLock<LanguageDefinitions>,
+}
+
+impl Backend {
+    pub fn new(client: Client) -> Self {
+        let documents = dashmap::DashMap::new();
+
+        let default_settings = Settings::default();
+        let default_definitions = LanguageDefinitions::new();
+
+        let settings = RwLock::new(default_settings);
+        let definitions = RwLock::new(default_definitions);
+
+        Self {
+            client,
+            settings,
+            documents,
+            definitions,
+        }
     }
 }
 
@@ -122,10 +132,6 @@ impl LanguageServer for Backend {
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         log!("textDocument/didOpen");
-        // log!(
-        //     "{:?}",
-        //     params.text_document.uri.path() // might panic - dont call in prod
-        // );
 
         let TextDocumentItem {
             uri, text, version, ..
@@ -182,14 +188,14 @@ impl LanguageServer for Backend {
         &self,
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
-        self.get_completions(params).await
+        self.handle_completion(params).await
     }
 
     async fn goto_definition(
         &self,
         params: GotoDefinitionParams,
     ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {
-        self.do_goto_definition(params).await
+        self.handle_goto_definition(params).await
     }
 
     async fn hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
@@ -211,25 +217,6 @@ impl LanguageServer for Backend {
     //         }),
     //     ))
     // }
-}
-
-impl Backend {
-    pub fn new(client: Client) -> Self {
-        let documents = dashmap::DashMap::new();
-
-        let default_settings = Settings::default();
-        let default_definitions = LanguageDefinitions::new();
-
-        let settings = RwLock::new(default_settings);
-        let definitions = RwLock::new(default_definitions);
-
-        Self {
-            client,
-            settings,
-            documents,
-            definitions,
-        }
-    }
 }
 
 pub async fn serve() {

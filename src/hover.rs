@@ -8,7 +8,7 @@ use crate::document;
 use crate::lang::{
     Directive, Directives, Instruction, Instructions, LanguageDefinitions, Registers,
 };
-use crate::server::{Backend, Documents};
+use crate::server::Backend;
 
 impl Backend {
     pub async fn handle_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {

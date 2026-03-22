@@ -10,11 +10,11 @@ use streaming_iterator::StreamingIterator;
 use crate::document;
 use crate::lang::LanguageDefinitions;
 use crate::lang::{Directive, Instruction, Registers};
-use crate::server::{Backend, Documents};
+use crate::server::Backend;
 
 impl Backend {
     // Goto definition: searches for word below cursor among all labels
-    pub async fn do_goto_definition(
+    pub async fn handle_goto_definition(
         &self,
         params: GotoDefinitionParams,
     ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {

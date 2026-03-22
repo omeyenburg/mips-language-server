@@ -10,12 +10,12 @@ use crate::document::utf16::*;
 use crate::document::Document;
 use crate::lang::LanguageDefinitions;
 use crate::lang::{Directive, Instruction, Registers};
-use crate::server::{Backend, Documents};
+use crate::server::Backend;
 
 impl Backend {
     /// Analyzes the document at the current cursor position and provides matching completions.
     /// Kinds of completions: instruction, directive (when starting with dot) or register (when starting with $).
-    pub async fn get_completions(
+    pub async fn handle_completion(
         &self,
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {

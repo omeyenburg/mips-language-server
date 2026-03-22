@@ -11,7 +11,7 @@ use crate::ast::SyntaxNode;
 use crate::document::Document;
 use crate::lang::LanguageDefinitions;
 use crate::lang::{Directive, Instruction, Registers};
-use crate::server::{Backend, Documents};
+use crate::server::Backend;
 
 use crate::document;
 use crate::semantic;
