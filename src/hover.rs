@@ -50,10 +50,11 @@ impl Backend {
         let definitions = self.definitions.read().await;
 
         let hover = match kind {
-            "mnemonic" => hover_instruction(&definitions.instructions, cursor_node_text),
-            "macro_mnemonic" | "numeric_mnemonic" | "string_mnemonic" | "control_mnemonic" => {
-                hover_directive(&definitions.directives, cursor_node_text)
+            "instruction_mnemonic" => {
+                hover_instruction(&definitions.instructions, cursor_node_text)
             }
+            "macro_mnemonic" | "integer_mnemonic" | "float_mnemonic" | "string_mnemonic"
+            | "control_mnemonic" => hover_directive(&definitions.directives, cursor_node_text),
             "register" => hover_register(&definitions.registers, cursor_node_text),
             _ => None,
         };
