@@ -327,9 +327,9 @@ fn build_instruction_hover_info(
             format!(
                 "```asm\n{} {}\n```\n{}  \nIntroduced: {:?} | ",
                 mnemonic,
-                &v.operands.join(", ").as_str(),
-                &v.description,
-                &v.introduced
+                v.operands.join(", ").as_str(),
+                v.description,
+                v.introduced
             )
             .as_str(),
         );
