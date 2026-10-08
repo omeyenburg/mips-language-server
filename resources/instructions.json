@@ -13008,6 +13008,21 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to value of rs (pseudo-instruction, expands to addu rd, rs, $zero)",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -14731,6 +14746,21 @@
         "introduced": "mips1",
         "deprecated": null,
         "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to negation of rs (pseudo-instruction, expands to sub rd, $zero, rs)",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
       }
     ]
   },
@@ -15014,6 +15044,21 @@
         ],
         "pseudo": false,
         "introduced": "mips1",
+        "deprecated": null,
+        "mips32": true
+      },
+      {
+        "dialects": [
+          "mars",
+          "spim"
+        ],
+        "description": "Set rd to bitwise not of rs (pseudo-instruction, expands to nor rd, rs, $zero)",
+        "operands": [
+          "rd",
+          "rs"
+        ],
+        "pseudo": true,
+        "introduced": null,
         "deprecated": null,
         "mips32": true
       }
@@ -20827,6 +20872,24 @@
           "rt",
           "rs",
           "imm32_u"
+        ],
+        "pseudo": true,
+        "introduced": null,
+        "deprecated": null,
+        "mips32": true
+      }
+    ]
+  },
+  "clear": {
+    "description": "clear register",
+    "variants": [
+      {
+        "dialects": [
+          "mars"
+        ],
+        "description": "Set rd to zero (pseudo-instruction, expands to addu rd, $zero, $zero)",
+        "operands": [
+          "rd"
         ],
         "pseudo": true,
         "introduced": null,
